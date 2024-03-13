@@ -236,6 +236,41 @@ export class AuthService {
         };
     };
 
+    async resendVerificationCode(userId: string) {
+        try {
+            const user = await this.prisma.user.findUnique({
+                where: {
+                    id: userId,
+                },
+            });
+            if (!user) throw new ForbiddenException("User not found");
+
+            const isVerified = user.verified;
+            if (isVerified === true) throw new ForbiddenException("User already verified");
+
+            const code = Math.floor(1000 + Math.random() * 9000);
+            const codeExpiry = new Date(Date.now() + 60 * 60 * 1000);
+
+            await this.prisma.user.update({
+                where: {
+                    id: user.id,
+                },
+                data: {
+                    code,
+                    codeExpiry,
+                },
+            });
+
+            // await this.eventEmitter.emit("user.created", new UserCreatedEvent(user.id, user.email, user.fullname, code));
+            // await this.logger.log("Verification email resent...", user.email);
+
+            return true;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        };
+    }
+
     async verification(userId: string, code: number) {
         try {
             if (!code) throw new ForbiddenException("Missing required fields");
@@ -396,9 +431,45 @@ export class AuthService {
         });
     };
 
-    async logOut() { }
+    async logOut(userId: string) {
+        try {
+            await this.prisma.user.updateMany({
+                where: {
+                    id: userId,
+                    hashedRt: {
+                        not: null
+                    },
+                },
+                data: {
+                    hashedRt: null,
+                },
+            });
+            return true;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        };
+    };
 
-    async adminLogOut() { }
+    async adminLogOut(adminId: string) {
+        try {
+            await this.prisma.admin.updateMany({
+                where: {
+                    id: adminId,
+                    hashedRt: {
+                        not: null
+                    },
+                },
+                data: {
+                    hashedRt: null,
+                },
+            });
+            return true;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        };
+    };
 
     async getUserById(userId: string) {
         try {
@@ -415,4 +486,20 @@ export class AuthService {
             throw error;
         };
     };
+
+    async getAdminById(adminId: string) {
+        try {
+            const admin = await this.prisma.admin.findUnique({
+                where: {
+                    id: adminId,
+                },
+            });
+            if (!admin) throw new UnauthorizedException("Admin not found");
+
+            return admin;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        };
+    }
 }

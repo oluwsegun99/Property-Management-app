@@ -60,6 +60,15 @@ export interface UserSignUpAfterInvite {
     password: string;
 }
 
+export interface CreateDeveloperCompany {
+    companyName: string;
+    companyEmail: string;
+    companyMobile: string;
+    companyTypeId: number;
+    registrationNumber?: Nullable<string>;
+    address?: Nullable<string>;
+}
+
 export interface Role {
     id?: Nullable<string>;
     roleName?: Nullable<string>;
@@ -70,7 +79,10 @@ export interface Role {
 
 export interface IQuery {
     getAllRoles(): Nullable<Nullable<Role>[]> | Promise<Nullable<Nullable<Role>[]>>;
+    getUserDeveloperRoles(): Nullable<Nullable<Role>[]> | Promise<Nullable<Nullable<Role>[]>>;
+    getAdminRoles(): Nullable<Nullable<Role>[]> | Promise<Nullable<Nullable<Role>[]>>;
     getUserById(): Nullable<User> | Promise<Nullable<User>>;
+    getAdminById(): Nullable<Admin> | Promise<Nullable<Admin>>;
 }
 
 export interface AdminInvite {
@@ -92,7 +104,10 @@ export interface IMutation {
     adminSignUp(input: AdminSignupInput): Nullable<AdminSignUpResponse> | Promise<Nullable<AdminSignUpResponse>>;
     adminSignIn(input: AdminSigninInput): Nullable<AdminSignUpResponse> | Promise<Nullable<AdminSignUpResponse>>;
     adminSignUpAfterInvite(input: AdminSignUpAfterInvite): Nullable<AdminSignUpResponse> | Promise<Nullable<AdminSignUpResponse>>;
+    resendVerificationCode(): Nullable<boolean> | Promise<Nullable<boolean>>;
     verification(code: number): Nullable<boolean> | Promise<Nullable<boolean>>;
+    logOut(): Nullable<boolean> | Promise<Nullable<boolean>>;
+    adminLogOut(): Nullable<boolean> | Promise<Nullable<boolean>>;
     userCreateInvite(input?: Nullable<UserCreateInvite>): Nullable<UserDeveloperInvite> | Promise<Nullable<UserDeveloperInvite>>;
 }
 
@@ -152,11 +167,23 @@ export interface UserDeveloperInvite {
     updatedAt?: Nullable<Date>;
 }
 
+export interface CompanyType {
+    id?: Nullable<number>;
+    type?: Nullable<string>;
+}
+
 export interface DeveloperCompany {
     id?: Nullable<string>;
     companyName?: Nullable<string>;
     companyEmail?: Nullable<string>;
     companyMobile?: Nullable<string>;
+    registrationNumber?: Nullable<string>;
+    companyLogo?: Nullable<string>;
+    description?: Nullable<string>;
+    website?: Nullable<string>;
+    address?: Nullable<string>;
+    companyTypeId?: Nullable<number>;
+    companyType?: Nullable<CompanyType>;
     vetted?: Nullable<string>;
     ownedById?: Nullable<string>;
     ownedBy?: Nullable<User>;

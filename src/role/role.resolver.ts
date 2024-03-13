@@ -10,9 +10,15 @@ export class RoleResolver {
         return await this.roleService.getAllRoles();
     };
 
-    async getUserDeveloperRoles() { }
+    @Query("getUserDeveloperRoles")
+    async getUserDeveloperRoles() {
+        return await this.roleService.getUserDeveloperRoles();
+    };
 
-    async getAdminRoles() { }
+    @Query("getAdminRoles")
+    async getAdminRoles() {
+        return await this.roleService.getAdminRoles();
+    };
 
     async getFinancierRoles() { }
 }

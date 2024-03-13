@@ -89,12 +89,29 @@ model User {
   @@map("users")
 }
 
+model CompanyType {
+  id   Int    @id
+  type String @unique
+
+  developerCompanies DeveloperCompany[]
+
+  @@map("companyTypes")
+}
+
 model DeveloperCompany {
-  id            String  @id @default(uuid())
-  companyName   String
-  companyEmail  String  @unique
-  companyMobile String
-  vetted        Boolean @default(false)
+  id                 String  @id @default(uuid())
+  companyName        String
+  companyEmail       String  @unique
+  companyMobile      String
+  registrationNumber String?
+  companyLogo        String?
+  description        String?
+  website            String?
+  address            String?
+  vetted             Boolean @default(false)
+
+  companyTypeId Int
+  companyType   CompanyType @relation(fields: [companyTypeId], references: [id])
 
   ownedById String @unique
   ownedBy   User   @relation(fields: [ownedById], references: [id])

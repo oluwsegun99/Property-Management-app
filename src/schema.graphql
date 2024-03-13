@@ -1,4 +1,5 @@
 scalar Date
+scalar Int
 
 type Role {
     id: String
@@ -10,6 +11,8 @@ type Role {
 
 type Query {
     getAllRoles: [Role]
+    getUserDeveloperRoles: [Role]
+    getAdminRoles: [Role]
 }
 
 type AdminInvite{
@@ -137,6 +140,7 @@ input UserSignUpAfterInvite{
 
 type Query{
     getUserById: User
+    getAdminById: Admin
 }
 
 type Mutation{
@@ -146,8 +150,16 @@ type Mutation{
     adminSignUp(input: AdminSignupInput!): AdminSignUpResponse
     adminSignIn(input: AdminSigninInput!): AdminSignUpResponse
     adminSignUpAfterInvite(input: AdminSignUpAfterInvite!): AdminSignUpResponse
+    resendVerificationCode: Boolean
     verification(code: Float!): Boolean
+    logOut: Boolean
+    adminLogOut: Boolean
     userCreateInvite(input: UserCreateInvite): UserDeveloperInvite
+}
+
+type CompanyType{
+    id: Int
+    type: String
 }
 
 type DeveloperCompany{
@@ -155,6 +167,13 @@ type DeveloperCompany{
     companyName: String
     companyEmail: String
     companyMobile: String
+    registrationNumber: String
+    companyLogo: String
+    description: String
+    website: String
+    address: String
+    companyTypeId: Int
+    companyType: CompanyType
     vetted: String
     ownedById: String
     ownedBy: User
@@ -171,4 +190,13 @@ type UserDeveloperCompany{
     isOwner: Boolean
     createdAt: Date
     updatedAt: Date
+}
+
+input CreateDeveloperCompany{
+    companyName: String!
+    companyEmail: String!
+    companyMobile: String!
+    companyTypeId: Int!
+    registrationNumber: String
+    address: String
 }

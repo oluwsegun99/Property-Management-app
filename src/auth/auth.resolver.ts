@@ -36,6 +36,8 @@ export class AuthResolver {
         return await this.authService.adminSignIn(dto);
     };
 
+    async resendVerificationCode() { }
+
     @UseGuards(AtGuard)
     @Mutation("verification")
     async verification(@GraphqlGetUserId() userId: string, @Args("code") code: number) {
@@ -43,8 +45,26 @@ export class AuthResolver {
     };
 
     @UseGuards(AtGuard)
+    @Mutation("logOut")
+    async logOut(@GraphqlGetUserId() userId: string) {
+        return await this.authService.logOut(userId);
+    };
+
+    @UseGuards(AtGuard)
+    @Mutation("adminLogOut")
+    async adminLogOut(@GraphqlGetUserId() adminId: string) {
+        return await this.authService.adminLogOut(adminId);
+    }
+
+    @UseGuards(AtGuard)
     @Query("getUserById")
     async getUserById(@GraphqlGetUserId() userId: string) {
         return await this.authService.getUserById(userId)
+    };
+
+    @UseGuards(AtGuard)
+    @Query("getAdminById")
+    async getAdminById(@GraphqlGetUserId() adminId: string) {
+        return await this.authService.getAdminById(adminId);
     };
 }
