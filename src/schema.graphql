@@ -9,7 +9,7 @@ type Role {
 }
 
 type Query {
-    getRoles: [Role]
+    getAllRoles: [Role]
 }
 
 type AdminInvite{

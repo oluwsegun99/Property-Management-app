@@ -5,7 +5,14 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class RoleService {
     constructor(private prisma: PrismaService) { }
 
-    async getAllRoles() { }
+    async getAllRoles() {
+        try {
+            return await this.prisma.role.findMany();
+        } catch (error) {
+            console.error(error);
+            throw error;
+        };
+    };
 
     async getUserDeveloperRoles() { }
 

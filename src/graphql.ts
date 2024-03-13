@@ -69,7 +69,7 @@ export interface Role {
 }
 
 export interface IQuery {
-    getRoles(): Nullable<Nullable<Role>[]> | Promise<Nullable<Nullable<Role>[]>>;
+    getAllRoles(): Nullable<Nullable<Role>[]> | Promise<Nullable<Nullable<Role>[]>>;
     getUserById(): Nullable<User> | Promise<Nullable<User>>;
 }
 

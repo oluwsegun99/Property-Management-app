@@ -57,9 +57,9 @@ jobs:
             sudo apt-get install -y git
             sudo apt-get install -y nodejs
             sudo apt install nginx -y
-            sudo ufw allow OpenSSH
-            sudo ufw allow "Nginx Full"
-            sudo ufw --force enable
+            # sudo ufw allow OpenSSH
+            # sudo ufw allow "Nginx Full"
+            # sudo ufw --force enable
             sudo apt-get install -y npm
             npm install --global yarn pm2
             sudo rm -rf homecrescent-backend/dist
@@ -71,14 +71,14 @@ jobs:
             sudo echo DATABASE_URL="${{secrets.DATABASE_URL}}" >> .env
             sudo echo ACCESS_SECRET="${{secrets.ACCESS_SECRET}}" >> .env
             sudo echo REFRESH_SECRET="${{secrets.REFRESH_SECRET}}" >> .env
-            # pm2 stop homecrescent-backend
+            pm2 stop homecrescent-backend
             git checkout testing
             git fetch
             git merge
             yarn install
             yarn build
-            pm2 start yarn --name homecrescent-backend -- start
-            # pm2 restart homecrescent-backend
+            # pm2 start yarn --name homecrescent-backend -- start
+            pm2 restart homecrescent-backend
             # sudo rm -rf /etc/nginx/sites-enabled/default
             # sudo cp -r default /etc/nginx/sites-enabled/
             # sudo systemctl restart nginx
