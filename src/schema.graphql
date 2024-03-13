@@ -1,0 +1,174 @@
+scalar Date
+
+type Role {
+    id: String
+    roleName: String
+    roleDescription: String
+    createdAt: Date
+    updatedAt: Date
+}
+
+type Query {
+    getRoles: [Role]
+}
+
+type AdminInvite{
+    id: String
+    fullname: String
+    email: String
+    mobile: String
+    roleId: String
+    role: Role
+    createdAt: Date
+    updatedAt: Date
+}
+
+input AdminCreateInvite{
+    fullname: String!
+    email: String!
+    mobile: String!
+    roleId: String!
+}
+
+type Mutation{
+    createAdminInvite(input: AdminCreateInvite): AdminInvite
+}
+
+type Admin {
+    id: String
+    fullname: String
+    email: String
+    mobile: String
+    roleId: String
+    role: Role
+    createdAt: Date
+    updatedAt: Date
+}
+
+input AdminSignupInput{
+    email: String!
+    fullname: String!
+    mobile: String!
+    password: String!
+}
+
+input AdminSignUpAfterInvite{
+    inviteId: String!
+    password: String!
+}
+
+type AdminSignUpResponse{
+    email: String!
+    access_token: String!
+    refresh_token: String!
+}
+
+input AdminSigninInput{
+    email: String!
+    password: String!
+    twoFACode: String!
+}
+
+type User {
+    id: String
+    fullname: String
+    email: String
+    mobile: String
+    vetted: Boolean
+    isDeveloper: Boolean
+    hasCompany: Boolean
+    roleId: String
+    role: Role
+    createdAt: Date
+    updatedAt: Date
+}
+
+input UserSignUpInput{
+    email: String!
+    fullname: String!
+    mobile: String!
+    password: String!
+    isDeveloper: Boolean
+    hasCompany: Boolean
+}
+
+type UserSignUpResponse{
+    access_token: String!
+    refresh_token: String!
+}
+
+input UserSigninInput{
+    email: String!
+    password: String!
+}
+
+type UserSignInResponse{
+    vetted: Boolean
+    verified: Boolean
+    token: UserSignUpResponse
+}
+
+type UserDeveloperInvite{
+    id: String
+    email: String
+    fullname: String
+    mobile: String
+    accepted: Boolean
+    developerCompanyId: String
+    developerCompany: DeveloperCompany
+    roleId: String
+    role: Role
+    createdAt: Date
+    updatedAt: Date
+}
+
+input UserCreateInvite{
+    email: String!
+    fullname: String!
+    mobile: String!
+    developerCompanyId: String!
+    roleId: String!
+}
+
+input UserSignUpAfterInvite{
+    inviteId: String!
+    password: String!
+}
+
+type Query{
+    getUserById: User
+}
+
+type Mutation{
+    signUp(input: UserSignUpInput!): UserSignUpResponse
+    userSignUpAfterInvite(input: UserSignUpAfterInvite): UserSignUpResponse
+    signIn(input: UserSigninInput!): UserSignInResponse
+    adminSignUp(input: AdminSignupInput!): AdminSignUpResponse
+    adminSignIn(input: AdminSigninInput!): AdminSignUpResponse
+    adminSignUpAfterInvite(input: AdminSignUpAfterInvite!): AdminSignUpResponse
+    verification(code: Float!): Boolean
+    userCreateInvite(input: UserCreateInvite): UserDeveloperInvite
+}
+
+type DeveloperCompany{
+    id: String
+    companyName: String
+    companyEmail: String
+    companyMobile: String
+    vetted: String
+    ownedById: String
+    ownedBy: User
+    createdAt: Date
+    updatedAt: Date
+}
+
+type UserDeveloperCompany{
+    id: String
+    developerCompanyId: String
+    developerCompany: DeveloperCompany
+    userId: String
+    user: User
+    isOwner: Boolean
+    createdAt: Date
+    updatedAt: Date
+}

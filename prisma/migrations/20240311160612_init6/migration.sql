@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "users" ALTER COLUMN "vetted" DROP NOT NULL,
+ALTER COLUMN "isDeveloper" DROP NOT NULL,
+ALTER COLUMN "hasCompany" DROP NOT NULL;

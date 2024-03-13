@@ -1,0 +1,145 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id              String   @id @default(uuid())
+  roleName        String
+  roleDescription String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  users                User[]
+  userDeveloperInvites UserDeveloperInvite[]
+  admins               Admin[]
+  adminInvites         AdminInvite[]
+
+  @@map("roles")
+}
+
+model AdminInvite {
+  id       String @id @default(uuid())
+  fullname String
+  email    String @unique
+  mobile   String
+
+  roleId String
+  role   Role   @relation(fields: [roleId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("adminInvites")
+}
+
+model Admin {
+  id       String @id @default(uuid())
+  fullname String
+  email    String @unique
+  hash     String
+  mobile   String
+
+  roleId String
+  role   Role   @relation(fields: [roleId], references: [id])
+
+  hashedRt               String?
+  twoFactorAuthSecret    String?
+  isTwoFactorAuthEnabled Boolean?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  @@map("admin")
+}
+
+model User {
+  id                  String    @id @default(uuid())
+  fullname            String
+  email               String    @unique
+  hash                String
+  mobile              String
+  verified            Boolean?  @default(false)
+  verificationAttempt Float?
+  verificationTimeOut DateTime?
+  vetted              Boolean?  @default(false)
+  isDeveloper         Boolean?  @default(false)
+  hasCompany          Boolean?  @default(false)
+
+  roleId String
+  role   Role   @relation(fields: [roleId], references: [id])
+
+  hashedRt               String?
+  code                   Float?
+  codeExpiry             DateTime?
+  twoFactorAuthSecret    String?
+  isTwoFactorAuthEnabled Boolean?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  developerCompanyOwned  DeveloperCompany?
+  userDeveloperCompanies UserDeveloperCompany?
+
+  @@map("users")
+}
+
+model DeveloperCompany {
+  id            String  @id @default(uuid())
+  companyName   String
+  companyEmail  String  @unique
+  companyMobile String
+  vetted        Boolean @default(false)
+
+  ownedById String @unique
+  ownedBy   User   @relation(fields: [ownedById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userDeveloperCompanies UserDeveloperCompany[]
+  userDeveloperInvites   UserDeveloperInvite[]
+
+  @@map("developerCompanies")
+}
+
+model UserDeveloperCompany {
+  id String @id @default(uuid())
+
+  developerCompanyId String
+  developerCompany   DeveloperCompany @relation(fields: [developerCompanyId], references: [id])
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  isOwner Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("userDeveloperCompanies")
+}
+
+model UserDeveloperInvite {
+  id       String  @id @default(uuid())
+  email    String
+  fullname String
+  mobile   String
+  accepted Boolean @default(false)
+
+  developerCompanyId String
+  developerCompany   DeveloperCompany @relation(fields: [developerCompanyId], references: [id])
+
+  roleId String
+  role   Role   @relation(fields: [roleId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("userDeveloperInvites")
+}
