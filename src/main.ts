@@ -11,7 +11,7 @@ async function bootstrap() {
       'http://localhost:3000',
     ],
     credentials: true,
-    preflightContinue: true,
+    // preflightContinue: true,
   });
 
   app.useGlobalPipes(new ValidationPipe());
