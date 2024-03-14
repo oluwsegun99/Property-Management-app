@@ -15,6 +15,9 @@ import { CompanyModule } from './company/company.module';
 @Module({
   imports: [
     GraphQLModule.forRoot<ApolloDriverConfig>({
+      cors: {
+        origin: ['http://localhost:3000'],
+      },
       driver: ApolloDriver,
       typePaths: ['./**/*.graphql'],
       definitions: {
