@@ -2,7 +2,7 @@ import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GraphqlGetUserId } from 'src/common/decorators';
 import { AtGuard } from 'src/common/guards/at-guard';
-import { AdminSigninInput, AdminSignUpAfterInvite, AdminSignupInput, UserSigninInput, UserSignUpInput } from 'src/graphql';
+import { AdminSigninInput, AdminSignUpAfterInvite, AdminSignupInput, UserSigninInput, UserSignUpAfterInvite, UserSignUpInput } from 'src/graphql';
 import { AuthService } from './auth.service';
 
 @Resolver()
@@ -14,6 +14,11 @@ export class AuthResolver {
     @Mutation("signUp")
     async signUp(@Args("input") dto: UserSignUpInput) {
         return await this.authService.signUp(dto);
+    };
+
+    @Mutation("userSignUpAfterInvite")
+    async userSignUpAfterInvite(@Args("input") dto: UserSignUpAfterInvite) {
+        return await this.authService.userSignUpAfterInvite(dto);
     };
 
     @Mutation("adminSignUp")

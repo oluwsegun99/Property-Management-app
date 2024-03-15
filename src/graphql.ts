@@ -116,7 +116,7 @@ export interface AdminInvite {
 export interface IMutation {
     createAdminInvite(input?: Nullable<AdminCreateInvite>): Nullable<AdminInvite> | Promise<Nullable<AdminInvite>>;
     signUp(input: UserSignUpInput): Nullable<UserSignUpResponse> | Promise<Nullable<UserSignUpResponse>>;
-    userSignUpAfterInvite(input?: Nullable<UserSignUpAfterInvite>): Nullable<UserSignUpResponse> | Promise<Nullable<UserSignUpResponse>>;
+    userSignUpAfterInvite(input: UserSignUpAfterInvite): Nullable<UserSignUpResponse> | Promise<Nullable<UserSignUpResponse>>;
     signIn(input: UserSigninInput): Nullable<UserSignInResponse> | Promise<Nullable<UserSignInResponse>>;
     adminSignUp(input: AdminSignupInput): Nullable<AdminSignUpResponse> | Promise<Nullable<AdminSignUpResponse>>;
     adminSignIn(input: AdminSigninInput): Nullable<AdminSignUpResponse> | Promise<Nullable<AdminSignUpResponse>>;
@@ -166,16 +166,21 @@ export interface User {
     updatedAt?: Nullable<Date>;
 }
 
-export interface UserSignUpResponse {
+export interface TokenResponse {
     access_token: string;
     refresh_token: string;
+}
+
+export interface UserSignUpResponse {
+    user?: Nullable<User>;
+    token?: Nullable<TokenResponse>;
 }
 
 export interface UserSignInResponse {
     vetted?: Nullable<boolean>;
     verified?: Nullable<boolean>;
     user?: Nullable<User>;
-    token?: Nullable<UserSignUpResponse>;
+    token?: Nullable<TokenResponse>;
 }
 
 export interface UserDeveloperInvite {

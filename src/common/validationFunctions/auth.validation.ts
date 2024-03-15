@@ -1,10 +1,21 @@
 import { plainToClass } from "class-transformer";
 import { validate, ValidationError } from "class-validator";
-import { AdminSigninInput, AdminSignUpAfterInvite, AdminSignupInput, UserSigninInput, UserSignUpInput } from "src/graphql";
-import { AdminSigninInputDTO, AdminSignUpAfterInviteDTO, AdminSignUpInputDTO, UserSigninInputDTO, UserSignUpInputDTO } from "../validators/auth.validator";
+import { AdminSigninInput, AdminSignUpAfterInvite, AdminSignupInput, UserSigninInput, UserSignUpAfterInvite, UserSignUpInput } from "src/graphql";
+import { AdminSigninInputDTO, AdminSignUpAfterInviteDTO, AdminSignUpInputDTO, UserSigninInputDTO, UserSignUpAfterInviteDTO, UserSignUpInputDTO } from "../validators/auth.validator";
 
 export async function validateSignUpDTO(dto: UserSignUpInput): Promise<string[]> {
     const dtoForValidation = plainToClass(UserSignUpInputDTO, dto);
+
+    const errors: ValidationError[] = await validate(dtoForValidation);
+    if (errors.length > 0) {
+        // Extract error messages
+        return errors.map((error: ValidationError) => Object.values(error.constraints || {})).flat();
+    }
+    return [];
+};
+
+export async function validateUserSignUpAfterInviteDTO(dto: UserSignUpAfterInvite): Promise<string[]> {
+    const dtoForValidation = plainToClass(UserSignUpAfterInviteDTO, dto);
 
     const errors: ValidationError[] = await validate(dtoForValidation);
     if (errors.length > 0) {

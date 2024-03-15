@@ -29,6 +29,18 @@ export class UserSignUpInputDTO {
     hasCompany: boolean;
 };
 
+export class UserSignUpAfterInviteDTO {
+    @IsNotEmpty({ message: 'inviteId should not be empty' })
+    @IsString()
+    @Matches(/^\s*\S.*$/, { message: 'inviteId should not contain only whitespace' })
+    inviteId: string;
+
+    @IsNotEmpty({ message: 'Password should not be empty' })
+    @IsString()
+    @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[$#@!&*~])[A-Za-z\d$#@!&*~]{8,}$/, { message: 'Invalid password format' })
+    password: string;
+};
+
 export class UserSigninInputDTO {
     @IsNotEmpty({ message: 'Email should not be empty' })
     @IsEmail({}, { message: 'Invalid email format' })

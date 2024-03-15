@@ -3,8 +3,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from "bcrypt";
-import { AdminSigninInput, AdminSignUpAfterInvite, AdminSignupInput, UserSigninInput, UserSignUpInput } from 'src/graphql';
-import { validateAdminSignInDTO, validateAdminSignUpAfterInviteDTO, validateAdminSignUpDTO, validateSignInDTO, validateSignUpDTO } from 'src/common/validationFunctions/auth.validation';
+import { AdminSigninInput, AdminSignUpAfterInvite, AdminSignupInput, UserSigninInput, UserSignUpAfterInvite, UserSignUpInput } from 'src/graphql';
+import { validateAdminSignInDTO, validateAdminSignUpAfterInviteDTO, validateAdminSignUpDTO, validateSignInDTO, validateSignUpDTO, validateUserSignUpAfterInviteDTO } from 'src/common/validationFunctions/auth.validation';
 import { Role } from 'src/common/enums/role.enum';
 
 @Injectable()
@@ -64,12 +64,84 @@ export class AuthService {
 
             const token = await this.getTokens(newUser.id, newUser.email);
             this.updateRtHash(newUser.id, token.refresh_token);
-            return token;
+            return {
+                user: newUser,
+                token,
+            };
         } catch (error) {
             console.error(error)
             throw error;
         };
     };
+
+    async userSignUpAfterInvite(dto: UserSignUpAfterInvite) {
+        try {
+            // Validate
+            const errors: string[] = await validateUserSignUpAfterInviteDTO(dto);
+            if (errors.length > 0) {
+                const errorMessage = `Validation error: ${errors.join(', ')}`;
+                throw new ForbiddenException(errorMessage);
+            };
+
+            const userInvite = await this.prisma.userDeveloperInvite.findUnique({
+                where: {
+                    id: dto.inviteId,
+                },
+            });
+            if (!userInvite) throw new ForbiddenException("Access denied: This email needs to be invited first");
+
+            const userExists = await this.prisma.user.findFirst({
+                where: {
+                    email: userInvite.email,
+                },
+            });
+            if (userExists) throw new ForbiddenException("Email already used");
+
+            const hash = await this.hashData(dto.password);
+
+            const code = Math.floor(1000 + Math.random() * 9000);
+            const codeExpiry = new Date(Date.now() + 60 * 60 * 1000);
+
+            const newInvitedUser = await this.prisma.$transaction(async (prisma) => {
+                const newUser = await this.prisma.user.create({
+                    data: {
+                        email: userInvite.email,
+                        fullname: userInvite.fullname,
+                        mobile: userInvite.mobile,
+                        hash,
+                        isDeveloper: true,
+                        hasCompany: true,
+                        roleId: userInvite.roleId,
+                        code,
+                        codeExpiry,
+                        // verified: false,
+                    },
+                });
+
+                await this.prisma.userDeveloperCompany.create({
+                    data: {
+                        userId: newUser.id,
+                        developerCompanyId: userInvite.developerCompanyId,
+                    },
+                });
+
+                return newUser
+            });
+
+            // await this.eventEmitter.emit("user.created", new UserCreatedEvent(newUser.id, newUser.email, newUser.fullname, code));
+            // await this.logger.log("User successfully created...", newUser.email);
+
+            const token = await this.getTokens(newInvitedUser.id, newInvitedUser.email);
+            this.updateRtHash(newInvitedUser.id, token.refresh_token);
+            return {
+                user: newInvitedUser,
+                token,
+            };
+        } catch (error) {
+            console.error(error)
+            throw error;
+        };
+    }
 
     async adminSignUp(dto: AdminSignupInput) {
         try {

@@ -95,9 +95,14 @@ input UserSignUpInput{
     hasCompany: Boolean
 }
 
-type UserSignUpResponse{
+type TokenResponse{
     access_token: String!
     refresh_token: String!
+}
+
+type UserSignUpResponse{
+    user: User
+    token: TokenResponse
 }
 
 input UserSigninInput{
@@ -109,7 +114,7 @@ type UserSignInResponse{
     vetted: Boolean
     verified: Boolean
     user: User
-    token: UserSignUpResponse
+    token: TokenResponse
 }
 
 type UserDeveloperInvite{
@@ -147,7 +152,7 @@ type Query{
 
 type Mutation{
     signUp(input: UserSignUpInput!): UserSignUpResponse
-    userSignUpAfterInvite(input: UserSignUpAfterInvite): UserSignUpResponse
+    userSignUpAfterInvite(input: UserSignUpAfterInvite!): UserSignUpResponse
     signIn(input: UserSigninInput!): UserSignInResponse
     adminSignUp(input: AdminSignupInput!): AdminSignUpResponse
     adminSignIn(input: AdminSigninInput!): AdminSignUpResponse
