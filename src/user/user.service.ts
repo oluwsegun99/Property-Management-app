@@ -69,4 +69,58 @@ export class UserService {
             throw error;
         };
     };
+
+    async deleteUserByEmail(email: string) {
+        try {
+            const userExists = await this.prisma.user.findUnique({
+                where: {
+                    email,
+                },
+            });
+            if (!userExists) throw new ForbiddenException("User not found");
+
+            await this.prisma.user.delete({
+                where: {
+                    id: userExists.id,
+                },
+            });
+
+            return true;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        };
+    };
+
+    async deleteUserById(userId: string) {
+        try {
+            const userExists = await this.prisma.user.findUnique({
+                where: {
+                    id: userId,
+                },
+            });
+            if (!userExists) throw new ForbiddenException("User not found");
+
+            await this.prisma.user.delete({
+                where: {
+                    id: userExists.id,
+                },
+            });
+
+            return true;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    async deleteAllUsers() {
+        try {
+            await this.prisma.user.deleteMany();
+            return true;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        };
+    };
 }

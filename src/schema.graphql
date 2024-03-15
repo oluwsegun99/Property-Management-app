@@ -157,6 +157,9 @@ type Mutation{
     logOut: Boolean
     adminLogOut: Boolean
     userCreateInvite(input: UserCreateInvite): UserDeveloperInvite
+    deleteUserByEmail(email: String!): Boolean
+    deleteUserById(userId: String!): Boolean
+    deleteAllUsers: Boolean
 }
 
 type CompanyType{

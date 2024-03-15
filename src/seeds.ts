@@ -106,8 +106,6 @@ async function seed() {
             data: typesToCreate,
         });
     };
-
-    await prisma.user.deleteMany();
 };
 
 seed()

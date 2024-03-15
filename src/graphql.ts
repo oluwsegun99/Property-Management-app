@@ -126,6 +126,9 @@ export interface IMutation {
     logOut(): Nullable<boolean> | Promise<Nullable<boolean>>;
     adminLogOut(): Nullable<boolean> | Promise<Nullable<boolean>>;
     userCreateInvite(input?: Nullable<UserCreateInvite>): Nullable<UserDeveloperInvite> | Promise<Nullable<UserDeveloperInvite>>;
+    deleteUserByEmail(email: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deleteUserById(userId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deleteAllUsers(): Nullable<boolean> | Promise<Nullable<boolean>>;
     createDeveloperCompany(input?: Nullable<CreateDeveloperCompany>): Nullable<DeveloperCompany> | Promise<Nullable<DeveloperCompany>>;
     updateDeveloperCompany(input?: Nullable<UpdateDeveloperCompany>): Nullable<DeveloperCompany> | Promise<Nullable<DeveloperCompany>>;
     deleteDeveloperCompany(companyId: string): Nullable<boolean> | Promise<Nullable<boolean>>;

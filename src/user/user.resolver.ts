@@ -23,4 +23,19 @@ export class UserResolver {
     async getAllUsers() {
         return await this.userService.getAllUsers();
     };
+
+    @Mutation("deleteUserByEmail")
+    async deleteUserByEmail(@Args("email") email: string) {
+        return await this.userService.deleteUserByEmail(email);
+    };
+
+    @Mutation("deleteUserById")
+    async deleteUserById(@Args("userId") userId: string) {
+        return await this.userService.deleteUserById(userId);
+    };
+
+    @Mutation("deleteAllUsers")
+    async deleteAllUsers() {
+        return await this.userService.deleteAllUsers();
+    };
 }
