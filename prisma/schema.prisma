@@ -32,7 +32,7 @@ model AdminInvite {
   mobile   String
 
   roleId String
-  role   Role   @relation(fields: [roleId], references: [id])
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -48,7 +48,7 @@ model Admin {
   mobile   String
 
   roleId String
-  role   Role   @relation(fields: [roleId], references: [id])
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
   hashedRt               String?
   twoFactorAuthSecret    String?
@@ -73,7 +73,7 @@ model User {
   hasCompany          Boolean?  @default(false)
 
   roleId String
-  role   Role   @relation(fields: [roleId], references: [id])
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
   hashedRt               String?
   code                   Float?
@@ -83,8 +83,8 @@ model User {
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt
 
-  developerCompanyOwned  DeveloperCompany?
-  userDeveloperCompanies UserDeveloperCompany?
+  developerCompanyOwned DeveloperCompany?
+  userDeveloperCompany  UserDeveloperCompany?
 
   @@map("users")
 }
@@ -111,10 +111,10 @@ model DeveloperCompany {
   vetted             Boolean @default(false)
 
   companyTypeId Int
-  companyType   CompanyType @relation(fields: [companyTypeId], references: [id])
+  companyType   CompanyType @relation(fields: [companyTypeId], references: [id], onDelete: Cascade)
 
   ownedById String @unique
-  ownedBy   User   @relation(fields: [ownedById], references: [id])
+  ownedBy   User   @relation(fields: [ownedById], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -129,10 +129,10 @@ model UserDeveloperCompany {
   id String @id @default(uuid())
 
   developerCompanyId String
-  developerCompany   DeveloperCompany @relation(fields: [developerCompanyId], references: [id])
+  developerCompany   DeveloperCompany @relation(fields: [developerCompanyId], references: [id], onDelete: Cascade)
 
   userId String @unique
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   isOwner Boolean @default(false)
 
@@ -150,10 +150,10 @@ model UserDeveloperInvite {
   accepted Boolean @default(false)
 
   developerCompanyId String
-  developerCompany   DeveloperCompany @relation(fields: [developerCompanyId], references: [id])
+  developerCompany   DeveloperCompany @relation(fields: [developerCompanyId], references: [id], onDelete: Cascade)
 
   roleId String
-  role   Role   @relation(fields: [roleId], references: [id])
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

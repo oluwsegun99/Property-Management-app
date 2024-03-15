@@ -108,6 +108,7 @@ input UserSigninInput{
 type UserSignInResponse{
     vetted: Boolean
     verified: Boolean
+    user: User
     token: UserSignUpResponse
 }
 
@@ -141,6 +142,7 @@ input UserSignUpAfterInvite{
 type Query{
     getUserById: User
     getAdminById: Admin
+    getAllUsers: [User]
 }
 
 type Mutation{
@@ -199,4 +201,30 @@ input CreateDeveloperCompany{
     companyTypeId: Int!
     registrationNumber: String
     address: String
+}
+
+input UpdateDeveloperCompany{
+    companyId: String!
+    companyName: String
+    companyEmail: String
+    companyMobile: String
+    registrationNumber: String
+    companyLogo: String
+    description: String
+    website: String
+    address: String
+    companyTypeId: Int
+}
+
+type Query {
+    getDeveloperCompanies: [DeveloperCompany]
+    getDeveloperCompanyById(companyId: String!): DeveloperCompany
+    getDeveloperCompanyByUser: DeveloperCompany
+}
+
+type Mutation{
+    createDeveloperCompany(input: CreateDeveloperCompany): DeveloperCompany
+    updateDeveloperCompany(input: UpdateDeveloperCompany): DeveloperCompany
+    deleteDeveloperCompany(companyId: String!): Boolean
+    deleteAllDeveloperCompanies: Boolean
 }

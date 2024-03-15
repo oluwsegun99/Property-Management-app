@@ -196,6 +196,7 @@ export class AuthService {
             return {
                 vetted: userExists.vetted,
                 verified: userExists.verified,
+                user: userExists,
                 token
             };
         } catch (error) {

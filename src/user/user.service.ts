@@ -60,4 +60,13 @@ export class UserService {
             throw error;
         };
     };
+
+    async getAllUsers() {
+        try {
+            return await this.prisma.user.findMany();
+        } catch (error) {
+            console.error(error);
+            throw error;
+        };
+    };
 }

@@ -69,6 +69,19 @@ export interface CreateDeveloperCompany {
     address?: Nullable<string>;
 }
 
+export interface UpdateDeveloperCompany {
+    companyId: string;
+    companyName?: Nullable<string>;
+    companyEmail?: Nullable<string>;
+    companyMobile?: Nullable<string>;
+    registrationNumber?: Nullable<string>;
+    companyLogo?: Nullable<string>;
+    description?: Nullable<string>;
+    website?: Nullable<string>;
+    address?: Nullable<string>;
+    companyTypeId?: Nullable<number>;
+}
+
 export interface Role {
     id?: Nullable<string>;
     roleName?: Nullable<string>;
@@ -83,6 +96,10 @@ export interface IQuery {
     getAdminRoles(): Nullable<Nullable<Role>[]> | Promise<Nullable<Nullable<Role>[]>>;
     getUserById(): Nullable<User> | Promise<Nullable<User>>;
     getAdminById(): Nullable<Admin> | Promise<Nullable<Admin>>;
+    getAllUsers(): Nullable<Nullable<User>[]> | Promise<Nullable<Nullable<User>[]>>;
+    getDeveloperCompanies(): Nullable<Nullable<DeveloperCompany>[]> | Promise<Nullable<Nullable<DeveloperCompany>[]>>;
+    getDeveloperCompanyById(companyId: string): Nullable<DeveloperCompany> | Promise<Nullable<DeveloperCompany>>;
+    getDeveloperCompanyByUser(): Nullable<DeveloperCompany> | Promise<Nullable<DeveloperCompany>>;
 }
 
 export interface AdminInvite {
@@ -109,6 +126,10 @@ export interface IMutation {
     logOut(): Nullable<boolean> | Promise<Nullable<boolean>>;
     adminLogOut(): Nullable<boolean> | Promise<Nullable<boolean>>;
     userCreateInvite(input?: Nullable<UserCreateInvite>): Nullable<UserDeveloperInvite> | Promise<Nullable<UserDeveloperInvite>>;
+    createDeveloperCompany(input?: Nullable<CreateDeveloperCompany>): Nullable<DeveloperCompany> | Promise<Nullable<DeveloperCompany>>;
+    updateDeveloperCompany(input?: Nullable<UpdateDeveloperCompany>): Nullable<DeveloperCompany> | Promise<Nullable<DeveloperCompany>>;
+    deleteDeveloperCompany(companyId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deleteAllDeveloperCompanies(): Nullable<boolean> | Promise<Nullable<boolean>>;
 }
 
 export interface Admin {
@@ -150,6 +171,7 @@ export interface UserSignUpResponse {
 export interface UserSignInResponse {
     vetted?: Nullable<boolean>;
     verified?: Nullable<boolean>;
+    user?: Nullable<User>;
     token?: Nullable<UserSignUpResponse>;
 }
 
