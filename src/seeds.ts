@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { CompanyType } from "./common/enums/companyType.enum";
 import { Role } from "./common/enums/role.enum";
 
 
@@ -49,6 +50,64 @@ async function seed() {
             data: rolesData,
         });
     };
+
+
+    //CompanyTypes
+    const companyTypeValues = Object.values(CompanyType).map((type) => type.toString());
+
+    const existingCompanyTypes = await prisma.companyType.findMany({
+        select: {
+            type: true,
+        },
+    });
+
+    const existingCompanyTypeSet = new Set(existingCompanyTypes.map((companyType) => companyType.type));
+
+    const typesToDelete: string[] = [];
+
+    for (const type of existingCompanyTypeSet) {
+        if (!companyTypeValues.includes(type)) {
+            typesToDelete.push(type);
+        };
+    };
+
+    if (typesToDelete.length > 0) {
+        await prisma.companyType.deleteMany({
+            where: {
+                type: {
+                    in: typesToDelete,
+                },
+            },
+        });
+    };
+
+    const typesToCreate: {
+        id: number,
+        type: string
+    }[] = [];
+
+    let typeIndex = 0;
+
+    for (const type of companyTypeValues) {
+        typeIndex++;
+
+        if (existingCompanyTypeSet.has(type)) {
+            continue;
+        } else if (!existingCompanyTypeSet.has(type)) {
+            typesToCreate.push({
+                id: typeIndex,
+                type: type,
+            });
+        };
+    };
+
+    if (typesToCreate.length > 0) {
+        await prisma.companyType.createMany({
+            data: typesToCreate,
+        });
+    };
+
+    await prisma.user.deleteMany();
 };
 
 seed()
