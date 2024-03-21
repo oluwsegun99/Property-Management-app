@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "prisma migrate deploy && prisma generate && ts-node src/seeds.ts && nest build",
+    "build": "prisma migrate deploy && prisma generate && ts-node src/seeds.ts && ts-node src/typesense.seed.ts && nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "ts-node src/seeds.ts && nest start --watch",
