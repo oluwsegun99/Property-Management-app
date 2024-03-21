@@ -12,7 +12,7 @@ async function createTypesenseCollections() {
             {
                 host: process.env.TYPESENSE_HOST,
                 port: 8108,
-                protocol: process.env.TYPESENSE_PROTOCOL,
+                protocol: 'http',
             },
         ],
         apiKey: process.env.TYPESENSE_ADMIN_API_KEY,
