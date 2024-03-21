@@ -641,5 +641,6 @@ type Mutation {
     createProperty(input: CreateProperty!): Property
     updateProperty(input: UpdateProperty!): Property
     deleteProperty(propertyId: String!): Boolean
+    deleteAllPropertyCategories: Boolean
     deleteAllProperties: Boolean
 }

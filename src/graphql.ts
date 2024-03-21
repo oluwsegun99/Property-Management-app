@@ -269,6 +269,7 @@ export interface IMutation {
     createProperty(input: CreateProperty): Nullable<Property> | Promise<Nullable<Property>>;
     updateProperty(input: UpdateProperty): Nullable<Property> | Promise<Nullable<Property>>;
     deleteProperty(propertyId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deleteAllPropertyCategories(): Nullable<boolean> | Promise<Nullable<boolean>>;
     deleteAllProperties(): Nullable<boolean> | Promise<Nullable<boolean>>;
 }
 

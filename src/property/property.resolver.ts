@@ -143,6 +143,11 @@ export class PropertyResolver {
         return await this.propertyService.deleteProperty(userId, propertyId);
     };
 
+    @Mutation("deleteAllPropertyCategories")
+    async deleteAllPropertyCategories() {
+        return await this.propertyService.deleteAllPropertyCategories();
+    };
+
     @Mutation("deleteAllProperties")
     async deleteAllProperties() {
         return await this.propertyService.deleteAllProperties();
