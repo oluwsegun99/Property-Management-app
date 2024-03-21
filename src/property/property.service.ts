@@ -1108,6 +1108,17 @@ export class PropertyService implements OnModuleInit {
         };
     };
 
+    async deleteAllPropertyCategories() {
+        try {
+            await this.prisma.propertyCategory.deleteMany();
+            await this.typesense.deleteAllPropertyCategoriesFromTypesense();
+            return true;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        };
+    };
+
     async deleteAllProperties() {
         try {
             await this.prisma.property.deleteMany();
