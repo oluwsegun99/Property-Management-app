@@ -22,6 +22,10 @@ jobs:
           echo DATABASE_URL="${{secrets.DATABASE_URL}}" >> .env
           echo ACCESS_SECRET="${{secrets.ACCESS_SECRET}}" >> .env
           echo REFRESH_SECRET="${{secrets.REFRESH_SECRET}}" >> .env
+          echo TYPESENSE_HOST="${{secrets.TYPESENSE_HOST}}" >> .env
+          echo TYPESENSE_ADMIN_API_KEY="${{secrets.TYPESENSE_ADMIN_API_KEY}}" >> .env
+          echo TYPESENSE_SEARCH_API_KEY="${{secrets.TYPESENSE_SEARCH_API_KEY}}" >> .env
+          echo TYPESENSE_PROTOCOL="${{secrets.TYPESENSE_PROTOCOL}}" >> .env
 
       - name: Install Yarn
         run: npm install -g yarn
@@ -71,6 +75,10 @@ jobs:
             sudo echo DATABASE_URL="${{secrets.DATABASE_URL}}" >> .env
             sudo echo ACCESS_SECRET="${{secrets.ACCESS_SECRET}}" >> .env
             sudo echo REFRESH_SECRET="${{secrets.REFRESH_SECRET}}" >> .env
+            sudo echo TYPESENSE_HOST="${{secrets.TYPESENSE_HOST}}" >> .env
+            sudo echo TYPESENSE_ADMIN_API_KEY="${{secrets.TYPESENSE_ADMIN_API_KEY}}" >> .env
+            sudo echo TYPESENSE_SEARCH_API_KEY="${{secrets.TYPESENSE_SEARCH_API_KEY}}" >> .env
+            sudo echo TYPESENSE_PROTOCOL="${{secrets.TYPESENSE_PROTOCOL}}" >> .env
             pm2 stop homecrescent-backend
             git checkout testing
             git fetch

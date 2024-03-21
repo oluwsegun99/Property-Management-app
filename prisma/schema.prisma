@@ -83,15 +83,22 @@ model User {
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt
 
-  developerCompanyOwned DeveloperCompany?
-  userDeveloperCompany  UserDeveloperCompany?
+  developerCompanyOwned    DeveloperCompany?
+  userDeveloperCompany     UserDeveloperCompany?
+  projects                 Project[]
+  properties               Property[]
+  propertyUpdateRequests   PropertyUpdateRequest[]
+  propertiesOwned          PropertyOwned[]
+  propertiesRented         PropertyRented[]
+  propertyPurchaseRequests PropertyPurchaseRequest[]
 
   @@map("users")
 }
 
 model CompanyType {
-  id   Int    @id
-  type String @unique
+  id        Int      @id
+  type      String   @unique
+  createdAt DateTime @default(now())
 
   developerCompanies DeveloperCompany[]
 
@@ -119,8 +126,11 @@ model DeveloperCompany {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  userDeveloperCompanies UserDeveloperCompany[]
-  userDeveloperInvites   UserDeveloperInvite[]
+  userDeveloperCompanies       UserDeveloperCompany[]
+  userDeveloperInvites         UserDeveloperInvite[]
+  developerCompanyBankAccounts DevloperCompanyBankAccount[]
+  projects                     Project[]
+  properties                   Property[]
 
   @@map("developerCompanies")
 }
@@ -159,4 +169,385 @@ model UserDeveloperInvite {
   updatedAt DateTime @updatedAt
 
   @@map("userDeveloperInvites")
+}
+
+model DevloperCompanyBankAccount {
+  id            String  @id @default(uuid())
+  accountName   String?
+  bankName      String
+  accountNumber String
+  bvn           String
+  bvnVerified   Boolean @default(false)
+
+  companyId String
+  company   DeveloperCompany @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("developerCompanyBankAccounts")
+}
+
+model Country {
+  id          String   @id @default(uuid())
+  countryName String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  states State[]
+
+  @@map("countries")
+}
+
+model State {
+  id        String @id @default(uuid())
+  stateName String
+
+  countryId String
+  country   Country @relation(fields: [countryId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cities City[]
+
+  @@map("states")
+}
+
+model City {
+  id       String @id @default(uuid())
+  cityName String
+
+  stateId String
+  state   State  @relation(fields: [stateId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  neighborhoods Neighborhood[]
+  projects      Project[]
+  properties    Property[]
+
+  @@map("cities")
+}
+
+model Neighborhood {
+  id   String @id @default(uuid())
+  name String
+
+  cityId String
+  city   City   @relation(fields: [cityId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projects        Project[]
+  propertyDetails PropertyDetail[]
+
+  @@map("neighborhoods")
+}
+
+model PropertyStatus {
+  id             Int      @id
+  propertyStatus String   @unique
+  createdAt      DateTime @default(now())
+
+  properties Property[]
+
+  @@map("propertyStatuses")
+}
+
+model PropertyOption {
+  id             Int      @id
+  propertyOption String   @unique
+  createdAt      DateTime @default(now())
+
+  propertyDetails PropertyDetail[]
+
+  @@map("propertyOptions")
+}
+
+model PropertyCategory {
+  id           String   @id @default(uuid())
+  categoryName String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  prototypes Prototype[]
+  properties Property[]
+
+  @@map("propertyCategories")
+}
+
+model ProjectStatus {
+  id            Int      @id
+  projectStatus String   @unique
+  createdAt     DateTime @default(now())
+
+  projects Project[]
+
+  @@map("projectStatuses")
+}
+
+model Project {
+  id               String  @id @default(uuid())
+  projectName      String
+  description      String?
+  address          String
+  projectLayoutUrl String?
+
+  cityId String
+  city   City   @relation(fields: [cityId], references: [id], onDelete: Cascade)
+
+  neighborhoodId String?
+  neighborhood   Neighborhood? @relation(fields: [neighborhoodId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  developerCompanyId String?
+  developerCompany   DeveloperCompany? @relation(fields: [developerCompanyId], references: [id], onDelete: Cascade)
+
+  projectStatusId Int
+  projectStatus   ProjectStatus @relation(fields: [projectStatusId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  prototypes Prototype[]
+  properties Property[]
+
+  @@map("projects")
+}
+
+model Prototype {
+  id            String  @id @default(uuid())
+  prototypeName String
+  description   String?
+  mediaUrl      String?
+
+  categoryId String?
+  category   PropertyCategory? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  properties Property[]
+
+  @@map("prototypes")
+}
+
+model RequestUpdateStatus {
+  id                  Int      @id
+  requestUpdateStatus String   @unique
+  createdAt           DateTime @default(now())
+
+  propertyUpdateRequests PropertyUpdateRequest[]
+
+  @@map("requestUpdateStatuses")
+}
+
+model Property {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  price       Float
+
+  categoryId String
+  category   PropertyCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  propertyStatusId Int
+  propertyStatus   PropertyStatus @relation(fields: [propertyStatusId], references: [id], onDelete: Cascade)
+
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  prototypeId String?
+  prototype   Prototype? @relation(fields: [prototypeId], references: [id], onDelete: Cascade)
+
+  cityId String
+  city   City   @relation(fields: [cityId], references: [id], onDelete: Cascade)
+
+  developedById String
+  developedBy   User   @relation(fields: [developedById], references: [id], onDelete: Cascade)
+
+  developerCompanyId String?
+  developerCompany   DeveloperCompany? @relation(fields: [developerCompanyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  propertyDetail           PropertyDetail?
+  propertiesMedia          PropertyMedia[]
+  propertyUpdateRequests   PropertyUpdateRequest[]
+  propertyOwned            PropertyOwned?
+  rents                    PropertyRented[]
+  propertiesCostHistory    PropertyCostHistory[]
+  propertyPurchaseRequests PropertyPurchaseRequest[]
+
+  @@map("properties")
+}
+
+model PropertyDetail {
+  id       String   @unique
+  property Property @relation(fields: [id], references: [id], onDelete: Cascade)
+
+  address           String?
+  longitude         String
+  latitude          String
+  bedrooms          Int
+  bathrooms         Int
+  toilets           Int
+  floors            Int
+  sizeSqft          Int
+  dateCompleted     DateTime?
+  parkingSpaces     Int
+  isFurnished       Boolean   @default(false)
+  hasPool           Boolean   @default(false)
+  hasGarden         Boolean   @default(false)
+  isNewConstruction Boolean   @default(false)
+  canPayInstallment Boolean   @default(false)
+  canMortgage       Boolean   @default(false)
+
+  neighborhoodId String?
+  neighborhood   Neighborhood? @relation(fields: [neighborhoodId], references: [id], onDelete: Cascade)
+
+  propertyOptionId Int
+  propertyOption   PropertyOption @relation(fields: [propertyOptionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("propertyDetails")
+}
+
+model PropertyUpdateRequest {
+  id          String @id @default(uuid())
+  description String
+
+  requestUpdateStatusId Int
+  requestUpdateStatus   RequestUpdateStatus @relation(fields: [requestUpdateStatusId], references: [id], onDelete: Cascade)
+
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("propertyUpdateRequests")
+}
+
+model PropertyOwned {
+  // id String @id @default(uuid())
+
+  propertyId String   @unique
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  purchaseDate DateTime
+
+  createdAt DateTime @default(now())
+
+  @@map("propertiesOwned")
+}
+
+model PropertyRented {
+  id String @id @default(uuid())
+
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  rentDateStart DateTime?
+  rentDateEnd   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("propertiesRented")
+}
+
+model PropertyMedia {
+  id String @id @default(uuid())
+
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  index       Int
+  mediaUrl    String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("propertiesMedia")
+}
+
+model PropertyCostHistory {
+  id String @id @default(uuid())
+
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  price         Float
+  effectiveDate DateTime
+  createdAt     DateTime @default(now())
+
+  @@map("propertiesCostHistory")
+}
+
+model PurchaseRequestType {
+  id                  Int      @id
+  purchaseRequestType String   @unique
+  createdAt           DateTime @default(now())
+
+  propertyPurchaseRequests PropertyPurchaseRequest[]
+
+  @@map("purchaseRequestTypes")
+}
+
+model DurationType {
+  id           Int      @id
+  durationType String   @unique
+  createdAt    DateTime @default(now())
+
+  propertyPurchaseRequests PropertyPurchaseRequest[]
+
+  @@map("durationTypes")
+}
+
+model PropertyPurchaseRequest {
+  id String @id @default(uuid())
+
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  requestDate  DateTime
+  approved     Boolean   @default(false)
+  approvalDate DateTime?
+
+  purchaseRequestTypeId Int
+  purchaseRequestType   PurchaseRequestType @relation(fields: [purchaseRequestTypeId], references: [id], onDelete: Cascade)
+
+  purchaseDuration Int
+
+  durationTypeId Int?
+  durationType   DurationType? @relation(fields: [durationTypeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("propertyPurchaseRequests")
 }

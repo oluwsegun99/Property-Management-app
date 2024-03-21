@@ -25,7 +25,7 @@ export class UserService {
                     isOwner: true,
                 },
             });
-            if (!user) throw new UnauthorizedException("Access Denied");
+            if (!user) throw new UnauthorizedException("Access Denied: User unauthorized or Invalid Company");
 
             const roleExists = await this.prisma.role.findUnique({
                 where: {

@@ -115,7 +115,11 @@ export class CompanyService {
                 include: {
                     userDeveloperCompany: {
                         select: {
-                            developerCompany: true,
+                            developerCompany: {
+                                include: {
+                                    companyType: true,
+                                },
+                            },
                         },
                     },
                 },

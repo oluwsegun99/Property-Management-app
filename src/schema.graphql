@@ -1,12 +1,13 @@
 scalar Date
+scalar DateTime
 scalar Int
 
 type Role {
     id: String
     roleName: String
     roleDescription: String
-    createdAt: Date
-    updatedAt: Date
+    createdAt: DateTime
+    updatedAt: DateTime
 }
 
 type Query {
@@ -22,8 +23,8 @@ type AdminInvite{
     mobile: String
     roleId: String
     role: Role
-    createdAt: Date
-    updatedAt: Date
+    createdAt: DateTime
+    updatedAt: DateTime
 }
 
 input AdminCreateInvite{
@@ -44,8 +45,8 @@ type Admin {
     mobile: String
     roleId: String
     role: Role
-    createdAt: Date
-    updatedAt: Date
+    createdAt: DateTime
+    updatedAt: DateTime
 }
 
 input AdminSignupInput{
@@ -82,8 +83,8 @@ type User {
     hasCompany: Boolean
     roleId: String
     role: Role
-    createdAt: Date
-    updatedAt: Date
+    createdAt: DateTime
+    updatedAt: DateTime
 }
 
 input UserSignUpInput{
@@ -127,8 +128,8 @@ type UserDeveloperInvite{
     developerCompany: DeveloperCompany
     roleId: String
     role: Role
-    createdAt: Date
-    updatedAt: Date
+    createdAt: DateTime
+    updatedAt: DateTime
 }
 
 input UserCreateInvite{
@@ -187,8 +188,8 @@ type DeveloperCompany{
     vetted: String
     ownedById: String
     ownedBy: User
-    createdAt: Date
-    updatedAt: Date
+    createdAt: DateTime
+    updatedAt: DateTime
 }
 
 type UserDeveloperCompany{
@@ -198,8 +199,8 @@ type UserDeveloperCompany{
     userId: String
     user: User
     isOwner: Boolean
-    createdAt: Date
-    updatedAt: Date
+    createdAt: DateTime
+    updatedAt: DateTime
 }
 
 input CreateDeveloperCompany{
@@ -235,4 +236,410 @@ type Mutation{
     updateDeveloperCompany(input: UpdateDeveloperCompany): DeveloperCompany
     deleteDeveloperCompany(companyId: String!): Boolean
     deleteAllDeveloperCompanies: Boolean
+}
+
+type Country{
+    id: String
+    countryName: String
+    createdAt: DateTime
+    updatedAt: DateTime
+    states: [State]
+}
+
+type State{
+    id: String
+    stateName: String
+    countryId: String
+    country: Country
+    createdAt: DateTime
+    updatedAt: DateTime
+    cities: [City]
+}
+
+type City{
+    id: String
+    cityName: String
+    stateId: String
+    state: State
+    createdAt: DateTime
+    updatedAt: DateTime
+    neighborhoods: [Neighborhood]
+    projects: [Project]
+    properties: [Property]
+}
+
+type Neighborhood{
+    id: String
+    name: String
+    cityId: String
+    city: City
+    createdAt: DateTime
+    updatedAt: DateTime
+    projects: [Project]
+    propertyDetails: [PropertyDetail]
+}
+
+type PropertyStatus{
+    id: Int
+    propertyStatus: String
+    createdAt: DateTime
+    properties: [Property]
+}
+
+type PropertyOption{
+    id: Int
+    propertyOption: String
+    createdAt: DateTime
+    propertyDetails: [PropertyDetail]
+}
+
+type PropertyCategory{
+    id: String
+    categoryName: String
+    createdAt: DateTime
+    updatedAt: DateTime
+    prototypes: [Prototype]
+    properties: [Property]
+}
+
+type ProjectStatus{
+    id: Int
+    projectStatus: String
+    createdAt: DateTime
+    projects: [Project]
+}
+
+type Project{
+    id: String
+    projectName: String
+    description: String
+    address: String
+    projectLayoutUrl: String
+    cityId: String
+    city: City
+    neighborhoodId: String
+    neighborhood: Neighborhood
+    userId: String
+    user: User
+    developerCompanyId: String
+    developerCompany: DeveloperCompany
+    projectStatusId: Int
+    projectStatus: ProjectStatus
+    createdAt: DateTime
+    updatedAt: DateTime
+    prototypes: [Prototype]
+    properties: [Property]
+}
+
+input CreateProject{
+    projectName: String!
+    description: String!
+    address: String!
+    cityId: String!
+    projectStatusId: Int!
+    developerCompanyId: String
+    projectLayoutUrl: String
+    neighborhoodId: String
+}
+
+input UpdateProject{
+    projectId: String!
+    projectName: String
+    description: String
+    address: String
+    projectLayoutUrl: String
+    cityId: String
+    neighborhoodId: String
+    projectStatusId: Int
+}
+
+type ProjectByCompanyResponse{
+    projectsByCompany: [Project]
+    cursorId: String
+}
+
+type Prototype{
+    id: String
+    prototypeName: String
+    description: String
+    mediaUrl: String
+    categoryId: String
+    category: PropertyCategory
+    projectId: String
+    project: Project
+    createdAt: DateTime
+    updatedAt: DateTime
+    properties: [Property]
+}
+
+input CreatePrototype{
+    prototypeName: String!
+    description: String!
+    projectId: String!
+    categoryId: String
+    mediaUrl: String
+}
+
+input UpdatePrototype{
+    prototypeId: String!
+    prototypeName: String
+    description: String
+    categoryId: String
+    mediaUrl: String
+}
+
+type RequestUpdateStatus{
+    id: Int
+    requestUpdateStatus: String
+    createdAt: Date
+    propertyUpdateRequests: [PropertyUpdateRequest]
+}
+
+type Property{
+    id: String
+    name: String
+    description: String
+    price: Float
+    categoryId: String
+    category: PropertyCategory
+    propertyStatusId: Int
+    propertyStatus: PropertyStatus
+    projectId: String
+    project: Project
+    prototypeId: String
+    prototype: Prototype
+    cityId: String
+    city: City
+    developedById: String
+    developedBy: User
+    developerCompanyId: String
+    developerCompany: DeveloperCompany
+    createdAt: DateTime
+    updatedAt: DateTime
+    propertyDetail: PropertyDetail
+    propertiesMedia: [PropertyMedia]
+    propertyUpdateRequests: [PropertyUpdateRequest]
+    propertyOwned: PropertyOwned
+    rents: [PropertyRented]
+    propertiesCostHistory: [PropertyCostHistory]
+    propertyPurchaseRequests: [PropertyPurchaseRequest]
+}
+
+type PropertyDetail{
+    id: String
+    property: Property
+    address: String
+    longitude: String
+    latitude: String
+    bedrooms: Int
+    bathrooms: Int
+    toilets: Int
+    floors: Int
+    sizeSqft: Int
+    dateCompleted: Date
+    parkingSpaces: Int
+    isFurnished: Boolean
+    hasPool: Boolean
+    hasGarden: Boolean
+    isNewConstruction: Boolean
+    canPayInstallment: Boolean
+    canMortgage: Boolean
+    neighborhoodId: String
+    neighborhood: Neighborhood
+    propertyOptionId: Int
+    propertyOption: PropertyOption
+    createdAt: DateTime
+    updatedAt: DateTime
+}
+
+type PropertyUpdateRequest{
+    id: String
+    description: String
+    requestUpdateStatusId: Int
+    requestUpdateStatus: RequestUpdateStatus
+    propertyId: String
+    property: Property
+    userId: String
+    user: User
+    createdAt: DateTime
+    updatedAt: DateTime
+}
+
+type PropertyOwned{
+    propertyId: String
+    property: Property
+    userId: String
+    user: User
+    purchaseDate: DateTime
+    createdAt: DateTime
+}
+
+type PropertyRented{
+    id: String
+    propertyId: String
+    property: Property
+    userId: String
+    user: User
+    rentDateStart: DateTime
+    rentDateEnd: DateTime
+    createdAt: DateTime
+    updatedAt: DateTime
+}
+
+type PropertyMedia{
+    id: String
+    propertyId: String
+    property: Property
+    index: Int
+    mediaUrl: String
+    description: String
+    createdAt: DateTime
+    updatedAt: DateTime
+}
+
+type PropertyCostHistory{
+    id: String
+    propertyId: String
+    property: Property
+    price: Float
+    effectiveDate: DateTime
+    createdAt: DateTime
+}
+
+type PurchaseRequestType{
+    id: Int
+    purchaseRequestType: String
+    createdAt: DateTime
+    propertyPurchaseRequests: [PropertyPurchaseRequest]
+}
+
+type DurationType{
+    id: Int
+    durationType: String
+    createdAt: DateTime
+    propertyPurchaseRequests: [PropertyPurchaseRequest]
+}
+
+type PropertyPurchaseRequest{
+    id: String
+    propertyId: String
+    property: Property
+    userId: String
+    user: User
+    requestDate: DateTime
+    approved: Boolean
+    approvalDate: DateTime
+    purchaseRequestTypeId: Int
+    purchaseRequestType: PurchaseRequestType
+    purchaseDuration: Int
+    durationTypeId: Int
+    durationType: DurationType
+    createdAt: DateTime
+    updatedAt: DateTime
+}
+
+input CreatePropertyDetails{
+    address: String!
+    longitude: String!
+    latitude: String!
+    bedrooms: Int!
+    bathrooms: Int!
+    toilets: Int!
+    floors: Int!
+    sizeSqft: Int!
+    dateCompleted: Date!
+    parkingSpaces: Int!
+    isFurnished: Boolean
+    hasPool: Boolean
+    hasGarden: Boolean
+    isNewConstruction: Boolean
+    canPayInstallment: Boolean
+    canMortgage: Boolean
+    neighborhoodId: String
+    propertyOptionId: Int!
+}
+
+input UpdatePropertyDetails{
+    address: String
+    longitude: String
+    latitude: String
+    bedrooms: Int
+    bathrooms: Int
+    toilets: Int
+    floors: Int
+    sizeSqft: Int
+    dateCompleted: Date
+    parkingSpaces: Int
+    isFurnished: Boolean
+    hasPool: Boolean
+    hasGarden: Boolean
+    isNewConstruction: Boolean
+    canPayInstallment: Boolean
+    canMortgage: Boolean
+    neighborhoodId: String
+    propertyOptionId: Int
+}
+
+input CreatePropertyMedia{
+    index: Int
+    mediaUrl: String
+    description: String
+}
+
+input CreateProperty{
+    name: String!
+    description: String!
+    price: Float!
+    categoryId: String!
+    propertyStatusId: Int!
+    projectId: String
+    prototypeId: String
+    cityId: String!
+    developerCompanyId: String
+    propertyDetail: CreatePropertyDetails!
+    propertyMedia: [CreatePropertyMedia]
+}
+
+input UpdateProperty{
+    propertyId: String!
+    name: String
+    description: String
+    price: Float
+    categoryId: String
+    propertyStatusId: Int
+    projectId: String
+    prototypeId: String
+    cityId: String
+    propertyDetail: UpdatePropertyDetails
+    propertyMedia: [CreatePropertyMedia]
+}
+
+type Query {
+    getProjects: [Project]
+    getProjectById(projectId: String!): Project
+    getProjectsByCompany(companyId: String!, cursor: String, sets: Float): ProjectByCompanyResponse
+    getPrototypes: [Prototype]
+    getPrototypesByProject(projectId: String!): [Prototype]
+    getPrototypeById(prototypeId: String!): Prototype
+    getProperties: [Property]
+    getPropertiesByProject(projectId: String!): [Property]
+    getPropertiesByCompany(companyId: String!): [Property]
+    getPropertyByDeveloper(developerId: String!): [Property]
+    getPropertyById(propertyId: String!): Property
+
+}
+
+type Mutation {
+    createProject(input: CreateProject!): Project
+    updateProject(input: UpdateProject!): Project
+    deleteProject(projectId: String!): Boolean
+    deleteAllProjects: Boolean
+    createPrototype(input: CreatePrototype!): Prototype
+    updatePrototype(input: UpdatePrototype!): Prototype
+    deletePrototype(prototypeId: String!): Boolean
+    deleteAllPrototypes: Boolean
+    createProperty(input: CreateProperty!): Property
+    updateProperty(input: UpdateProperty!): Property
+    deleteProperty(propertyId: String!): Boolean
+    deleteAllProperties: Boolean
 }

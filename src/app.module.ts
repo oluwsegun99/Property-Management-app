@@ -11,17 +11,24 @@ import { RoleModule } from './role/role.module';
 import { AdminModule } from './admin/admin.module';
 import { UserModule } from './user/user.module';
 import { CompanyModule } from './company/company.module';
+import { PropertyModule } from './property/property.module';
+import { DateResolver, DateTimeResolver } from 'graphql-scalars';
+import { TypesenseModule } from './typesense/typesense.module';
 
 @Module({
   imports: [
     GraphQLModule.forRoot<ApolloDriverConfig>({
       cors: {
-        origin: ['http://localhost:3000'],
+        origin: ['http://localhost:3000', 'https://home-crescent.vercel.app'],
       },
       driver: ApolloDriver,
       typePaths: ['./**/*.graphql'],
       definitions: {
-        path: join(process.cwd(), 'src/graphql.ts')
+        path: join(process.cwd(), 'src/graphql.ts'),
+      },
+      resolvers: {
+        Date: DateResolver,
+        DateTime: DateTimeResolver,
       },
       playground: true
     }),
@@ -34,6 +41,8 @@ import { CompanyModule } from './company/company.module';
     AdminModule,
     UserModule,
     CompanyModule,
+    PropertyModule,
+    TypesenseModule,
   ],
   controllers: [AppController],
   providers: [AppService],

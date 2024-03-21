@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "prisma migrate deploy && prisma generate && ts-node src/seeds.ts && nest build",
+    "build": "prisma migrate deploy && prisma generate && ts-node src/seeds.ts && ts-node src/typesense.seed.ts && nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "ts-node src/seeds.ts && nest start --watch",
@@ -18,7 +18,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "gen:graphql": "ts-node ./src/generate-typings"
+    "gen:graphql": "ts-node ./src/generate-typings",
+    "gen:typesense": "ts-node src/typesense.seed.ts"
   },
   "dependencies": {
     "@apollo/server": "^4.10.1",
@@ -36,11 +37,13 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "graphql": "^16.8.1",
+    "graphql-scalars": "1.20.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.2.0",
+    "typesense": "^1.7.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
