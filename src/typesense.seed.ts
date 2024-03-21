@@ -10,9 +10,9 @@ async function createTypesenseCollections() {
     const typesenseClient = new Typesense.Client({
         nodes: [
             {
-                host: "164.92.202.0",
+                host: process.env.TYPESENSE_HOST,
                 port: 8108,
-                protocol: 'http',
+                protocol: process.env.TYPESENSE_PROTOCOL,
             },
         ],
         apiKey: process.env.TYPESENSE_ADMIN_API_KEY,
