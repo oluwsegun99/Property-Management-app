@@ -114,7 +114,7 @@ export class PropertyService implements OnModuleInit {
 
     async getPropertyStatuses() {
         try {
-            return await this.prisma.projectStatus.findMany();
+            return await this.prisma.propertyStatus.findMany();
         } catch (error) {
             console.error(error);
             throw error;
