@@ -14,6 +14,7 @@ import { CompanyModule } from './company/company.module';
 import { PropertyModule } from './property/property.module';
 import { DateResolver, DateTimeResolver } from 'graphql-scalars';
 import { TypesenseModule } from './typesense/typesense.module';
+import { LocationModule } from './location/location.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { TypesenseModule } from './typesense/typesense.module';
     CompanyModule,
     PropertyModule,
     TypesenseModule,
+    LocationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

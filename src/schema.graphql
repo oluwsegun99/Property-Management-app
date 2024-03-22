@@ -269,10 +269,6 @@ type City{
     properties: [Property]
 }
 
-type Query{
-    getAllCities: [City]
-}
-
 type Neighborhood{
     id: String
     name: String
@@ -282,6 +278,12 @@ type Neighborhood{
     updatedAt: DateTime
     projects: [Project]
     propertyDetails: [PropertyDetail]
+}
+
+type Query{
+    getStates: [State]
+    getCities: [City]
+    getCitiesByStateId(stateId: String!): [City]
 }
 
 type PropertyStatus{
@@ -620,6 +622,10 @@ input UpdateProperty{
 }
 
 type Query {
+    getPropertyStatuses: [PropertyStatus]
+    getPropertyOptions: [PropertyOption]
+    getPropertyCategories: [PropertyCategory]
+    getProjectStatuses: [ProjectStatus]
     getProjects: [Project]
     getProjectById(projectId: String!): Project
     getProjectsByCompany(companyId: String!, cursor: String, sets: Float): ProjectByCompanyResponse

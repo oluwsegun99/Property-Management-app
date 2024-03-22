@@ -13,6 +13,26 @@ import { PropertyService } from './property.service';
 export class PropertyResolver {
     constructor(private propertyService: PropertyService) { }
 
+    @Query("getPropertyStatuses")
+    async getPropertyStatuses() {
+        return await this.propertyService.getPropertyStatuses();
+    };
+
+    @Query("getPropertyOptions")
+    async getPropertyOptions() {
+        return await this.propertyService.getPropertyOptions();
+    };
+
+    @Query("getPropertyCategories")
+    async getPropertyCategories() {
+        return await this.propertyService.getPropertyCategories();
+    };
+
+    @Query("getProjectStatuses")
+    async getProjectStatuses() {
+        return await this.propertyService.getProjectStatuses();
+    };
+
     @UseGuards(AtGuard, RolesGuard)
     @Roles(Role.Owner)
     @Mutation("createProject")

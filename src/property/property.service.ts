@@ -112,6 +112,42 @@ export class PropertyService implements OnModuleInit {
         };
     };
 
+    async getPropertyStatuses() {
+        try {
+            return await this.prisma.projectStatus.findMany();
+        } catch (error) {
+            console.error(error);
+            throw error;
+        };
+    };
+
+    async getPropertyOptions() {
+        try {
+            return await this.prisma.propertyOption.findMany();
+        } catch (error) {
+            console.error(error);
+            throw error;
+        };
+    };
+
+    async getPropertyCategories() {
+        try {
+            return await this.prisma.propertyCategory.findMany();
+        } catch (error) {
+            console.error(error);
+            throw error;
+        };
+    };
+
+    async getProjectStatuses() {
+        try {
+            return await this.prisma.projectStatus.findMany();
+        } catch (error) {
+            console.error(error);
+            throw error;
+        };
+    };
+
     async createProject(userId: string, dto: CreateProject) {
         try {
             // Validate
