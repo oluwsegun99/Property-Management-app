@@ -211,9 +211,11 @@ export interface IQuery {
     getUserById(): Nullable<User> | Promise<Nullable<User>>;
     getAdminById(): Nullable<Admin> | Promise<Nullable<Admin>>;
     getAllUsers(): Nullable<Nullable<User>[]> | Promise<Nullable<Nullable<User>[]>>;
+    getCompanyTypes(): Nullable<Nullable<CompanyType>[]> | Promise<Nullable<Nullable<CompanyType>[]>>;
     getDeveloperCompanies(): Nullable<Nullable<DeveloperCompany>[]> | Promise<Nullable<Nullable<DeveloperCompany>[]>>;
     getDeveloperCompanyById(companyId: string): Nullable<DeveloperCompany> | Promise<Nullable<DeveloperCompany>>;
     getDeveloperCompanyByUser(): Nullable<DeveloperCompany> | Promise<Nullable<DeveloperCompany>>;
+    getAllCities(): Nullable<Nullable<City>[]> | Promise<Nullable<Nullable<City>[]>>;
     getProjects(): Nullable<Nullable<Project>[]> | Promise<Nullable<Nullable<Project>[]>>;
     getProjectById(projectId: string): Nullable<Project> | Promise<Nullable<Project>>;
     getProjectsByCompany(companyId: string, cursor?: Nullable<string>, sets?: Nullable<number>): Nullable<ProjectByCompanyResponse> | Promise<Nullable<ProjectByCompanyResponse>>;

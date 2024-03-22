@@ -12,6 +12,11 @@ import { CompanyService } from './company.service';
 export class CompanyResolver {
     constructor(private companyService: CompanyService) { }
 
+    @Query("getCompanyTypes")
+    async getCompanyTypes() {
+        return await this.companyService.getCompanyTypes();
+    };
+
     @UseGuards(AtGuard, RolesGuard)
     @Roles(Role.Owner)
     @Mutation("createDeveloperCompany")

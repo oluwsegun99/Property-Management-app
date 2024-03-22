@@ -8,6 +8,15 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class CompanyService {
     constructor(private prisma: PrismaService) { }
 
+    async getCompanyTypes() {
+        try {
+            return await this.prisma.companyType.findMany();
+        } catch (error) {
+            console.error(error);
+            throw error;
+        };
+    };
+
     async createDeveloperCompany(userId: string, dto: CreateDeveloperCompany) {
         try {
             // Validate

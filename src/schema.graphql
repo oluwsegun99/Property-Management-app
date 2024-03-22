@@ -226,6 +226,7 @@ input UpdateDeveloperCompany{
 }
 
 type Query {
+    getCompanyTypes: [CompanyType]
     getDeveloperCompanies: [DeveloperCompany]
     getDeveloperCompanyById(companyId: String!): DeveloperCompany
     getDeveloperCompanyByUser: DeveloperCompany
@@ -266,6 +267,10 @@ type City{
     neighborhoods: [Neighborhood]
     projects: [Project]
     properties: [Property]
+}
+
+type Query{
+    getAllCities: [City]
 }
 
 type Neighborhood{
