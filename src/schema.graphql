@@ -114,6 +114,7 @@ input UserSigninInput{
 type UserSignInResponse{
     vetted: Boolean
     verified: Boolean
+    hasDeveloperCompany: Boolean
     user: User
     token: TokenResponse
 }

@@ -325,6 +325,7 @@ export interface UserSignUpResponse {
 export interface UserSignInResponse {
     vetted?: Nullable<boolean>;
     verified?: Nullable<boolean>;
+    hasDeveloperCompany?: Nullable<boolean>;
     user?: Nullable<User>;
     token?: Nullable<TokenResponse>;
 }

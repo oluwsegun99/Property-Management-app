@@ -254,8 +254,19 @@ export class AuthService {
                 where: {
                     email: dto.email,
                 },
+                include: {
+                    userDeveloperCompany: {
+                        select: {
+                            developerCompany: true,
+                        },
+                    },
+                },
             });
             if (!userExists) throw new UnauthorizedException("Incorrect email or password");
+
+            let hasDeveloperCompany: boolean = false;
+
+            if (userExists.userDeveloperCompany && userExists.userDeveloperCompany.developerCompany) hasDeveloperCompany = true;
 
             //compare passwords
             const passwordMatches = await bcrypt.compare(dto.password, userExists.hash);
@@ -268,6 +279,7 @@ export class AuthService {
             return {
                 vetted: userExists.vetted,
                 verified: userExists.verified,
+                hasDeveloperCompany,
                 user: userExists,
                 token
             };

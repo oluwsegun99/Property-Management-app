@@ -135,7 +135,7 @@ export class CompanyService {
             });
             if (!user) throw new UnauthorizedException("Access denied");
 
-            if (!user.userDeveloperCompany.developerCompany) throw new ForbiddenException("Company not found: No company assigned");
+            if (!user.userDeveloperCompany || !user.userDeveloperCompany.developerCompany) throw new ForbiddenException("Company not found: No company assigned");
 
             const userDeveloperCompany = user.userDeveloperCompany.developerCompany;
 
