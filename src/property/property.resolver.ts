@@ -146,7 +146,7 @@ export class PropertyResolver {
 
     @Query("getPropertyById")
     async getPropertyById(@Args("propertyId") propertyId: string) {
-        return await this.propertyService.getProjectById(propertyId);
+        return await this.propertyService.getPropertyById(propertyId);
     };
 
     @UseGuards(AtGuard, RolesGuard)

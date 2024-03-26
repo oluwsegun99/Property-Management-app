@@ -477,13 +477,28 @@ model PropertyRented {
   @@map("propertiesRented")
 }
 
+model PropertyMediaCategory {
+  id            String  @id @default(uuid())
+  mediaCategory String  @unique
+  required      Boolean
+
+  createdAt DateTime @default(now())
+
+  propertiesMedia PropertyMedia[]
+
+  @@map("propertyMediaCategories")
+}
+
 model PropertyMedia {
   id String @id @default(uuid())
 
   propertyId String
   property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
-  index       Int
+  propertyMediaCategoryId String
+  propertyMediaCategory   PropertyMediaCategory @relation(fields: [propertyMediaCategoryId], references: [id], onDelete: Cascade)
+
+  index       Int?
   mediaUrl    String
   description String?
   createdAt   DateTime @default(now())

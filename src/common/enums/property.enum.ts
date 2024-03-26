@@ -49,3 +49,21 @@ export enum PropertyCategory {
     Penthouse = 'Penthouse',
     Studio = 'Studio'
 }
+
+export enum PropertyMediaCategory {
+    Banner = "Banner",
+    LivingRoom = "LivingRoom",
+    Bedroom = "Bedroom",
+    Bathroom = "Bathroom",
+    Kitchen = "Kitchen",
+    Other = "Other"
+}
+
+export const PROPERTY_MEDIA_CATEGORY: { mediaCategory: string, required: boolean }[] = [
+    { mediaCategory: PropertyMediaCategory.Banner, required: true },
+    { mediaCategory: PropertyMediaCategory.LivingRoom, required: true },
+    { mediaCategory: PropertyMediaCategory.Bedroom, required: true },
+    { mediaCategory: PropertyMediaCategory.Bathroom, required: true },
+    { mediaCategory: PropertyMediaCategory.Kitchen, required: false },
+    { mediaCategory: PropertyMediaCategory.Other, required: false }
+];

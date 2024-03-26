@@ -164,7 +164,8 @@ export interface UpdatePropertyDetails {
 
 export interface CreatePropertyMedia {
     index?: Nullable<number>;
-    mediaUrl?: Nullable<string>;
+    mediaUrl: string;
+    mediaCategoryId: string;
     description?: Nullable<string>;
 }
 
@@ -589,12 +590,22 @@ export interface PropertyRented {
     updatedAt?: Nullable<DateTime>;
 }
 
+export interface PropertyMediaCategory {
+    id?: Nullable<string>;
+    mediaCategory?: Nullable<string>;
+    required?: Nullable<boolean>;
+    createdAt?: Nullable<DateTime>;
+    propertiesMedia?: Nullable<Nullable<PropertyMedia>[]>;
+}
+
 export interface PropertyMedia {
     id?: Nullable<string>;
     propertyId?: Nullable<string>;
     property?: Nullable<Property>;
     index?: Nullable<number>;
     mediaUrl?: Nullable<string>;
+    propertyMediaCategoryId?: Nullable<string>;
+    propertyMediaCategory?: Nullable<PropertyMediaCategory>;
     description?: Nullable<string>;
     createdAt?: Nullable<DateTime>;
     updatedAt?: Nullable<DateTime>;

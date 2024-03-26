@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable, OnModuleInit, UnauthorizedException } from '@nestjs/common';
 import { User } from '@prisma/client';
-import { PropertyCategory } from 'src/common/enums/property.enum';
+import { PropertyCategory, PropertyMediaCategory } from 'src/common/enums/property.enum';
 import { validateCreateProjectDTO, validateCreatePropertyDetailDTO, validateCreatePropertyDTO, validateCreatePrototypeDTO, validatePropertyMediaArray, validateUpdateProjectDTO, validateUpdatePrototypeDTO } from 'src/common/validationFunctions/property.validation';
 import { CreateProject, CreateProperty, CreatePrototype, PropertyMedia, UpdateProject, UpdateProperty, UpdatePrototype, UserDeveloperCompany } from 'src/graphql';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -934,14 +934,43 @@ export class PropertyService implements OnModuleInit {
                 });
 
                 if (dto.propertyMedia.length > 0) {
+                    const propertyMediaCategories = await prisma.propertyMediaCategory.findMany();
+
+                    const requiredMediaCategories = propertyMediaCategories.filter((category) => category.required === true).map((mediaCategory) => {
+                        return {
+                            id: mediaCategory.id,
+                            mediaCategory: mediaCategory.mediaCategory
+                        };
+                    });
+
+                    const bannerMediaCategory = requiredMediaCategories.find((category) => category.mediaCategory === PropertyMediaCategory.Banner);
+
                     const propertyMediaData = dto.propertyMedia.map((media) => {
+                        const mediaCategoryExists = propertyMediaCategories.find((category) => category.id === media.mediaCategoryId);
+                        if (!mediaCategoryExists) throw new ForbiddenException("Invalid media category");
+
                         return {
                             propertyId: newProperty.id,
                             index: media.index,
                             mediaUrl: media.mediaUrl,
+                            propertyMediaCategoryId: media.mediaCategoryId,
                             description: media.description,
                         };
                     });
+
+                    const handledMediaCategoryIds = propertyMediaData.map((data) => data.propertyMediaCategoryId);
+
+                    //check for multiple banner entries
+                    const bannerEntries = handledMediaCategoryIds.filter((id) => id === bannerMediaCategory.id);
+                    if (bannerEntries.length > 1) throw new ForbiddenException("Multiple Banner entries: Only one banner entry is required");
+
+                    //check if all required categories are present
+                    for (const requiredCategory of requiredMediaCategories) {
+
+                        //there can be multiple entries of the required category but this ensures that at least one entry is present instead of using filter
+                        const requiredCategoryPresent = handledMediaCategoryIds.find((data) => data === requiredCategory.id);
+                        if (!requiredCategoryPresent) throw new ForbiddenException(`Required: ${requiredCategory.mediaCategory} Url not found`);
+                    };
 
                     await prisma.propertyMedia.createMany({
                         data: propertyMediaData,
@@ -982,7 +1011,11 @@ export class PropertyService implements OnModuleInit {
             return await this.prisma.property.findMany({
                 include: {
                     propertyDetail: true,
-                    propertiesMedia: true,
+                    propertiesMedia: {
+                        include: {
+                            propertyMediaCategory: true
+                        }
+                    },
                 },
             });
         } catch (error) {
@@ -1001,7 +1034,11 @@ export class PropertyService implements OnModuleInit {
                     properties: {
                         include: {
                             propertyDetail: true,
-                            propertiesMedia: true,
+                            propertiesMedia: {
+                                include: {
+                                    propertyMediaCategory: true,
+                                },
+                            },
                         },
                     },
                 },
@@ -1027,7 +1064,11 @@ export class PropertyService implements OnModuleInit {
                     properties: {
                         include: {
                             propertyDetail: true,
-                            propertiesMedia: true,
+                            propertiesMedia: {
+                                include: {
+                                    propertyMediaCategory: true,
+                                },
+                            },
                         },
                     },
                 },
@@ -1054,7 +1095,11 @@ export class PropertyService implements OnModuleInit {
                     properties: {
                         include: {
                             propertyDetail: true,
-                            propertiesMedia: true,
+                            propertiesMedia: {
+                                include: {
+                                    propertyMediaCategory: true,
+                                },
+                            },
                         },
                     },
                 },
@@ -1075,6 +1120,14 @@ export class PropertyService implements OnModuleInit {
             const propertyExists = await this.prisma.property.findUnique({
                 where: {
                     id: propertyId,
+                },
+                include: {
+                    propertyDetail: true,
+                    propertiesMedia: {
+                        include: {
+                            propertyMediaCategory: true,
+                        },
+                    },
                 },
             });
             if (!propertyExists) throw new ForbiddenException("Property not found");

@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { CompanyType } from "./common/enums/companyType.enum";
 import { CITY_DATA, Country, STATE_DATA } from "./common/enums/location.enum";
-import { DurationType, ProjectStatus, PropertyCategory, PropertyOption, PropertyStatus, PurchaseRequestType, RequestUpdateStatus } from "./common/enums/property.enum";
+import { DurationType, ProjectStatus, PropertyCategory, PropertyOption, PropertyStatus, PROPERTY_MEDIA_CATEGORY, PurchaseRequestType, RequestUpdateStatus } from "./common/enums/property.enum";
 import { Role } from "./common/enums/role.enum";
 import { ImportTypesensePropertyCategory } from "./typesense/importTypes/propertyCategory.import";
 
@@ -441,6 +441,52 @@ async function seed() {
     };
 
     //property category was here
+
+    //Property Media Category
+    const propertyMediaCategoryValues = PROPERTY_MEDIA_CATEGORY.map((category) => category.mediaCategory);
+
+    const existingMediaCategories = await prisma.propertyMediaCategory.findMany({
+        select: {
+            mediaCategory: true,
+        },
+    });
+
+    const existingMediaCategoriesSet = new Set(existingMediaCategories.map((category) => category.mediaCategory));
+
+    const mediaCategoriesToDelete: string[] = [];
+
+    for (const category of existingMediaCategoriesSet) {
+        if (!propertyMediaCategoryValues.includes(category)) {
+            mediaCategoriesToDelete.push(category);
+        };
+    };
+
+    if (mediaCategoriesToDelete.length > 0) {
+        await prisma.propertyMediaCategory.deleteMany({
+            where: {
+                mediaCategory: {
+                    in: mediaCategoriesToDelete,
+                },
+            },
+        });
+    };
+
+    const mediaCategoryData = propertyMediaCategoryValues.map((category) => {
+        if (!existingMediaCategoriesSet.has(category)) {
+            const categoryEntity = PROPERTY_MEDIA_CATEGORY.find((value) => value.mediaCategory === category);
+
+            return {
+                mediaCategory: categoryEntity.mediaCategory,
+                required: categoryEntity.required
+            };
+        };
+    });
+
+    if (mediaCategoryData.length > 0) {
+        await prisma.propertyMediaCategory.createMany({
+            data: mediaCategoryData,
+        });
+    };
 
     //Countries
     const countryValues = Object.values(Country).map((country) => country.toString());

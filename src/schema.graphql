@@ -494,12 +494,22 @@ type PropertyRented{
     updatedAt: DateTime
 }
 
+type PropertyMediaCategory{
+    id: String
+    mediaCategory: String
+    required: Boolean
+    createdAt: DateTime
+    propertiesMedia: [PropertyMedia]
+}
+
 type PropertyMedia{
     id: String
     propertyId: String
     property: Property
     index: Int
     mediaUrl: String
+    propertyMediaCategoryId: String
+    propertyMediaCategory: PropertyMediaCategory
     description: String
     createdAt: DateTime
     updatedAt: DateTime
@@ -590,7 +600,8 @@ input UpdatePropertyDetails{
 
 input CreatePropertyMedia{
     index: Int
-    mediaUrl: String
+    mediaUrl: String!
+    mediaCategoryId: String!
     description: String
 }
 
