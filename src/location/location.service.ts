@@ -35,6 +35,4 @@ export class LocationService {
             throw error;
         };
     };
-
-    //comment
 }
