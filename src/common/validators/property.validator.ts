@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { IsString, IsNotEmpty, IsOptional, Matches, IsNumber, IsDate, IsBoolean, ValidateNested, IsArray, ArrayNotEmpty, ArrayMinSize } from 'class-validator';
 
 export class CreateProjectDTO {
@@ -212,15 +213,22 @@ export class CreatePropertyDetailsDTO {
     propertyOptionId: number;
 };
 
+export class MediaUrlItem {
+    @Matches(/^\s*\S.*$/, { message: 'Media URL should not contain only whitespace' })
+    mediaUrl: string;
+}
+
 export class CreatePropertyMediaDTO {
     @IsOptional()
     @IsNumber()
     index?: number;
 
-    @IsOptional()
-    @IsString()
-    @Matches(/^\s*\S.*$/, { message: 'Media URL should not contain only whitespace' })
-    mediaUrl?: string;
+    @IsArray()
+    @ArrayNotEmpty({ message: 'Property Media should not be empty' })
+    @ArrayMinSize(1, { message: 'Property Media should contain at least one item' })
+    @ValidateNested({ each: true })
+    @Type(() => MediaUrlItem)
+    mediaUrl?: MediaUrlItem[];
 
     @IsOptional()
     @IsString()

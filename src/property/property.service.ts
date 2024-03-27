@@ -148,6 +148,15 @@ export class PropertyService implements OnModuleInit {
         };
     };
 
+    async getPropertyMediaCategories() {
+        try {
+            return await this.prisma.propertyMediaCategory.findMany();
+        } catch (error) {
+            console.error(error);
+            throw error;
+        };
+    }
+
     async createProject(userId: string, dto: CreateProject) {
         try {
             // Validate
@@ -945,18 +954,30 @@ export class PropertyService implements OnModuleInit {
 
                     const bannerMediaCategory = requiredMediaCategories.find((category) => category.mediaCategory === PropertyMediaCategory.Banner);
 
-                    const propertyMediaData = dto.propertyMedia.map((media) => {
+                    const propertyMediaData: {
+                        propertyId: string,
+                        index: number,
+                        mediaUrl: string,
+                        propertyMediaCategoryId: string,
+                        description: string,
+                    }[] = []
+
+                    for (const media of dto.propertyMedia) {
                         const mediaCategoryExists = propertyMediaCategories.find((category) => category.id === media.mediaCategoryId);
                         if (!mediaCategoryExists) throw new ForbiddenException("Invalid media category");
 
-                        return {
-                            propertyId: newProperty.id,
-                            index: media.index,
-                            mediaUrl: media.mediaUrl,
-                            propertyMediaCategoryId: media.mediaCategoryId,
-                            description: media.description,
-                        };
-                    });
+                        const eachMediaUrl = media.mediaUrl.map((mediaUrl) => {
+                            return {
+                                propertyId: newProperty.id,
+                                index: media.index,
+                                mediaUrl: mediaUrl,
+                                propertyMediaCategoryId: media.mediaCategoryId,
+                                description: media.description,
+                            }
+                        });
+
+                        propertyMediaData.push(...eachMediaUrl);
+                    };
 
                     const handledMediaCategoryIds = propertyMediaData.map((data) => data.propertyMediaCategoryId);
 

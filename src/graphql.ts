@@ -164,7 +164,7 @@ export interface UpdatePropertyDetails {
 
 export interface CreatePropertyMedia {
     index?: Nullable<number>;
-    mediaUrl: string;
+    mediaUrl: string[];
     mediaCategoryId: string;
     description?: Nullable<string>;
 }
@@ -223,6 +223,7 @@ export interface IQuery {
     getPropertyOptions(): Nullable<Nullable<PropertyOption>[]> | Promise<Nullable<Nullable<PropertyOption>[]>>;
     getPropertyCategories(): Nullable<Nullable<PropertyCategory>[]> | Promise<Nullable<Nullable<PropertyCategory>[]>>;
     getProjectStatuses(): Nullable<Nullable<ProjectStatus>[]> | Promise<Nullable<Nullable<ProjectStatus>[]>>;
+    getPropertyMediaCategories(): Nullable<Nullable<PropertyMediaCategory>[]> | Promise<Nullable<Nullable<PropertyMediaCategory>[]>>;
     getProjects(): Nullable<Nullable<Project>[]> | Promise<Nullable<Nullable<Project>[]>>;
     getProjectById(projectId: string): Nullable<Project> | Promise<Nullable<Project>>;
     getProjectsByCompany(companyId: string, cursor?: Nullable<string>, sets?: Nullable<number>): Nullable<ProjectByCompanyResponse> | Promise<Nullable<ProjectByCompanyResponse>>;

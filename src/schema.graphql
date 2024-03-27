@@ -600,7 +600,7 @@ input UpdatePropertyDetails{
 
 input CreatePropertyMedia{
     index: Int
-    mediaUrl: String!
+    mediaUrl: [String!]!
     mediaCategoryId: String!
     description: String
 }
@@ -638,6 +638,7 @@ type Query {
     getPropertyOptions: [PropertyOption]
     getPropertyCategories: [PropertyCategory]
     getProjectStatuses: [ProjectStatus]
+    getPropertyMediaCategories: [PropertyMediaCategory]
     getProjects: [Project]
     getProjectById(projectId: String!): Project
     getProjectsByCompany(companyId: String!, cursor: String, sets: Float): ProjectByCompanyResponse

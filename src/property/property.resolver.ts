@@ -33,6 +33,11 @@ export class PropertyResolver {
         return await this.propertyService.getProjectStatuses();
     };
 
+    @Query("getPropertyMediaCategories")
+    async getPropertyMediaCategories() {
+        return await this.propertyService.getPropertyMediaCategories();
+    };
+
     @UseGuards(AtGuard, RolesGuard)
     @Roles(Role.Owner)
     @Mutation("createProject")
