@@ -164,7 +164,7 @@ export interface UpdatePropertyDetails {
 
 export interface CreatePropertyMedia {
     index?: Nullable<number>;
-    mediaUrl: string[];
+    mediaUrl: string;
     mediaCategoryId: string;
     description?: Nullable<string>;
 }

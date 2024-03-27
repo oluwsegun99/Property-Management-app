@@ -954,30 +954,18 @@ export class PropertyService implements OnModuleInit {
 
                     const bannerMediaCategory = requiredMediaCategories.find((category) => category.mediaCategory === PropertyMediaCategory.Banner);
 
-                    const propertyMediaData: {
-                        propertyId: string,
-                        index: number,
-                        mediaUrl: string,
-                        propertyMediaCategoryId: string,
-                        description: string,
-                    }[] = []
-
-                    for (const media of dto.propertyMedia) {
+                    const propertyMediaData = dto.propertyMedia.map((media) => {
                         const mediaCategoryExists = propertyMediaCategories.find((category) => category.id === media.mediaCategoryId);
                         if (!mediaCategoryExists) throw new ForbiddenException("Invalid media category");
 
-                        const eachMediaUrl = media.mediaUrl.map((mediaUrl) => {
-                            return {
-                                propertyId: newProperty.id,
-                                index: media.index,
-                                mediaUrl: mediaUrl,
-                                propertyMediaCategoryId: media.mediaCategoryId,
-                                description: media.description,
-                            }
-                        });
-
-                        propertyMediaData.push(...eachMediaUrl);
-                    };
+                        return {
+                            propertyId: newProperty.id,
+                            index: media.index,
+                            mediaUrl: media.mediaUrl,
+                            propertyMediaCategoryId: media.mediaCategoryId,
+                            description: media.description,
+                        };
+                    });
 
                     const handledMediaCategoryIds = propertyMediaData.map((data) => data.propertyMediaCategoryId);
 

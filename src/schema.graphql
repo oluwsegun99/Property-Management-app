@@ -600,7 +600,7 @@ input UpdatePropertyDetails{
 
 input CreatePropertyMedia{
     index: Int
-    mediaUrl: [String!]!
+    mediaUrl: String!
     mediaCategoryId: String!
     description: String
 }
