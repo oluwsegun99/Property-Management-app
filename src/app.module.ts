@@ -15,12 +15,13 @@ import { PropertyModule } from './property/property.module';
 import { DateResolver, DateTimeResolver } from 'graphql-scalars';
 import { TypesenseModule } from './typesense/typesense.module';
 import { LocationModule } from './location/location.module';
+import { InspectionModule } from './inspection/inspection.module';
 
 @Module({
   imports: [
     GraphQLModule.forRoot<ApolloDriverConfig>({
       cors: {
-        origin: ['http://localhost:3000', 'https://home-crescent.vercel.app'],
+        origin: ['http://localhost:3000', 'https://home-crescent.vercel.app', 'https://homecrescent-developer.vercel.app'],
       },
       driver: ApolloDriver,
       typePaths: ['./**/*.graphql'],
@@ -45,6 +46,7 @@ import { LocationModule } from './location/location.module';
     PropertyModule,
     TypesenseModule,
     LocationModule,
+    InspectionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

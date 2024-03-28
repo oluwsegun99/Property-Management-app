@@ -9,7 +9,8 @@ async function bootstrap() {
     allowedHeaders: ["content-type"],
     origin: [
       'http://localhost:3000',
-      'https://home-crescent.vercel.app'
+      'https://home-crescent.vercel.app',
+      'https://homecrescent-developer.vercel.app'
     ],
     credentials: true,
     preflightContinue: true,
