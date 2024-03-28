@@ -1019,7 +1019,13 @@ export class PropertyService implements OnModuleInit {
         try {
             return await this.prisma.property.findMany({
                 include: {
-                    propertyDetail: true,
+                    city: true,
+                    propertyStatus: true,
+                    propertyDetail: {
+                        include: {
+                            propertyOption: true,
+                        },
+                    },
                     propertiesMedia: {
                         include: {
                             propertyMediaCategory: true
@@ -1042,6 +1048,8 @@ export class PropertyService implements OnModuleInit {
                 select: {
                     properties: {
                         include: {
+                            city: true,
+                            propertyStatus: true,
                             propertyDetail: true,
                             propertiesMedia: {
                                 include: {
@@ -1072,6 +1080,8 @@ export class PropertyService implements OnModuleInit {
                 select: {
                     properties: {
                         include: {
+                            city: true,
+                            propertyStatus: true,
                             propertyDetail: true,
                             propertiesMedia: {
                                 include: {
@@ -1103,6 +1113,8 @@ export class PropertyService implements OnModuleInit {
                 select: {
                     properties: {
                         include: {
+                            city: true,
+                            propertyStatus: true,
                             propertyDetail: true,
                             propertiesMedia: {
                                 include: {
@@ -1131,6 +1143,8 @@ export class PropertyService implements OnModuleInit {
                     id: propertyId,
                 },
                 include: {
+                    city: true,
+                    propertyStatus: true,
                     propertyDetail: true,
                     propertiesMedia: {
                         include: {
