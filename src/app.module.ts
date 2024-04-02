@@ -3,8 +3,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { RoleModule } from './role/role.module';
@@ -15,7 +13,7 @@ import { PropertyModule } from './property/property.module';
 import { DateResolver, DateTimeResolver } from 'graphql-scalars';
 import { TypesenseModule } from './typesense/typesense.module';
 import { LocationModule } from './location/location.module';
-// import { InspectionModule } from './inspection/inspection.module';
+import { InspectionModule } from './inspection/inspection.module';
 
 @Module({
   imports: [
@@ -46,9 +44,9 @@ import { LocationModule } from './location/location.module';
     PropertyModule,
     TypesenseModule,
     LocationModule,
-    // InspectionModule,
+    InspectionModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule { }

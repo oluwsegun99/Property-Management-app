@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, OnModuleInit, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable, Logger, OnModuleInit, UnauthorizedException } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PropertyCategory, PropertyMediaCategory } from 'src/common/enums/property.enum';
 import { validateCreateProjectDTO, validateCreatePropertyDetailDTO, validateCreatePropertyDTO, validateCreatePrototypeDTO, validatePropertyMediaArray, validateUpdateProjectDTO, validateUpdatePrototypeDTO } from 'src/common/validationFunctions/property.validation';
@@ -13,6 +13,8 @@ export class PropertyService implements OnModuleInit {
         private prisma: PrismaService,
         private typesense: TypesenseService
     ) { }
+
+    private readonly logger = new Logger(PropertyService.name);
 
     async onModuleInit() {
 
@@ -102,13 +104,13 @@ export class PropertyService implements OnModuleInit {
 
                 for (const category of propertyCategoriesForTypesense) {
                     await this.typesense.deleteManyPropertyCategoriesFromTypesense(category.categoryName);
-                    console.log("deleted previous categories");
+                    this.logger.log("deleted previous category");
                 };
             };
 
             await this.typesense.importPropertyCategoriesToTypesense(propertyCategoriesForTypesense);
 
-            console.log("Properties categories successfully synced with typesense");
+            this.logger.log("Properties categories successfully synced with typesense");
         };
     };
 
@@ -1143,7 +1145,11 @@ export class PropertyService implements OnModuleInit {
                     id: propertyId,
                 },
                 include: {
-                    city: true,
+                    city: {
+                        include: {
+                            state: true,
+                        },
+                    },
                     propertyStatus: true,
                     propertyDetail: true,
                     propertiesMedia: {

@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsEmail, Matches } from 'class-validator';
+import { IsString, IsNotEmpty, IsEmail, Matches, IsNumber } from 'class-validator';
 
 export class AdminCreateInviteDTO {
     @IsNotEmpty({ message: 'Fullname should not be empty' })
@@ -20,3 +20,14 @@ export class AdminCreateInviteDTO {
     @Matches(/^\s*\S.*$/, { message: 'Role ID should not contain only whitespace' })
     roleId: string;
 };
+
+export class AdminApprovePrequalificationDTO {
+    @IsNotEmpty({ message: 'Prequalification ID should not be empty' })
+    @IsString()
+    @Matches(/^\s*\S.*$/, { message: 'Prequalification ID should not contain only whitespace' })
+    prequalificationId: string;
+
+    @IsNotEmpty({ message: 'Prequalification status ID should not be empty' })
+    @IsNumber()
+    prequalificationStatusId: number;
+}

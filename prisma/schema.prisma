@@ -91,6 +91,10 @@ model User {
   propertiesOwned          PropertyOwned[]
   propertiesRented         PropertyRented[]
   propertyPurchaseRequests PropertyPurchaseRequest[]
+  userWishlists            UserWishlist[]
+  inspectionSchedules      InspectionSchedule[]
+  inspectionScheduleSlips  InspectionScheduleSlip[]
+  prequalifications        Prequalification[]
 
   @@map("users")
 }
@@ -131,6 +135,7 @@ model DeveloperCompany {
   developerCompanyBankAccounts DevloperCompanyBankAccount[]
   projects                     Project[]
   properties                   Property[]
+  inspectionScheduleSlips      InspectionScheduleSlip[]
 
   @@map("developerCompanies")
 }
@@ -387,12 +392,14 @@ model Property {
   rents                    PropertyRented[]
   propertiesCostHistory    PropertyCostHistory[]
   propertyPurchaseRequests PropertyPurchaseRequest[]
+  userWishlists            UserWishlist[]
+  inspectionSchedules      InspectionSchedule[]
 
   @@map("properties")
 }
 
 model PropertyDetail {
-  id       String   @unique
+  id       String   @id @unique
   property Property @relation(fields: [id], references: [id], onDelete: Cascade)
 
   address           String?
@@ -565,4 +572,139 @@ model PropertyPurchaseRequest {
   updatedAt DateTime @updatedAt
 
   @@map("propertyPurchaseRequests")
+}
+
+model UserWishlist {
+  id String @id @default(uuid())
+
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@map("userWishlists")
+}
+
+model InspectionType {
+  id             Int    @id
+  inspectionType String @unique
+
+  createdAt DateTime @default(now())
+
+  inspectionSchedules InspectionSchedule[]
+
+  @@map("inspectionTypes")
+}
+
+model InspectionStatus {
+  id               Int    @id
+  inspectionStatus String @unique
+
+  createdAt DateTime @default(now())
+
+  inspectionSchedules InspectionSchedule[]
+
+  @@map("inspectionStatuses")
+}
+
+model InspectionSchedule {
+  id String @id @default(uuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  dateScheduled DateTime
+
+  inspectionTypeId Int
+  inspectionType   InspectionType @relation(fields: [inspectionTypeId], references: [id], onDelete: Cascade)
+
+  inspectionStatusId Int
+  inspectionStatus   InspectionStatus @relation(fields: [inspectionStatusId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  inspectionScheduleSlip InspectionScheduleSlip?
+
+  @@map("inspectionSchedules")
+}
+
+model InspectionScheduleSlip {
+  id                 String             @id @unique
+  inspectionSchedule InspectionSchedule @relation(fields: [id], references: [id], onDelete: Cascade)
+
+  agentId String
+  agent   User   @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  developerCompanyId String?
+  developerCompany   DeveloperCompany? @relation(fields: [developerCompanyId], references: [id], onDelete: Cascade)
+
+  approvedDate DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("inspectionScheduleSlips")
+}
+
+model InvestmentState {
+  id              Int      @id
+  investmentState String   @unique
+  createdAt       DateTime @default(now())
+
+  @@map("investmentStates")
+}
+
+model InvestmentFrequency {
+  id                  Int
+  investmentFrequency String   @unique
+  createdAt           DateTime @default(now())
+
+  @@map("investmentFrequencies")
+}
+
+model PaymentStatus {
+  id            Int      @id
+  paymentStatus String   @unique
+  createdAt     DateTime @default(now())
+
+  @@map("paymentStatuses")
+}
+
+model PrequalificationStatus {
+  id                     Int      @id
+  prequalificationStatus String   @unique
+  createdAt              DateTime @default(now())
+
+  prequalifications Prequalification[]
+
+  @@map("prequalificationStatuses")
+}
+
+model Prequalification {
+  id                 String  @id @default(uuid())
+  fullname           String
+  email              String
+  incomeMonthly      Float
+  isSelfEmployed     Boolean @default(false)
+  companyName        String?
+  companyAddress     String?
+  isJointApplication Boolean @default(false)
+  spouseEmail        String?
+
+  prequalificationStatusId Int
+  prequalificationStatus   PrequalificationStatus @relation(fields: [prequalificationStatusId], references: [id], onDelete: Cascade)
+
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("prequalifications")
 }

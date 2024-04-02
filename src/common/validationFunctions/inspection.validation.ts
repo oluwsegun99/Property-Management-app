@@ -1,11 +1,11 @@
 import { plainToClass } from "class-transformer";
 import { validate, ValidationError } from "class-validator";
-import { AdminApprovePrequalification, AdminCreateInvite } from "src/graphql";
-import { AdminApprovePrequalificationDTO, AdminCreateInviteDTO } from "../validators/admin.validator";
+import { CreateInspectionSchedule, UpdateInspectionSchedule } from "src/graphql";
+import { CreateInspectionScheduleDTO, UpdateInspectionScheduleDTO } from "../validators/inspection.validator";
 
 
-export async function validateAdminCreateInviteDTO(dto: AdminCreateInvite): Promise<string[]> {
-    const dtoForValidation = plainToClass(AdminCreateInviteDTO, dto);
+export async function validateCreateInspectionScheduleDTO(dto: CreateInspectionSchedule): Promise<string[]> {
+    const dtoForValidation = plainToClass(CreateInspectionScheduleDTO, dto);
 
     const errors: ValidationError[] = await validate(dtoForValidation);
     if (errors.length > 0) {
@@ -15,8 +15,8 @@ export async function validateAdminCreateInviteDTO(dto: AdminCreateInvite): Prom
     return [];
 };
 
-export async function validateAdminApprovePrequalificationDTO(dto: AdminApprovePrequalification): Promise<string[]> {
-    const dtoForValidation = plainToClass(AdminApprovePrequalificationDTO, dto);
+export async function validateUpdateInspectionScheduleDTO(dto: UpdateInspectionSchedule): Promise<string[]> {
+    const dtoForValidation = plainToClass(UpdateInspectionScheduleDTO, dto);
 
     const errors: ValidationError[] = await validate(dtoForValidation);
     if (errors.length > 0) {

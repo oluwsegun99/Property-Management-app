@@ -197,6 +197,57 @@ export interface UpdateProperty {
     propertyMedia?: Nullable<Nullable<CreatePropertyMedia>[]>;
 }
 
+export interface CreateInspectionSchedule {
+    propertyId: string;
+    dateScheduled: DateTime;
+    inspectionTypeId: number;
+}
+
+export interface UpdateInspectionSchedule {
+    scheduleId: string;
+    dateScheduled?: Nullable<DateTime>;
+    inspectionTypeId?: Nullable<number>;
+}
+
+export interface AdminHandleInspectionSchedule {
+    inspectionStatusId: number;
+    scheduleId: string;
+}
+
+export interface DeveloperHandleInspectionSchedule {
+    scheduleId: string;
+    inspectionStatusId: number;
+    agentId?: Nullable<string>;
+}
+
+export interface CreatePrequalification {
+    fullname: string;
+    email: string;
+    incomeMonthly: number;
+    isSelfEmployed?: Nullable<boolean>;
+    companyName?: Nullable<string>;
+    companyAddress?: Nullable<string>;
+    isJointApplication?: Nullable<boolean>;
+    spouseEmail?: Nullable<string>;
+}
+
+export interface UpdatePrequalification {
+    prequalificationId: string;
+    fullname?: Nullable<string>;
+    email?: Nullable<string>;
+    incomeMonthly?: Nullable<number>;
+    isSelfEmployed?: Nullable<boolean>;
+    companyName?: Nullable<string>;
+    companyAddress?: Nullable<string>;
+    isJointApplication?: Nullable<boolean>;
+    spouseEmail?: Nullable<string>;
+}
+
+export interface AdminApprovePrequalification {
+    prequalificationId: string;
+    prequalificationStatusId: number;
+}
+
 export interface Role {
     id?: Nullable<string>;
     roleName?: Nullable<string>;
@@ -212,6 +263,9 @@ export interface IQuery {
     getUserById(): Nullable<User> | Promise<Nullable<User>>;
     getAdminById(): Nullable<Admin> | Promise<Nullable<Admin>>;
     getAllUsers(): Nullable<Nullable<User>[]> | Promise<Nullable<Nullable<User>[]>>;
+    getAllUserWishlists(): Nullable<Nullable<UserWishlist>[]> | Promise<Nullable<Nullable<UserWishlist>[]>>;
+    getUserWishlistsByUser(): Nullable<Nullable<Property>[]> | Promise<Nullable<Nullable<Property>[]>>;
+    getUserWishlistById(wishlistId: string): Nullable<UserWishlist> | Promise<Nullable<UserWishlist>>;
     getCompanyTypes(): Nullable<Nullable<CompanyType>[]> | Promise<Nullable<Nullable<CompanyType>[]>>;
     getDeveloperCompanies(): Nullable<Nullable<DeveloperCompany>[]> | Promise<Nullable<Nullable<DeveloperCompany>[]>>;
     getDeveloperCompanyById(companyId: string): Nullable<DeveloperCompany> | Promise<Nullable<DeveloperCompany>>;
@@ -235,6 +289,17 @@ export interface IQuery {
     getPropertiesByCompany(companyId: string): Nullable<Nullable<Property>[]> | Promise<Nullable<Nullable<Property>[]>>;
     getPropertyByDeveloper(developerId: string): Nullable<Nullable<Property>[]> | Promise<Nullable<Nullable<Property>[]>>;
     getPropertyById(propertyId: string): Nullable<Property> | Promise<Nullable<Property>>;
+    getInspectionTypes(): Nullable<Nullable<InspectionType>[]> | Promise<Nullable<Nullable<InspectionType>[]>>;
+    getInspectionStatus(): Nullable<Nullable<InspectionStatus>[]> | Promise<Nullable<Nullable<InspectionStatus>[]>>;
+    adminGetInspectionSchedules(monthValue?: Nullable<number>): Nullable<Nullable<InspectionCalendarLog>[]> | Promise<Nullable<Nullable<InspectionCalendarLog>[]>>;
+    getInspectionScheduleByDeveloper(monthValue?: Nullable<number>): Nullable<Nullable<InspectionCalendarLog>[]> | Promise<Nullable<Nullable<InspectionCalendarLog>[]>>;
+    userGetInspectionSchedules(): Nullable<Nullable<InspectionSchedule>[]> | Promise<Nullable<Nullable<InspectionSchedule>[]>>;
+    getInspectionSchedules(): Nullable<Nullable<InspectionSchedule>[]> | Promise<Nullable<Nullable<InspectionSchedule>[]>>;
+    getInpectionScheduleById(scheduleId: string): Nullable<InspectionSchedule> | Promise<Nullable<InspectionSchedule>>;
+    adminViewPrequalifications(): Nullable<Nullable<Prequalification>[]> | Promise<Nullable<Nullable<Prequalification>[]>>;
+    getPrequalifications(): Nullable<Nullable<Prequalification>[]> | Promise<Nullable<Nullable<Prequalification>[]>>;
+    getPrequalificationById(prequalificationId: string): Nullable<Prequalification> | Promise<Nullable<Prequalification>>;
+    getPrequalificationsByUser(): Nullable<Nullable<Prequalification>[]> | Promise<Nullable<Nullable<Prequalification>[]>>;
 }
 
 export interface AdminInvite {
@@ -264,6 +329,9 @@ export interface IMutation {
     deleteUserByEmail(email: string): Nullable<boolean> | Promise<Nullable<boolean>>;
     deleteUserById(userId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
     deleteAllUsers(): Nullable<boolean> | Promise<Nullable<boolean>>;
+    addPropertyToWishlist(propertyId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deletePropertyfromWishlist(propertyId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deleteAllUserWishlists(): Nullable<boolean> | Promise<Nullable<boolean>>;
     createDeveloperCompany(input?: Nullable<CreateDeveloperCompany>): Nullable<DeveloperCompany> | Promise<Nullable<DeveloperCompany>>;
     updateDeveloperCompany(input?: Nullable<UpdateDeveloperCompany>): Nullable<DeveloperCompany> | Promise<Nullable<DeveloperCompany>>;
     deleteDeveloperCompany(companyId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
@@ -281,6 +349,17 @@ export interface IMutation {
     deleteProperty(propertyId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
     deleteAllPropertyCategories(): Nullable<boolean> | Promise<Nullable<boolean>>;
     deleteAllProperties(): Nullable<boolean> | Promise<Nullable<boolean>>;
+    createInspectionSchedule(input: CreateInspectionSchedule): Nullable<InspectionSchedule> | Promise<Nullable<InspectionSchedule>>;
+    adminHandleInspectionSchedule(input: AdminHandleInspectionSchedule): string | Promise<string>;
+    developerHandleInspectionSchedule(input: DeveloperHandleInspectionSchedule): InspectionScheduleSlip | Promise<InspectionScheduleSlip>;
+    updateInspectionSchedule(input: UpdateInspectionSchedule): Nullable<InspectionSchedule> | Promise<Nullable<InspectionSchedule>>;
+    deleteInspectionSchedule(scheduleId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deleteAllInspectionSchedules(): Nullable<boolean> | Promise<Nullable<boolean>>;
+    createPrequalification(input: CreatePrequalification): Nullable<Prequalification> | Promise<Nullable<Prequalification>>;
+    updatePrequalification(input: UpdatePrequalification): Nullable<Prequalification> | Promise<Nullable<Prequalification>>;
+    deletePrequalification(prequalificationId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deleteAllPrequalifications(): Nullable<boolean> | Promise<Nullable<boolean>>;
+    adminApprovePrequalification(input: AdminApprovePrequalification): Nullable<boolean> | Promise<Nullable<boolean>>;
 }
 
 export interface Admin {
@@ -312,6 +391,15 @@ export interface User {
     role?: Nullable<Role>;
     createdAt?: Nullable<DateTime>;
     updatedAt?: Nullable<DateTime>;
+}
+
+export interface UserWishlist {
+    id?: Nullable<string>;
+    propertyId?: Nullable<string>;
+    property?: Nullable<Property>;
+    userId?: Nullable<string>;
+    user?: Nullable<User>;
+    createdAt?: Nullable<DateTime>;
 }
 
 export interface TokenResponse {
@@ -649,6 +737,78 @@ export interface PropertyPurchaseRequest {
     purchaseDuration?: Nullable<number>;
     durationTypeId?: Nullable<number>;
     durationType?: Nullable<DurationType>;
+    createdAt?: Nullable<DateTime>;
+    updatedAt?: Nullable<DateTime>;
+}
+
+export interface InspectionType {
+    id?: Nullable<number>;
+    inspectionType?: Nullable<string>;
+    createdAt?: Nullable<DateTime>;
+    inspectionSchedules?: Nullable<Nullable<InspectionSchedule>[]>;
+}
+
+export interface InspectionStatus {
+    id?: Nullable<number>;
+    inspectionStatus?: Nullable<string>;
+    createdAt?: Nullable<DateTime>;
+    inspectionSchedules?: Nullable<Nullable<InspectionSchedule>[]>;
+}
+
+export interface InspectionSchedule {
+    id?: Nullable<string>;
+    userId?: Nullable<string>;
+    user?: Nullable<User>;
+    propertyId?: Nullable<string>;
+    property?: Nullable<Property>;
+    dateScheduled?: Nullable<DateTime>;
+    inspectionTypeId?: Nullable<number>;
+    inspectionType?: Nullable<InspectionType>;
+    inspectionStatusId?: Nullable<number>;
+    inspectionStatus?: Nullable<InspectionStatus>;
+    createdAt?: Nullable<DateTime>;
+    updatedAt?: Nullable<DateTime>;
+    inspectionScheduleSlip?: Nullable<InspectionScheduleSlip>;
+}
+
+export interface InspectionScheduleSlip {
+    id?: Nullable<string>;
+    inspectionSchedule?: Nullable<InspectionSchedule>;
+    agentId?: Nullable<string>;
+    agent?: Nullable<User>;
+    developerCompanyId?: Nullable<string>;
+    developerCompany?: Nullable<DeveloperCompany>;
+    approvedDate?: Nullable<DateTime>;
+    createdAt?: Nullable<DateTime>;
+    updatedAt?: Nullable<DateTime>;
+}
+
+export interface InspectionCalendarLog {
+    date?: Nullable<string>;
+    inspectionsForDay?: Nullable<Nullable<InspectionSchedule>[]>;
+}
+
+export interface PrequalificationStatus {
+    id?: Nullable<number>;
+    prequalificationStatus?: Nullable<string>;
+    createdAt?: Nullable<DateTime>;
+    prequalifications?: Nullable<Nullable<Prequalification>[]>;
+}
+
+export interface Prequalification {
+    id?: Nullable<string>;
+    fullname?: Nullable<string>;
+    email?: Nullable<string>;
+    incomeMonthly?: Nullable<number>;
+    isSelfEmployed?: Nullable<boolean>;
+    companyName?: Nullable<string>;
+    companyAddress?: Nullable<string>;
+    isJointApplication?: Nullable<boolean>;
+    spouseEmail?: Nullable<string>;
+    prequalificationStatusId?: Nullable<number>;
+    prequalificationStatus?: Nullable<PrequalificationStatus>;
+    userId?: Nullable<string>;
+    user?: Nullable<User>;
     createdAt?: Nullable<DateTime>;
     updatedAt?: Nullable<DateTime>;
 }

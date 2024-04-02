@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { CompanyType } from "./common/enums/companyType.enum";
+import { InspectionStatus, InspectionType } from "./common/enums/inspection.enum";
 import { CITY_DATA, Country, STATE_DATA } from "./common/enums/location.enum";
+import { PrequalificationStatus } from "./common/enums/prequalification.enum";
 import { DurationType, ProjectStatus, PropertyCategory, PropertyOption, PropertyStatus, PROPERTY_MEDIA_CATEGORY, PurchaseRequestType, RequestUpdateStatus } from "./common/enums/property.enum";
 import { Role } from "./common/enums/role.enum";
 import { ImportTypesensePropertyCategory } from "./typesense/importTypes/propertyCategory.import";
@@ -645,6 +647,172 @@ async function seed() {
             data: cityData,
         });
     };
+
+    //INSPECTION TYPE
+    const inspectionTypeValues = Object.values(InspectionType).map((type) => type.toString());
+
+    const existingInspectionTypes = await prisma.inspectionType.findMany({
+        select: {
+            inspectionType: true,
+        },
+    });
+
+    const existingInspectionTypeSet = new Set(existingInspectionTypes.map((inspectionType) => inspectionType.inspectionType));
+
+    const inspectionTypesToDelete: string[] = [];
+
+    for (const type of existingInspectionTypeSet) {
+        if (!inspectionTypeValues.includes(type)) {
+            inspectionTypesToDelete.push(type);
+        };
+    };
+
+    if (inspectionTypesToDelete.length > 0) {
+        await prisma.inspectionType.deleteMany({
+            where: {
+                inspectionType: {
+                    in: inspectionTypesToDelete,
+                },
+            },
+        });
+    };
+
+    const inspectionTypesToCreate: {
+        id: number,
+        inspectionType: string
+    }[] = [];
+
+    let typeIndex = 0;
+
+    for (const type of inspectionTypeValues) {
+        typeIndex++;
+
+        if (existingInspectionTypeSet.has(type)) {
+            continue;
+        } else {
+            inspectionTypesToCreate.push({
+                id: typeIndex,
+                inspectionType: type,
+            });
+        };
+    };
+
+    if (inspectionTypesToCreate.length > 0) {
+        await prisma.inspectionType.createMany({
+            data: inspectionTypesToCreate,
+        });
+    };
+
+    //INSPECTION STATUS
+    const inspectionStatusValues = Object.values(InspectionStatus).map((status) => status.toString());
+
+    const existingInspectionStatuses = await prisma.inspectionStatus.findMany({
+        select: {
+            inspectionStatus: true,
+        },
+    });
+
+    const existingInspectionStatusSet = new Set(existingInspectionStatuses.map((inspectionStatus) => inspectionStatus.inspectionStatus));
+
+    const inspectionStatusesToDelete: string[] = [];
+
+    for (const status of existingInspectionStatusSet) {
+        if (!inspectionStatusValues.includes(status)) {
+            inspectionStatusesToDelete.push(status);
+        };
+    };
+
+    if (inspectionStatusesToDelete.length > 0) {
+        await prisma.inspectionStatus.deleteMany({
+            where: {
+                inspectionStatus: {
+                    in: inspectionStatusesToDelete,
+                },
+            },
+        });
+    };
+
+    const inspectionStatusesToCreate: {
+        id: number,
+        inspectionStatus: string
+    }[] = [];
+
+    let inspectionstatusIndex = 0;
+
+    for (const status of inspectionStatusValues) {
+        inspectionstatusIndex++;
+
+        if (existingInspectionStatusSet.has(status)) {
+            continue;
+        } else {
+            inspectionStatusesToCreate.push({
+                id: inspectionstatusIndex,
+                inspectionStatus: status,
+            });
+        };
+    };
+
+    if (inspectionStatusesToCreate.length > 0) {
+        await prisma.inspectionStatus.createMany({
+            data: inspectionStatusesToCreate,
+        });
+    };
+
+    //PREQUALIFICATION STATUS
+
+    const prequalificationStatusValues = Object.values(PrequalificationStatus).map((status) => status.toString());
+
+    const existingPrequalificationStatuses = await prisma.prequalificationStatus.findMany({
+        select: {
+            prequalificationStatus: true,
+        },
+    });
+
+    const existingPrequalificationStatusSet = new Set(existingPrequalificationStatuses.map((prequalificationStatus) => prequalificationStatus.prequalificationStatus));
+
+    const prequalificationStatusesToDelete: string[] = [];
+
+    for (const status of existingPrequalificationStatusSet) {
+        if (!prequalificationStatusValues.includes(status)) {
+            prequalificationStatusesToDelete.push(status);
+        }
+    }
+
+    if (prequalificationStatusesToDelete.length > 0) {
+        await prisma.prequalificationStatus.deleteMany({
+            where: {
+                prequalificationStatus: {
+                    in: prequalificationStatusesToDelete,
+                },
+            },
+        });
+    }
+
+    const prequalificationStatusesToCreate: {
+        id: number,
+        prequalificationStatus: string
+    }[] = [];
+
+    let prequalificationStatusIndex = 0;
+
+    for (const status of prequalificationStatusValues) {
+        prequalificationStatusIndex++;
+
+        if (existingPrequalificationStatusSet.has(status)) {
+            continue;
+        } else {
+            prequalificationStatusesToCreate.push({
+                id: prequalificationStatusIndex,
+                prequalificationStatus: status,
+            });
+        }
+    }
+
+    if (prequalificationStatusesToCreate.length > 0) {
+        await prisma.prequalificationStatus.createMany({
+            data: prequalificationStatusesToCreate,
+        });
+    }
 };
 
 seed()

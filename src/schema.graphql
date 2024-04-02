@@ -87,6 +87,15 @@ type User {
     updatedAt: DateTime
 }
 
+type UserWishlist{
+    id: String
+    propertyId: String
+    property: Property
+    userId: String
+    user: User
+    createdAt: DateTime
+}
+
 input UserSignUpInput{
     email: String!
     fullname: String!
@@ -150,6 +159,9 @@ type Query{
     getUserById: User
     getAdminById: Admin
     getAllUsers: [User]
+    getAllUserWishlists: [UserWishlist]
+    getUserWishlistsByUser: [Property]
+    getUserWishlistById(wishlistId: String!): UserWishlist
 }
 
 type Mutation{
@@ -167,6 +179,9 @@ type Mutation{
     deleteUserByEmail(email: String!): Boolean
     deleteUserById(userId: String!): Boolean
     deleteAllUsers: Boolean
+    addPropertyToWishlist(propertyId: String!): Boolean
+    deletePropertyfromWishlist(propertyId: String!): Boolean
+    deleteAllUserWishlists: Boolean
 }
 
 type CompanyType{
@@ -667,4 +682,161 @@ type Mutation {
     deleteProperty(propertyId: String!): Boolean
     deleteAllPropertyCategories: Boolean
     deleteAllProperties: Boolean
+}
+
+type InspectionType{
+    id: Int
+    inspectionType: String
+    createdAt: DateTime
+    inspectionSchedules: [InspectionSchedule]
+}
+
+type InspectionStatus{
+    id: Int
+    inspectionStatus: String
+    createdAt: DateTime
+    inspectionSchedules: [InspectionSchedule]
+}
+
+type InspectionSchedule{
+    id: String
+    userId: String
+    user: User
+    propertyId: String
+    property: Property
+    dateScheduled: DateTime
+    inspectionTypeId: Int
+    inspectionType: InspectionType
+    inspectionStatusId: Int
+    inspectionStatus: InspectionStatus
+    createdAt: DateTime
+    updatedAt: DateTime
+    inspectionScheduleSlip: InspectionScheduleSlip 
+}
+
+type InspectionScheduleSlip{
+    id: String
+    inspectionSchedule: InspectionSchedule
+    agentId: String
+    agent: User
+    developerCompanyId: String
+    developerCompany: DeveloperCompany
+    approvedDate: DateTime
+    createdAt: DateTime
+    updatedAt: DateTime
+}
+
+input CreateInspectionSchedule{
+    propertyId: String!
+    dateScheduled: DateTime!
+    inspectionTypeId: Int!
+}
+
+input UpdateInspectionSchedule{
+    scheduleId: String!
+    dateScheduled: DateTime
+    inspectionTypeId: Int
+}
+
+input AdminHandleInspectionSchedule{
+    inspectionStatusId: Int!
+    scheduleId: String!
+}
+
+input DeveloperHandleInspectionSchedule{
+    scheduleId: String!
+    inspectionStatusId: Int!
+    agentId: String
+}
+
+type InspectionCalendarLog{
+    date: String
+    inspectionsForDay: [InspectionSchedule]
+}
+
+type Query {
+    getInspectionTypes: [InspectionType]
+    getInspectionStatus: [InspectionStatus]
+    adminGetInspectionSchedules(monthValue: Int): [InspectionCalendarLog]
+    getInspectionScheduleByDeveloper(monthValue: Int): [InspectionCalendarLog]
+    userGetInspectionSchedules: [InspectionSchedule]
+    getInspectionSchedules: [InspectionSchedule]
+    getInpectionScheduleById(scheduleId: String!): InspectionSchedule
+}
+
+type Mutation {
+    createInspectionSchedule(input: CreateInspectionSchedule!): InspectionSchedule
+    adminHandleInspectionSchedule(input: AdminHandleInspectionSchedule!): String!
+    developerHandleInspectionSchedule(input: DeveloperHandleInspectionSchedule!): InspectionScheduleSlip!
+    updateInspectionSchedule(input: UpdateInspectionSchedule!): InspectionSchedule
+    deleteInspectionSchedule(scheduleId: String!): Boolean
+    deleteAllInspectionSchedules: Boolean
+}
+
+type PrequalificationStatus {
+    id: Int
+    prequalificationStatus: String
+    createdAt: DateTime
+    prequalifications: [Prequalification]
+}
+
+type Prequalification{
+    id: String
+    fullname: String
+    email: String
+    incomeMonthly: Float
+    isSelfEmployed: Boolean
+    companyName: String
+    companyAddress: String
+    isJointApplication: Boolean
+    spouseEmail: String
+    prequalificationStatusId: Int
+    prequalificationStatus: PrequalificationStatus
+    userId: String
+    user: User
+    createdAt: DateTime
+    updatedAt: DateTime
+}
+
+input CreatePrequalification{
+    fullname: String!
+    email: String!
+    incomeMonthly: Float!
+    isSelfEmployed: Boolean
+    companyName: String
+    companyAddress: String
+    isJointApplication: Boolean
+    spouseEmail: String
+}
+
+input UpdatePrequalification{
+    prequalificationId: String!
+    fullname: String
+    email: String
+    incomeMonthly: Float
+    isSelfEmployed: Boolean
+    companyName: String
+    companyAddress: String
+    isJointApplication: Boolean
+    spouseEmail: String
+}
+
+input AdminApprovePrequalification{
+    prequalificationId: String!
+    prequalificationStatusId: Int!
+}
+
+type Query {
+    adminViewPrequalifications: [Prequalification]
+    getPrequalifications: [Prequalification]
+    getPrequalificationById(prequalificationId: String!): Prequalification
+    getPrequalificationsByUser: [Prequalification]
+}
+
+type Mutation {
+    createPrequalification(input: CreatePrequalification!): Prequalification
+    updatePrequalification(input: UpdatePrequalification!): Prequalification
+    deletePrequalification(prequalificationId: String!): Boolean
+    deleteAllPrequalifications: Boolean
+    adminApprovePrequalification(input: AdminApprovePrequalification!): Boolean
 }
