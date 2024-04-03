@@ -1,6 +1,8 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GraphqlGetUserId } from 'src/common/decorators';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Role } from 'src/common/enums/role.enum';
 import { AtGuard } from 'src/common/guards/at-guard';
 import { AdminSigninInput, AdminSignUpAfterInvite, AdminSignupInput, UserSigninInput, UserSignUpAfterInvite, UserSignUpInput } from 'src/graphql';
 import { AuthService } from './auth.service';
@@ -71,5 +73,19 @@ export class AuthResolver {
     @Query("getAdminById")
     async getAdminById(@GraphqlGetUserId() adminId: string) {
         return await this.authService.getAdminById(adminId);
+    };
+
+    @UseGuards(AtGuard)
+    @Roles(Role.SuperAdmin, Role.Admin)
+    @Mutation("generateQrCodeDataURL")
+    async generateQrCodeDataURL(@GraphqlGetUserId() adminId: string) {
+        return await this.authService.generateQrCodeDataURL(adminId);
+    };
+
+    @UseGuards(AtGuard)
+    @Roles(Role.SuperAdmin, Role.Admin)
+    @Mutation("turnOnTwoFactorAuth")
+    async turnOnTwoFactorAuth(@GraphqlGetUserId() adminId: string, @Args("twoFACode") twoFACode: string) {
+        return await this.authService.turnOnTwoFactorAuth(adminId, twoFACode);
     };
 }

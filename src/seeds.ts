@@ -3,7 +3,7 @@ import { CompanyType } from "./common/enums/companyType.enum";
 import { InspectionStatus, InspectionType } from "./common/enums/inspection.enum";
 import { CITY_DATA, Country, STATE_DATA } from "./common/enums/location.enum";
 import { PrequalificationStatus } from "./common/enums/prequalification.enum";
-import { DurationType, ProjectStatus, PropertyCategory, PropertyOption, PropertyStatus, PROPERTY_MEDIA_CATEGORY, PurchaseRequestType, RequestUpdateStatus } from "./common/enums/property.enum";
+import { DurationType, ProjectMediaCategory, ProjectStatus, PROJECT_MEDIA_CATEGORY, PropertyCategory, PropertyOption, PropertyStatus, PROPERTY_MEDIA_CATEGORY, PurchaseRequestType, RequestUpdateStatus } from "./common/enums/property.enum";
 import { Role } from "./common/enums/role.enum";
 import { ImportTypesensePropertyCategory } from "./typesense/importTypes/propertyCategory.import";
 
@@ -812,7 +812,54 @@ async function seed() {
         await prisma.prequalificationStatus.createMany({
             data: prequalificationStatusesToCreate,
         });
+    };
+
+    //PROJECT MEDIA CATEGORY
+
+    const projectMediaCategoryValues = PROJECT_MEDIA_CATEGORY.map((category) => category.mediaCategory);
+
+    const existingProjectMediaCategories = await prisma.projectMediaCategory.findMany({
+        select: {
+            mediaCategory: true,
+        },
+    });
+
+    const existingProjectMediaCategorySet = new Set(existingProjectMediaCategories.map((projectMediaCategory) => projectMediaCategory.mediaCategory));
+
+    const projectMediaCategoriesToDelete: string[] = [];
+
+    for (const category of existingProjectMediaCategorySet) {
+        if (!projectMediaCategoryValues.includes(category)) {
+            projectMediaCategoriesToDelete.push(category);
+        }
     }
+
+    if (projectMediaCategoriesToDelete.length > 0) {
+        await prisma.projectMediaCategory.deleteMany({
+            where: {
+                mediaCategory: {
+                    in: projectMediaCategoriesToDelete,
+                },
+            },
+        });
+    }
+
+    const projectMediaCategoryData = projectMediaCategoryValues.map((category) => {
+        if (!existingProjectMediaCategorySet.has(category)) {
+            const categoryEntity = PROJECT_MEDIA_CATEGORY.find((value) => value.mediaCategory === category);
+
+            return {
+                mediaCategory: categoryEntity.mediaCategory,
+                required: categoryEntity.required
+            };
+        };
+    });
+
+    if (projectMediaCategoryData.length > 0) {
+        await prisma.projectMediaCategory.createMany({
+            data: projectMediaCategoryData,
+        });
+    };
 };
 
 seed()

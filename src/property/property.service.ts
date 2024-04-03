@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable, Logger, OnModuleInit, UnauthorizedException } from '@nestjs/common';
 import { User } from '@prisma/client';
-import { PropertyCategory, PropertyMediaCategory } from 'src/common/enums/property.enum';
-import { validateCreateProjectDTO, validateCreatePropertyDetailDTO, validateCreatePropertyDTO, validateCreatePrototypeDTO, validatePropertyMediaArray, validateUpdateProjectDTO, validateUpdatePrototypeDTO } from 'src/common/validationFunctions/property.validation';
+import { ProjectMediaCategory, PropertyCategory, PropertyMediaCategory } from 'src/common/enums/property.enum';
+import { validateCreateProjectDTO, validateCreatePropertyDetailDTO, validateCreatePropertyDTO, validateCreatePrototypeDTO, validateProjectMediaArray, validatePropertyMediaArray, validatePrototypeMediaArray, validateUpdateProjectDTO, validateUpdatePrototypeDTO } from 'src/common/validationFunctions/property.validation';
 import { CreateProject, CreateProperty, CreatePrototype, PropertyMedia, UpdateProject, UpdateProperty, UpdatePrototype, UserDeveloperCompany } from 'src/graphql';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ImportTypesensePropertyCategory } from 'src/typesense/importTypes/propertyCategory.import';
@@ -168,6 +168,13 @@ export class PropertyService implements OnModuleInit {
                 throw new ForbiddenException(errorMessage);
             };
 
+            //project media validation
+            const projectMediaErrors: string[] = await validateProjectMediaArray(dto.projectMedia);
+            if (projectMediaErrors.length > 0) {
+                const errorMessage = `Validation error: ${projectMediaErrors.join(', ')}`;
+                throw new ForbiddenException(errorMessage);
+            };
+
             //authorization
             let user: User;
 
@@ -224,26 +231,74 @@ export class PropertyService implements OnModuleInit {
             });
             if (!projectStatusExists) throw new ForbiddenException("Invalid Project status");
 
-            const newProject = await this.prisma.project.create({
-                data: {
-                    projectName: dto.projectName,
-                    description: dto.description,
-                    address: dto.address,
-                    projectLayoutUrl: dto.projectLayoutUrl,
-                    cityId: dto.cityId,
-                    neighborhoodId: dto.neighborhoodId,
-                    userId: user.id,
-                    developerCompanyId: dto.developerCompanyId ? dto.developerCompanyId : null,
-                    projectStatusId: dto.projectStatusId,
-                },
-                include: {
-                    city: true,
-                },
+            const createProject = await this.prisma.$transaction(async (prisma) => {
+                const newProject = await prisma.project.create({
+                    data: {
+                        projectName: dto.projectName,
+                        description: dto.description,
+                        address: dto.address,
+                        // projectLayoutUrl: dto.projectLayoutUrl,
+                        cityId: dto.cityId,
+                        neighborhoodId: dto.neighborhoodId,
+                        userId: user.id,
+                        developerCompanyId: dto.developerCompanyId ? dto.developerCompanyId : null,
+                        projectStatusId: dto.projectStatusId,
+                    },
+                    include: {
+                        city: true,
+                    },
+                });
+
+                if (dto.projectMedia.length > 0) {
+                    const projectMediaCategories = await prisma.projectMediaCategory.findMany();
+
+                    const requiredMediaCategories = projectMediaCategories.filter((category) => category.required === true).map((mediaCategory) => {
+                        return {
+                            id: mediaCategory.id,
+                            mediaCategory: mediaCategory.mediaCategory
+                        };
+                    });
+
+                    const bannerMediaCategory = requiredMediaCategories.find((category) => category.mediaCategory === ProjectMediaCategory.Banner);
+
+                    const projectMediaData = dto.projectMedia.map((media) => {
+                        const mediaCategoryExists = projectMediaCategories.find((category) => category.id === media.projectMediaCategoryId);
+                        if (!mediaCategoryExists) throw new ForbiddenException("Invalid media category");
+
+                        return {
+                            projectId: newProject.id,
+                            index: media.index,
+                            mediaUrl: media.mediaUrl,
+                            projectMediaCategoryId: media.projectMediaCategoryId,
+                            description: media.description,
+                        };
+                    });
+
+                    const handledMediaCategoryIds = projectMediaData.map((data) => data.projectMediaCategoryId);
+
+                    //check for multiple banner entries
+                    const bannerEntries = handledMediaCategoryIds.filter((id) => id === bannerMediaCategory.id);
+                    if (bannerEntries.length > 1) throw new ForbiddenException("Multiple Banner entries: Only one banner entry is required");
+
+                    //check if all required categories are present
+                    for (const requiredCategory of requiredMediaCategories) {
+
+                        //there can be multiple entries of the required category but this ensures that at least one entry is present instead of using filter
+                        const requiredCategoryPresent = handledMediaCategoryIds.find((data) => data === requiredCategory.id);
+                        if (!requiredCategoryPresent) throw new ForbiddenException(`Required: ${requiredCategory.mediaCategory} Url not found`);
+                    };
+
+                    await prisma.projectMedia.createMany({
+                        data: projectMediaData,
+                    });
+                };
+
+                return newProject
             });
 
-            await this.typesense.syncProjectToTypesense(newProject);
+            await this.typesense.syncProjectToTypesense(createProject);
 
-            return newProject;
+            return createProject;
         } catch (error) {
             console.error(error);
             throw error;
@@ -519,6 +574,13 @@ export class PropertyService implements OnModuleInit {
                 throw new ForbiddenException(errorMessage);
             };
 
+            //prototype media validation
+            const prototypeMediaErrors: string[] = await validatePrototypeMediaArray(dto.prototypeMedia);
+            if (prototypeMediaErrors.length > 0) {
+                const errorMessage = `Validation error: ${prototypeMediaErrors.join(', ')}`;
+                throw new ForbiddenException(errorMessage);
+            };
+
             //authorization
             const projectExists = await this.prisma.project.findUnique({
                 where: {
@@ -554,17 +616,65 @@ export class PropertyService implements OnModuleInit {
             });
             if (!categoryExists) throw new ForbiddenException("Category not found");
 
-            const newPrototype = await this.prisma.prototype.create({
-                data: {
-                    prototypeName: dto.prototypeName,
-                    categoryId: dto.categoryId,
-                    projectId: dto.projectId,
-                    description: dto.description,
-                    mediaUrl: dto.mediaUrl,
-                },
-            });
+            const createPrototype = await this.prisma.$transaction(async (prisma) => {
+                const newPrototype = await prisma.prototype.create({
+                    data: {
+                        prototypeName: dto.prototypeName,
+                        categoryId: dto.categoryId,
+                        projectId: dto.projectId,
+                        description: dto.description,
+                        // mediaUrl: dto.mediaUrl,
+                    },
+                });
 
-            return newPrototype;
+                if (dto.prototypeMedia.length > 0) {
+                    const propertyMediaCategories = await prisma.propertyMediaCategory.findMany();
+
+                    const requiredMediaCategories = propertyMediaCategories.filter((category) => category.required === true).map((mediaCategory) => {
+                        return {
+                            id: mediaCategory.id,
+                            mediaCategory: mediaCategory.mediaCategory
+                        };
+                    });
+
+                    const bannerMediaCategory = requiredMediaCategories.find((category) => category.mediaCategory === PropertyMediaCategory.Banner);
+
+                    const prototypeMediaData = dto.prototypeMedia.map((media) => {
+                        const mediaCategoryExists = propertyMediaCategories.find((category) => category.id === media.propertyMediaCategoryId);
+                        if (!mediaCategoryExists) throw new ForbiddenException("Invalid media category");
+
+                        return {
+                            prototypeId: newPrototype.id,
+                            index: media.index,
+                            mediaUrl: media.mediaUrl,
+                            propertyMediaCategoryId: media.propertyMediaCategoryId,
+                            description: media.description,
+                        };
+                    });
+
+                    const handledMediaCategoryIds = prototypeMediaData.map((data) => data.propertyMediaCategoryId);
+
+                    //check for multiple banner entries
+                    const bannerEntries = handledMediaCategoryIds.filter((id) => id === bannerMediaCategory.id);
+                    if (bannerEntries.length > 1) throw new ForbiddenException("Multiple Banner entries: Only one banner entry is required");
+
+                    //check if all required categories are present
+                    for (const requiredCategory of requiredMediaCategories) {
+
+                        //there can be multiple entries of the required category but this ensures that at least one entry is present instead of using filter
+                        const requiredCategoryPresent = handledMediaCategoryIds.find((data) => data === requiredCategory.id);
+                        if (!requiredCategoryPresent) throw new ForbiddenException(`Required: ${requiredCategory.mediaCategory} Url not found`);
+                    };
+
+                    await prisma.prototypeMedia.createMany({
+                        data: prototypeMediaData,
+                    });
+                };
+
+                return newPrototype;
+            })
+
+            return createPrototype
         } catch (error) {
             console.error(error);
             throw error;

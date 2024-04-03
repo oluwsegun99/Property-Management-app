@@ -30,7 +30,7 @@ export class InspectionResolver {
     };
 
     @UseGuards(AtGuard, RolesGuard)
-    @Roles(Role.Admin)
+    @Roles(Role.SuperAdmin, Role.Admin)
     @Query("adminGetInspectionSchedules")
     async adminGetInspectionSchedules(@GraphqlGetUserId() adminId: string, @Args("monthValue") monthValue?: number) {
         return await this.inspectionService.adminGetInspectionSchedules(adminId, monthValue);
@@ -61,7 +61,7 @@ export class InspectionResolver {
     };
 
     @UseGuards(AtGuard, RolesGuard)
-    @Roles(Role.Admin)
+    @Roles(Role.SuperAdmin, Role.Admin)
     @Mutation("adminHandleInspectionSchedule")
     async adminHandleInspectionSchedule(@GraphqlGetUserId() adminId: string, @Args("input") dto: AdminHandleInspectionSchedule) {
         return await this.inspectionService.adminHandleInspectionSchedule(adminId, dto);

@@ -95,8 +95,28 @@ model User {
   inspectionSchedules      InspectionSchedule[]
   inspectionScheduleSlips  InspectionScheduleSlip[]
   prequalifications        Prequalification[]
+  investments              Investment[]
+  userWallet               UserWallet?
 
   @@map("users")
+}
+
+model UserWallet {
+  id            String @id @default(uuid())
+  accountNumber String
+  balance       Float  @default(0)
+  savings       Float  @default(0)
+  total         Float  @default(0)
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  investmentPayments InvestmentPayment[]
+
+  @@map("userWallets")
 }
 
 model CompanyType {
@@ -319,10 +339,41 @@ model Project {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  prototypes Prototype[]
-  properties Property[]
+  prototypes    Prototype[]
+  properties    Property[]
+  projectsMedia ProjectMedia[]
 
   @@map("projects")
+}
+
+model ProjectMediaCategory {
+  id            String  @id @default(uuid())
+  mediaCategory String  @unique
+  required      Boolean
+
+  createdAt DateTime @default(now())
+
+  projectsMedia ProjectMedia[]
+
+  @@map("projectMediaCategories")
+}
+
+model ProjectMedia {
+  id String @id @default(uuid())
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  projectMediaCategoryId String
+  projectMediaCategory   ProjectMediaCategory @relation(fields: [projectMediaCategoryId], references: [id], onDelete: Cascade)
+
+  index       Int?
+  mediaUrl    String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("projectsMedia")
 }
 
 model Prototype {
@@ -340,9 +391,28 @@ model Prototype {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  properties Property[]
+  properties      Property[]
+  prototypesMedia PrototypeMedia[]
 
   @@map("prototypes")
+}
+
+model PrototypeMedia {
+  id String @id @default(uuid())
+
+  prototypeId String
+  prototype   Prototype @relation(fields: [prototypeId], references: [id], onDelete: Cascade)
+
+  propertyMediaCategoryId String
+  propertyMediaCategory   PropertyMediaCategory @relation(fields: [propertyMediaCategoryId], references: [id], onDelete: Cascade)
+
+  index       Int?
+  mediaUrl    String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("prototypesMedia")
 }
 
 model RequestUpdateStatus {
@@ -492,6 +562,7 @@ model PropertyMediaCategory {
   createdAt DateTime @default(now())
 
   propertiesMedia PropertyMedia[]
+  prototypesMedia PrototypeMedia[]
 
   @@map("propertyMediaCategories")
 }
@@ -658,13 +729,17 @@ model InvestmentState {
   investmentState String   @unique
   createdAt       DateTime @default(now())
 
+  investments Investment[]
+
   @@map("investmentStates")
 }
 
 model InvestmentFrequency {
-  id                  Int
+  id                  Int      @id
   investmentFrequency String   @unique
   createdAt           DateTime @default(now())
+
+  investments Investment[]
 
   @@map("investmentFrequencies")
 }
@@ -673,6 +748,8 @@ model PaymentStatus {
   id            Int      @id
   paymentStatus String   @unique
   createdAt     DateTime @default(now())
+
+  investmentPaymentSchedules InvestmentPaymentSchedule[]
 
   @@map("paymentStatuses")
 }
@@ -707,4 +784,72 @@ model Prequalification {
   updatedAt DateTime @updatedAt
 
   @@map("prequalifications")
+}
+
+model Investment {
+  id          String   @id @default(uuid())
+  description String
+  totalAmount Float
+  startDate   DateTime
+  duration    Int
+
+  investmentStateId Int
+  investmentState   InvestmentState @relation(fields: [investmentStateId], references: [id], onDelete: Cascade)
+
+  investmentFrequencyId Int
+  investmentFrequency   InvestmentFrequency @relation(fields: [investmentFrequencyId], references: [id], onDelete: Cascade)
+
+  totalPaid Float @default(0)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  investmentPaymentSchedules InvestmentPaymentSchedule[]
+  investmentPayments         InvestmentPayment[]
+
+  @@map("investments")
+}
+
+model InvestmentPaymentSchedule {
+  id        String   @id @default(uuid())
+  amountDue Float
+  dateDue   DateTime
+  paid      Boolean  @default(false)
+
+  investmentId String
+  investment   Investment @relation(fields: [investmentId], references: [id], onDelete: Cascade)
+
+  paymentStatusId Int
+  paymentStatus   PaymentStatus @relation(fields: [paymentStatusId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  investmentPayments InvestmentPayment[]
+
+  @@map("investmentPaymentSchedules")
+}
+
+model InvestmentPayment {
+  id         String @id @default(uuid())
+  reference  String
+  amountPaid Float
+  datePaid   Float
+
+  investmentId String
+  investment   Investment @relation(fields: [investmentId], references: [id], onDelete: Cascade)
+
+  investmentPaymentScheduleId String
+  investmentPaymentSchedule   InvestmentPaymentSchedule @relation(fields: [investmentPaymentScheduleId], references: [id], onDelete: Cascade)
+
+  userWalletId String
+  userWallet   UserWallet @relation(fields: [userWalletId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("investmentPayments")
 }

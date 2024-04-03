@@ -6,6 +6,8 @@ import * as bcrypt from "bcrypt";
 import { AdminSigninInput, AdminSignUpAfterInvite, AdminSignupInput, UserSigninInput, UserSignUpAfterInvite, UserSignUpInput } from 'src/graphql';
 import { validateAdminSignInDTO, validateAdminSignUpAfterInviteDTO, validateAdminSignUpDTO, validateSignInDTO, validateSignUpDTO, validateUserSignUpAfterInviteDTO } from 'src/common/validationFunctions/auth.validation';
 import { Role } from 'src/common/enums/role.enum';
+import { authenticator } from 'otplib';
+import { toDataURL } from 'qrcode';
 
 @Injectable()
 export class AuthService {
@@ -587,4 +589,101 @@ export class AuthService {
             throw error;
         };
     }
+
+    async generateTwoFactorAuthSecret(adminId: string) {
+        const admin = await this.prisma.admin.findUnique({
+            where: {
+                id: adminId,
+            },
+        });
+
+        if (!admin) throw new UnauthorizedException("Admin not found");
+
+        const secret = authenticator.generateSecret();
+
+        const otpAuthUrl = authenticator.keyuri(admin.email, process.env.AUTHENTICATOR_SECRET, secret);
+
+        await this.setTwoFactorAuthSecret(admin.id, secret);
+
+        return { secret, otpAuthUrl };
+    };
+
+    async setTwoFactorAuthSecret(adminId: string, secret: string) {
+        const admin = await this.prisma.admin.findUnique({
+            where: {
+                id: adminId,
+            },
+        });
+
+        if (!admin) throw new UnauthorizedException("Admin not found");
+
+        await this.prisma.admin.update({
+            where: {
+                id: admin.id,
+            },
+            data: {
+                twoFactorAuthSecret: secret,
+                isTwoFactorAuthEnabled: true,
+            },
+        });
+
+        return true;
+    };
+
+    //GENERATE QR CODE
+    async generateQrCodeDataURL(adminId: string) {
+        const generateTwoFactorAuthSecret = await this.generateTwoFactorAuthSecret(adminId);
+        if (!generateTwoFactorAuthSecret.otpAuthUrl || !generateTwoFactorAuthSecret.secret) throw new ForbiddenException("Error in generating 2FA secret and otpAuthUrl");
+        const qrCode = await toDataURL(generateTwoFactorAuthSecret.otpAuthUrl);
+        // console.log(qrCode);
+        return qrCode;
+    };
+
+    async turnOnTwoFactorAuth(adminId: string, twoFACode: string) {
+        const admin = await this.prisma.admin.findUnique({
+            where: {
+                id: adminId,
+            },
+        });
+
+        if (!admin) throw new UnauthorizedException("Admin not found");
+
+        if (admin.isTwoFactorAuthEnabled === true) throw new ForbiddenException("Two factor authentication already enabled");
+
+        //check if code is valid
+        const valid = await this.isTwoFactorAuthCodeValid(admin.id, twoFACode);
+        if (!valid) throw new ForbiddenException("Auth code not valid");
+
+        //Enable 2FA
+        await this.prisma.admin.update({
+            where: {
+                id: admin.id,
+            },
+            data: {
+                isTwoFactorAuthEnabled: true,
+            },
+        });
+
+        return true;
+    };
+
+    async isTwoFactorAuthCodeValid(adminId: string, twoFACode: string) {
+        const admin = await this.prisma.admin.findUnique({
+            where: {
+                id: adminId,
+            },
+        });
+
+        if (!admin) throw new UnauthorizedException("Admin not found");
+
+        if (!admin.twoFactorAuthSecret) throw new ForbiddenException("No secret found");
+
+        const verify = await authenticator.verify({ token: twoFACode, secret: admin.twoFactorAuthSecret })
+
+        // console.log(verify);
+
+        if (!verify) throw new ForbiddenException("Auth code not valid");
+
+        return verify;
+    };
 }

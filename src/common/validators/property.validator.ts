@@ -1,5 +1,27 @@
 import { IsString, IsNotEmpty, IsOptional, Matches, IsNumber, IsDate, IsBoolean, ValidateNested, IsArray, ArrayNotEmpty, ArrayMinSize } from 'class-validator';
 
+export class CreateProjectMediaDTO {
+    @IsNotEmpty({ message: 'Project media category ID should not be empty' })
+    @IsString()
+    @Matches(/^\s*\S.*$/, { message: 'Project media category ID should not contain only whitespace' })
+    projectMediaCategoryId: string;
+
+    @IsNotEmpty({ message: 'Media URL should not be empty' })
+    @IsString()
+    @Matches(/^\s*\S.*$/, { message: 'Media URL should not contain only whitespace' })
+    mediaUrl: string;
+
+    @IsOptional()
+    @IsString()
+    @Matches(/^\s*\S.*$/, { message: 'Description should not contain only whitespace' })
+    description?: string;
+
+    @IsOptional()
+    @IsNumber()
+    @Matches(/^\s*\S.*$/, { message: 'Index should not contain only whitespace' })
+    index?: number;
+};
+
 export class CreateProjectDTO {
     @IsNotEmpty({ message: 'Project name should not be empty' })
     @IsString()
@@ -22,24 +44,25 @@ export class CreateProjectDTO {
     cityId: string;
 
     @IsNotEmpty({ message: 'Project status ID should not be empty' })
-    @IsNumber({}, { message: 'Invalid project status ID' })
+    @IsNumber()
     projectStatusId: number;
 
     @IsOptional()
     @IsString()
-    @Matches(/^\s*\S.*$/, { message: 'Developer CompanyId ID should not contain only whitespace' })
+    @Matches(/^\s*\S.*$/, { message: 'Developer company ID should not contain only whitespace' })
     developerCompanyId?: string;
-
-    @IsOptional()
-    @IsString()
-    @Matches(/^\s*\S.*$/, { message: 'Project layout URL should not contain only whitespace' })
-    projectLayoutUrl?: string;
 
     @IsOptional()
     @IsString()
     @Matches(/^\s*\S.*$/, { message: 'Neighborhood ID should not contain only whitespace' })
     neighborhoodId?: string;
-};
+
+    @IsOptional()
+    @IsArray()
+    @ArrayNotEmpty({ message: 'Property Media should not be empty' })
+    @ArrayMinSize(1, { message: 'Property Media should contain at least one item' })
+    projectMedia?: CreateProjectMediaDTO[];
+}
 
 export class UpdateProjectDTO {
     @IsString()
@@ -79,7 +102,35 @@ export class UpdateProjectDTO {
     @IsOptional()
     @IsNumber({}, { message: 'Invalid project status ID' })
     projectStatusId?: number;
+
+    @IsOptional()
+    @IsArray()
+    @ArrayNotEmpty({ message: 'Property Media should not be empty' })
+    @ArrayMinSize(1, { message: 'Property Media should contain at least one item' })
+    projectMedia?: CreateProjectMediaDTO[];
 };
+
+export class CreatePrototypeMediaDTO {
+    @IsNotEmpty({ message: 'Property media category ID should not be empty' })
+    @IsString()
+    @Matches(/^\s*\S.*$/, { message: 'Property media category ID should not contain only whitespace' })
+    propertyMediaCategoryId: string;
+
+    @IsOptional()
+    @IsNumber()
+    @Matches(/^\s*\S.*$/, { message: 'Index should not contain only whitespace' })
+    index?: number;
+
+    @IsNotEmpty({ message: 'Media URL should not be empty' })
+    @IsString()
+    @Matches(/^\s*\S.*$/, { message: 'Media URL should not contain only whitespace' })
+    mediaUrl: string;
+
+    @IsOptional()
+    @IsString()
+    @Matches(/^\s*\S.*$/, { message: 'Description should not contain only whitespace' })
+    description?: string;
+}
 
 export class CreatePrototypeDTO {
     @IsNotEmpty({ message: 'Prototype name should not be empty' })
@@ -103,10 +154,11 @@ export class CreatePrototypeDTO {
     categoryId?: string;
 
     @IsOptional()
-    @IsString()
-    @Matches(/^\s*\S.*$/, { message: 'Media URL should not contain only whitespace' })
-    mediaUrl?: string;
-};
+    @IsArray()
+    @ArrayNotEmpty({ message: 'Prototype Media should not be empty' })
+    @ArrayMinSize(1, { message: 'Prototype Media should contain at least one item' })
+    prototypeMedia?: CreatePrototypeMediaDTO[];
+}
 
 export class UpdatePrototypeDTO {
     @IsString()
@@ -215,17 +267,24 @@ export class CreatePropertyDetailsDTO {
 export class CreatePropertyMediaDTO {
     @IsOptional()
     @IsNumber()
+    @Matches(/^\s*\S.*$/, { message: 'Index should not contain only whitespace' })
     index?: number;
 
+    @IsNotEmpty({ message: 'Media URL should not be empty' })
     @IsString()
     @Matches(/^\s*\S.*$/, { message: 'Media URL should not contain only whitespace' })
     mediaUrl: string;
+
+    @IsNotEmpty({ message: 'Media category ID should not be empty' })
+    @IsString()
+    @Matches(/^\s*\S.*$/, { message: 'Media category ID should not contain only whitespace' })
+    mediaCategoryId: string;
 
     @IsOptional()
     @IsString()
     @Matches(/^\s*\S.*$/, { message: 'Description should not contain only whitespace' })
     description?: string;
-};
+}
 
 export class CreatePropertyDTO {
     @IsNotEmpty({ message: 'Name should not be empty' })

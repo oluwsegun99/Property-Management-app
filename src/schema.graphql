@@ -182,6 +182,8 @@ type Mutation{
     addPropertyToWishlist(propertyId: String!): Boolean
     deletePropertyfromWishlist(propertyId: String!): Boolean
     deleteAllUserWishlists: Boolean
+    generateQrCodeDataURL: String!
+    turnOnTwoFactorAuth(twoFACode: String!): Boolean!
 }
 
 type CompanyType{
@@ -354,6 +356,34 @@ type Project{
     properties: [Property]
 }
 
+type ProjectMediaCategory{
+    id: String
+    mediaCategory: String
+    required: Boolean
+    createdAt: DateTime
+    projectsMedia: [ProjectMedia]
+}
+
+type ProjectMedia {
+    id: String
+    projectId: String
+    project: Project
+    projectMediaCategoryId: String
+    projectMediaCategory: ProjectMediaCategory
+    index: Int
+    mediaUrl: String
+    description: String
+    createdAt: DateTime
+    updatedAt: DateTime
+}
+
+input CreateProjectMedia{
+    projectMediaCategoryId: String!
+    mediaUrl: String!
+    description: String
+    index: Int
+}
+
 input CreateProject{
     projectName: String!
     description: String!
@@ -361,8 +391,9 @@ input CreateProject{
     cityId: String!
     projectStatusId: Int!
     developerCompanyId: String
-    projectLayoutUrl: String
+    # projectLayoutUrl: String
     neighborhoodId: String
+    projectMedia: [CreateProjectMedia]
 }
 
 input UpdateProject{
@@ -374,6 +405,7 @@ input UpdateProject{
     cityId: String
     neighborhoodId: String
     projectStatusId: Int
+    projectMedia: [CreateProjectMedia]
 }
 
 type ProjectByCompanyResponse{
@@ -395,12 +427,32 @@ type Prototype{
     properties: [Property]
 }
 
+type PrototypeMedia {
+    id: String
+    prototypeId: String
+    prototype: Prototype
+    propertyMediaCategoryId: String
+    propertyMediaCategory: ProjectMediaCategory
+    index: Int
+    mediaUrl: String
+    description: String
+    createdAt: DateTime
+    updatedAt: DateTime
+}
+
+input CreatePrototypeMedia{
+    propertyMediaCategoryId: String!
+    index: Int
+    mediaUrl: String!
+    description: String
+}
+
 input CreatePrototype{
     prototypeName: String!
     description: String!
     projectId: String!
     categoryId: String
-    mediaUrl: String
+    prototypeMedia: [CreatePrototypeMedia]
 }
 
 input UpdatePrototype{

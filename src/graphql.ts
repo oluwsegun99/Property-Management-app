@@ -82,6 +82,13 @@ export interface UpdateDeveloperCompany {
     companyTypeId?: Nullable<number>;
 }
 
+export interface CreateProjectMedia {
+    projectMediaCategoryId: string;
+    mediaUrl: string;
+    description?: Nullable<string>;
+    index?: Nullable<number>;
+}
+
 export interface CreateProject {
     projectName: string;
     description: string;
@@ -89,8 +96,8 @@ export interface CreateProject {
     cityId: string;
     projectStatusId: number;
     developerCompanyId?: Nullable<string>;
-    projectLayoutUrl?: Nullable<string>;
     neighborhoodId?: Nullable<string>;
+    projectMedia?: Nullable<Nullable<CreateProjectMedia>[]>;
 }
 
 export interface UpdateProject {
@@ -102,6 +109,14 @@ export interface UpdateProject {
     cityId?: Nullable<string>;
     neighborhoodId?: Nullable<string>;
     projectStatusId?: Nullable<number>;
+    projectMedia?: Nullable<Nullable<CreateProjectMedia>[]>;
+}
+
+export interface CreatePrototypeMedia {
+    propertyMediaCategoryId: string;
+    index?: Nullable<number>;
+    mediaUrl: string;
+    description?: Nullable<string>;
 }
 
 export interface CreatePrototype {
@@ -109,7 +124,7 @@ export interface CreatePrototype {
     description: string;
     projectId: string;
     categoryId?: Nullable<string>;
-    mediaUrl?: Nullable<string>;
+    prototypeMedia?: Nullable<Nullable<CreatePrototypeMedia>[]>;
 }
 
 export interface UpdatePrototype {
@@ -332,6 +347,8 @@ export interface IMutation {
     addPropertyToWishlist(propertyId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
     deletePropertyfromWishlist(propertyId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
     deleteAllUserWishlists(): Nullable<boolean> | Promise<Nullable<boolean>>;
+    generateQrCodeDataURL(): string | Promise<string>;
+    turnOnTwoFactorAuth(twoFACode: string): boolean | Promise<boolean>;
     createDeveloperCompany(input?: Nullable<CreateDeveloperCompany>): Nullable<DeveloperCompany> | Promise<Nullable<DeveloperCompany>>;
     updateDeveloperCompany(input?: Nullable<UpdateDeveloperCompany>): Nullable<DeveloperCompany> | Promise<Nullable<DeveloperCompany>>;
     deleteDeveloperCompany(companyId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
@@ -562,6 +579,27 @@ export interface Project {
     properties?: Nullable<Nullable<Property>[]>;
 }
 
+export interface ProjectMediaCategory {
+    id?: Nullable<string>;
+    mediaCategory?: Nullable<string>;
+    required?: Nullable<boolean>;
+    createdAt?: Nullable<DateTime>;
+    projectsMedia?: Nullable<Nullable<ProjectMedia>[]>;
+}
+
+export interface ProjectMedia {
+    id?: Nullable<string>;
+    projectId?: Nullable<string>;
+    project?: Nullable<Project>;
+    projectMediaCategoryId?: Nullable<string>;
+    projectMediaCategory?: Nullable<ProjectMediaCategory>;
+    index?: Nullable<number>;
+    mediaUrl?: Nullable<string>;
+    description?: Nullable<string>;
+    createdAt?: Nullable<DateTime>;
+    updatedAt?: Nullable<DateTime>;
+}
+
 export interface ProjectByCompanyResponse {
     projectsByCompany?: Nullable<Nullable<Project>[]>;
     cursorId?: Nullable<string>;
@@ -579,6 +617,19 @@ export interface Prototype {
     createdAt?: Nullable<DateTime>;
     updatedAt?: Nullable<DateTime>;
     properties?: Nullable<Nullable<Property>[]>;
+}
+
+export interface PrototypeMedia {
+    id?: Nullable<string>;
+    prototypeId?: Nullable<string>;
+    prototype?: Nullable<Prototype>;
+    propertyMediaCategoryId?: Nullable<string>;
+    propertyMediaCategory?: Nullable<ProjectMediaCategory>;
+    index?: Nullable<number>;
+    mediaUrl?: Nullable<string>;
+    description?: Nullable<string>;
+    createdAt?: Nullable<DateTime>;
+    updatedAt?: Nullable<DateTime>;
 }
 
 export interface RequestUpdateStatus {

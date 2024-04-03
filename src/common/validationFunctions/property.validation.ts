@@ -1,7 +1,7 @@
 import { plainToClass } from "class-transformer";
 import { validate, ValidationError } from "class-validator";
-import { CreateProject, CreateProperty, CreatePropertyDetails, CreatePropertyMedia, CreatePrototype, UpdateProject, UpdatePrototype } from "src/graphql";
-import { CreateProjectDTO, CreatePropertyDetailsDTO, CreatePropertyDTO, CreatePropertyMediaDTO, CreatePrototypeDTO, UpdateProjectDTO, UpdatePrototypeDTO } from "../validators/property.validator";
+import { CreateProject, CreateProjectMedia, CreateProperty, CreatePropertyDetails, CreatePropertyMedia, CreatePrototype, CreatePrototypeMedia, UpdateProject, UpdatePrototype } from "src/graphql";
+import { CreateProjectDTO, CreateProjectMediaDTO, CreatePropertyDetailsDTO, CreatePropertyDTO, CreatePropertyMediaDTO, CreatePrototypeDTO, CreatePrototypeMediaDTO, UpdateProjectDTO, UpdatePrototypeDTO } from "../validators/property.validator";
 
 
 export async function validateCreateProjectDTO(dto: CreateProject): Promise<string[]> {
@@ -13,6 +13,22 @@ export async function validateCreateProjectDTO(dto: CreateProject): Promise<stri
         return errors.map((error: ValidationError) => Object.values(error.constraints || {})).flat();
     }
     return [];
+};
+
+export async function validateProjectMediaArray(data: CreateProjectMedia[]): Promise<string[]> {
+    const allErrors: string[] = [];
+
+    for (const entry of data) {
+        const dtoForValidation = plainToClass(CreateProjectMediaDTO, entry);
+        const errors: ValidationError[] = await validate(dtoForValidation);
+        if (errors.length > 0) {
+            // Extract error messages for this entry
+            const entryErrors = errors.map((error: ValidationError) => Object.values(error.constraints || {})).flat();
+            allErrors.push(...entryErrors);
+        };
+    };
+
+    return allErrors;
 };
 
 export async function validateUpdateProjectDTO(dto: UpdateProject): Promise<string[]> {
@@ -35,6 +51,22 @@ export async function validateCreatePrototypeDTO(dto: CreatePrototype): Promise<
         return errors.map((error: ValidationError) => Object.values(error.constraints || {})).flat();
     }
     return [];
+};
+
+export async function validatePrototypeMediaArray(data: CreatePrototypeMedia[]): Promise<string[]> {
+    const allErrors: string[] = [];
+
+    for (const entry of data) {
+        const dtoForValidation = plainToClass(CreatePrototypeMediaDTO, entry);
+        const errors: ValidationError[] = await validate(dtoForValidation);
+        if (errors.length > 0) {
+            // Extract error messages for this entry
+            const entryErrors = errors.map((error: ValidationError) => Object.values(error.constraints || {})).flat();
+            allErrors.push(...entryErrors);
+        };
+    };
+
+    return allErrors;
 };
 
 export async function validateUpdatePrototypeDTO(dto: UpdatePrototype): Promise<string[]> {
