@@ -95,9 +95,10 @@ export class AdminSigninInputDTO {
     @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[$#@!&*~])[A-Za-z\d$#@!&*~]{8,}$/, { message: 'Invalid password format' })
     password: string;
 
+    @IsOptional()
     @IsNotEmpty({ message: '2FA Code should not be empty' })
     @IsString()
     @Matches(/^\s*\S.*$/, { message: '2FA Code should not contain only whitespace' })
-    twoFACode: string;
+    twoFACode?: string;
 };
 

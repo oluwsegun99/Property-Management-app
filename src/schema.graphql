@@ -70,7 +70,7 @@ type AdminSignUpResponse{
 input AdminSigninInput{
     email: String!
     password: String!
-    twoFACode: String!
+    twoFACode: String
 }
 
 type User {
@@ -94,6 +94,19 @@ type UserWishlist{
     userId: String
     user: User
     createdAt: DateTime
+}
+
+type UserWallet{
+    id: String
+    accountNumber: String
+    balance: Float
+    savings: Float
+    total: Float
+    userId: String
+    user: User
+    createdAt: DateTime
+    updatedAt: DateTime
+    investmentPayments: [InvestmentPayment]
 }
 
 input UserSignUpInput{
@@ -432,7 +445,7 @@ type PrototypeMedia {
     prototypeId: String
     prototype: Prototype
     propertyMediaCategoryId: String
-    propertyMediaCategory: ProjectMediaCategory
+    propertyMediaCategory: PropertyMediaCategory
     index: Int
     mediaUrl: String
     description: String
@@ -706,6 +719,7 @@ type Query {
     getPropertyCategories: [PropertyCategory]
     getProjectStatuses: [ProjectStatus]
     getPropertyMediaCategories: [PropertyMediaCategory]
+    getProjectMediaCategories: [ProjectMediaCategory]
     getProjects: [Project]
     getProjectById(projectId: String!): Project
     getProjectsByCompany(companyId: String!, cursor: String, sets: Float): ProjectByCompanyResponse
@@ -891,4 +905,112 @@ type Mutation {
     deletePrequalification(prequalificationId: String!): Boolean
     deleteAllPrequalifications: Boolean
     adminApprovePrequalification(input: AdminApprovePrequalification!): Boolean
+}
+
+type InvestmentState {
+    id: Int
+    investmentState: String
+    createdAt: DateTime
+    investments: [Investment]
+}
+
+type InvestmentFrequency{
+    id: Int
+    investmentFrequency: String
+    createdAt: DateTime
+    investments: [Investment]
+}
+
+type PaymentStatus{
+    id: Int
+    paymentStatus: String
+    createdAt: DateTime
+    # investmentPaymentSchedules: []
+}
+
+type Investment {
+    id: String
+    description: String
+    totalAmount: Float
+    startDate: DateTime
+    duration: Int
+    investmentStateId: Int
+    investmentState: InvestmentState
+    investmentFrequencyId: Int
+    investmentFrequency: InvestmentFrequency
+    totalPaid: Float
+    userId: String
+    user: User
+    createdAt: DateTime
+    updatedAt: DateTime
+    investmentPaymentSchedules: [InvestmentPaymentSchedule]
+    investmentPayments: [InvestmentPayment]
+}
+
+type InvestmentPaymentSchedule{
+    id: String
+    amountDue: Float
+    dateDue: DateTime
+    paid: Boolean
+    investmentId: String
+    investment: Investment
+    paymentStatusId: Int
+    paymentStatus: PaymentStatus
+    createdAt: DateTime
+    updatedAt: DateTime
+    investmentPayments: [InvestmentPayment]
+}
+
+type InvestmentPayment{
+    id: String
+    reference: String
+    amountPaid: Float
+    datePaid: DateTime
+    investmentId: String
+    investment: Investment
+    investmentPaymentScheduleId: String
+    investmentPaymentSchedule: InvestmentPaymentSchedule
+    userWalletId: String
+    userWallet: UserWallet
+    createdAt: DateTime
+    updatedAt: DateTime
+}
+
+input CreateInvestment{
+    description: String!
+    totalAmount: Float!
+    startDate: Date!
+    duration: Int!
+    # investmentStateId: Int!
+    investmentFrequencyId: Int!
+}
+
+input UpdateInvestment{
+    investmentId: String!
+    description: String
+    totalAmount: Float
+    startDate: Date
+    duration: Int
+    investmentFrequencyId: Int
+}
+
+input ResumeInvestment{
+    investmentId: String!
+    resumeDate: Date!
+}
+
+type Query {
+    getInvestments: [Investment]
+    getInvestementsByUser: [Investment]
+    adminGetInvestments: [Investment]
+}
+
+type Mutation {
+    createInvestment(input: CreateInvestment!): Investment
+    updateInvestment(input: UpdateInvestment!): Investment
+    pauseInvestment(investmentId: String!): Boolean
+    resumeInvestment(input: ResumeInvestment): Boolean
+    endInvestment(investmentId: String!): Boolean
+    deleteInvestment(investmentId: String!): Boolean
+    deleteAllInvestements: Boolean
 }

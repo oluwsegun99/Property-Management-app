@@ -30,7 +30,7 @@ export interface AdminSignUpAfterInvite {
 export interface AdminSigninInput {
     email: string;
     password: string;
-    twoFACode: string;
+    twoFACode?: Nullable<string>;
 }
 
 export interface UserSignUpInput {
@@ -263,6 +263,28 @@ export interface AdminApprovePrequalification {
     prequalificationStatusId: number;
 }
 
+export interface CreateInvestment {
+    description: string;
+    totalAmount: number;
+    startDate: Date;
+    duration: number;
+    investmentFrequencyId: number;
+}
+
+export interface UpdateInvestment {
+    investmentId: string;
+    description?: Nullable<string>;
+    totalAmount?: Nullable<number>;
+    startDate?: Nullable<Date>;
+    duration?: Nullable<number>;
+    investmentFrequencyId?: Nullable<number>;
+}
+
+export interface ResumeInvestment {
+    investmentId: string;
+    resumeDate: Date;
+}
+
 export interface Role {
     id?: Nullable<string>;
     roleName?: Nullable<string>;
@@ -293,6 +315,7 @@ export interface IQuery {
     getPropertyCategories(): Nullable<Nullable<PropertyCategory>[]> | Promise<Nullable<Nullable<PropertyCategory>[]>>;
     getProjectStatuses(): Nullable<Nullable<ProjectStatus>[]> | Promise<Nullable<Nullable<ProjectStatus>[]>>;
     getPropertyMediaCategories(): Nullable<Nullable<PropertyMediaCategory>[]> | Promise<Nullable<Nullable<PropertyMediaCategory>[]>>;
+    getProjectMediaCategories(): Nullable<Nullable<ProjectMediaCategory>[]> | Promise<Nullable<Nullable<ProjectMediaCategory>[]>>;
     getProjects(): Nullable<Nullable<Project>[]> | Promise<Nullable<Nullable<Project>[]>>;
     getProjectById(projectId: string): Nullable<Project> | Promise<Nullable<Project>>;
     getProjectsByCompany(companyId: string, cursor?: Nullable<string>, sets?: Nullable<number>): Nullable<ProjectByCompanyResponse> | Promise<Nullable<ProjectByCompanyResponse>>;
@@ -315,6 +338,9 @@ export interface IQuery {
     getPrequalifications(): Nullable<Nullable<Prequalification>[]> | Promise<Nullable<Nullable<Prequalification>[]>>;
     getPrequalificationById(prequalificationId: string): Nullable<Prequalification> | Promise<Nullable<Prequalification>>;
     getPrequalificationsByUser(): Nullable<Nullable<Prequalification>[]> | Promise<Nullable<Nullable<Prequalification>[]>>;
+    getInvestments(): Nullable<Nullable<Investment>[]> | Promise<Nullable<Nullable<Investment>[]>>;
+    getInvestementsByUser(): Nullable<Nullable<Investment>[]> | Promise<Nullable<Nullable<Investment>[]>>;
+    adminGetInvestments(): Nullable<Nullable<Investment>[]> | Promise<Nullable<Nullable<Investment>[]>>;
 }
 
 export interface AdminInvite {
@@ -377,6 +403,13 @@ export interface IMutation {
     deletePrequalification(prequalificationId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
     deleteAllPrequalifications(): Nullable<boolean> | Promise<Nullable<boolean>>;
     adminApprovePrequalification(input: AdminApprovePrequalification): Nullable<boolean> | Promise<Nullable<boolean>>;
+    createInvestment(input: CreateInvestment): Nullable<Investment> | Promise<Nullable<Investment>>;
+    updateInvestment(input: UpdateInvestment): Nullable<Investment> | Promise<Nullable<Investment>>;
+    pauseInvestment(investmentId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    resumeInvestment(input?: Nullable<ResumeInvestment>): Nullable<boolean> | Promise<Nullable<boolean>>;
+    endInvestment(investmentId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deleteInvestment(investmentId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deleteAllInvestements(): Nullable<boolean> | Promise<Nullable<boolean>>;
 }
 
 export interface Admin {
@@ -417,6 +450,19 @@ export interface UserWishlist {
     userId?: Nullable<string>;
     user?: Nullable<User>;
     createdAt?: Nullable<DateTime>;
+}
+
+export interface UserWallet {
+    id?: Nullable<string>;
+    accountNumber?: Nullable<string>;
+    balance?: Nullable<number>;
+    savings?: Nullable<number>;
+    total?: Nullable<number>;
+    userId?: Nullable<string>;
+    user?: Nullable<User>;
+    createdAt?: Nullable<DateTime>;
+    updatedAt?: Nullable<DateTime>;
+    investmentPayments?: Nullable<Nullable<InvestmentPayment>[]>;
 }
 
 export interface TokenResponse {
@@ -624,7 +670,7 @@ export interface PrototypeMedia {
     prototypeId?: Nullable<string>;
     prototype?: Nullable<Prototype>;
     propertyMediaCategoryId?: Nullable<string>;
-    propertyMediaCategory?: Nullable<ProjectMediaCategory>;
+    propertyMediaCategory?: Nullable<PropertyMediaCategory>;
     index?: Nullable<number>;
     mediaUrl?: Nullable<string>;
     description?: Nullable<string>;
@@ -860,6 +906,74 @@ export interface Prequalification {
     prequalificationStatus?: Nullable<PrequalificationStatus>;
     userId?: Nullable<string>;
     user?: Nullable<User>;
+    createdAt?: Nullable<DateTime>;
+    updatedAt?: Nullable<DateTime>;
+}
+
+export interface InvestmentState {
+    id?: Nullable<number>;
+    investmentState?: Nullable<string>;
+    createdAt?: Nullable<DateTime>;
+    investments?: Nullable<Nullable<Investment>[]>;
+}
+
+export interface InvestmentFrequency {
+    id?: Nullable<number>;
+    investmentFrequency?: Nullable<string>;
+    createdAt?: Nullable<DateTime>;
+    investments?: Nullable<Nullable<Investment>[]>;
+}
+
+export interface PaymentStatus {
+    id?: Nullable<number>;
+    paymentStatus?: Nullable<string>;
+    createdAt?: Nullable<DateTime>;
+}
+
+export interface Investment {
+    id?: Nullable<string>;
+    description?: Nullable<string>;
+    totalAmount?: Nullable<number>;
+    startDate?: Nullable<DateTime>;
+    duration?: Nullable<number>;
+    investmentStateId?: Nullable<number>;
+    investmentState?: Nullable<InvestmentState>;
+    investmentFrequencyId?: Nullable<number>;
+    investmentFrequency?: Nullable<InvestmentFrequency>;
+    totalPaid?: Nullable<number>;
+    userId?: Nullable<string>;
+    user?: Nullable<User>;
+    createdAt?: Nullable<DateTime>;
+    updatedAt?: Nullable<DateTime>;
+    investmentPaymentSchedules?: Nullable<Nullable<InvestmentPaymentSchedule>[]>;
+    investmentPayments?: Nullable<Nullable<InvestmentPayment>[]>;
+}
+
+export interface InvestmentPaymentSchedule {
+    id?: Nullable<string>;
+    amountDue?: Nullable<number>;
+    dateDue?: Nullable<DateTime>;
+    paid?: Nullable<boolean>;
+    investmentId?: Nullable<string>;
+    investment?: Nullable<Investment>;
+    paymentStatusId?: Nullable<number>;
+    paymentStatus?: Nullable<PaymentStatus>;
+    createdAt?: Nullable<DateTime>;
+    updatedAt?: Nullable<DateTime>;
+    investmentPayments?: Nullable<Nullable<InvestmentPayment>[]>;
+}
+
+export interface InvestmentPayment {
+    id?: Nullable<string>;
+    reference?: Nullable<string>;
+    amountPaid?: Nullable<number>;
+    datePaid?: Nullable<DateTime>;
+    investmentId?: Nullable<string>;
+    investment?: Nullable<Investment>;
+    investmentPaymentScheduleId?: Nullable<string>;
+    investmentPaymentSchedule?: Nullable<InvestmentPaymentSchedule>;
+    userWalletId?: Nullable<string>;
+    userWallet?: Nullable<UserWallet>;
     createdAt?: Nullable<DateTime>;
     updatedAt?: Nullable<DateTime>;
 }

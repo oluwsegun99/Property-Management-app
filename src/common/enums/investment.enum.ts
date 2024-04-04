@@ -2,14 +2,18 @@ export enum InvestmentState {
     Started = "Started",
     Paused = "Paused",
     Failed = "Failed",
-    Completed = "Completed"
+    Completed = "Completed",
+    Created = "Created",
+    Ended = "Ended"
 };
 
 export enum InvestmentStateEnum {
     Started = 1,
     Paused = 2,
     Failed = 3,
-    Completed = 4
+    Completed = 4,
+    Created = 5,
+    Ended = 6
 };
 
 export enum InvestmentFrequency {

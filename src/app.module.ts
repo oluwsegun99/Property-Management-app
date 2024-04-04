@@ -14,6 +14,8 @@ import { DateResolver, DateTimeResolver } from 'graphql-scalars';
 import { TypesenseModule } from './typesense/typesense.module';
 import { LocationModule } from './location/location.module';
 import { InspectionModule } from './inspection/inspection.module';
+import { InvestmentModule } from './investment/investment.module';
+import { MortgageModule } from './mortgage/mortgage.module';
 
 @Module({
   imports: [
@@ -45,6 +47,8 @@ import { InspectionModule } from './inspection/inspection.module';
     TypesenseModule,
     LocationModule,
     InspectionModule,
+    InvestmentModule,
+    MortgageModule,
   ],
   controllers: [],
   providers: [],

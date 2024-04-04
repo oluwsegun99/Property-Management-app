@@ -43,9 +43,6 @@ export class InspectionService {
                     isDeveloper: false,
                     hasCompany: false,
                 },
-                select: {
-                    userWishlists: true,
-                },
             });
             if (!user) throw new UnauthorizedException("Access denied");
 

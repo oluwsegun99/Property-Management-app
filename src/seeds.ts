@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { CompanyType } from "./common/enums/companyType.enum";
 import { InspectionStatus, InspectionType } from "./common/enums/inspection.enum";
+import { InvestmentFrequency, InvestmentState, PaymentStatus } from "./common/enums/investment.enum";
 import { CITY_DATA, Country, STATE_DATA } from "./common/enums/location.enum";
 import { PrequalificationStatus } from "./common/enums/prequalification.enum";
 import { DurationType, ProjectMediaCategory, ProjectStatus, PROJECT_MEDIA_CATEGORY, PropertyCategory, PropertyOption, PropertyStatus, PROPERTY_MEDIA_CATEGORY, PurchaseRequestType, RequestUpdateStatus } from "./common/enums/property.enum";
@@ -860,6 +861,174 @@ async function seed() {
             data: projectMediaCategoryData,
         });
     };
+
+    //INVESTMENT STATE
+
+    const investmentStateValues = Object.values(InvestmentState).map((state) => state.toString());
+
+    const existingInvestmentStates = await prisma.investmentState.findMany({
+        select: {
+            investmentState: true,
+        },
+    });
+
+    const existingInvestmentStateSet = new Set(existingInvestmentStates.map((investmentState) => investmentState.investmentState));
+
+    const investmentStatesToDelete: string[] = [];
+
+    for (const state of existingInvestmentStateSet) {
+        if (!investmentStateValues.includes(state)) {
+            investmentStatesToDelete.push(state);
+        }
+    }
+
+    if (investmentStatesToDelete.length > 0) {
+        await prisma.investmentState.deleteMany({
+            where: {
+                investmentState: {
+                    in: investmentStatesToDelete,
+                },
+            },
+        });
+    }
+
+    const investmentStatesToCreate: {
+        id: number,
+        investmentState: string
+    }[] = [];
+
+    let investmentStateIndex = 0;
+
+    for (const state of investmentStateValues) {
+        investmentStateIndex++;
+
+        if (existingInvestmentStateSet.has(state)) {
+            continue;
+        } else {
+            investmentStatesToCreate.push({
+                id: investmentStateIndex,
+                investmentState: state,
+            });
+        }
+    }
+
+    if (investmentStatesToCreate.length > 0) {
+        await prisma.investmentState.createMany({
+            data: investmentStatesToCreate,
+        });
+    }
+
+    //INVESTMENT FREQUENCY
+
+    const investmentFrequencyValues = Object.values(InvestmentFrequency).map((frequency) => frequency.toString());
+
+    const existingInvestmentFrequencies = await prisma.investmentFrequency.findMany({
+        select: {
+            investmentFrequency: true,
+        },
+    });
+
+    const existingInvestmentFrequencySet = new Set(existingInvestmentFrequencies.map((investmentFrequency) => investmentFrequency.investmentFrequency));
+
+    const investmentFrequenciesToDelete: string[] = [];
+
+    for (const frequency of existingInvestmentFrequencySet) {
+        if (!investmentFrequencyValues.includes(frequency)) {
+            investmentFrequenciesToDelete.push(frequency);
+        }
+    }
+
+    if (investmentFrequenciesToDelete.length > 0) {
+        await prisma.investmentFrequency.deleteMany({
+            where: {
+                investmentFrequency: {
+                    in: investmentFrequenciesToDelete,
+                },
+            },
+        });
+    }
+
+    const investmentFrequenciesToCreate: {
+        id: number,
+        investmentFrequency: string
+    }[] = [];
+
+    let investmentFrequencyIndex = 0;
+
+    for (const frequency of investmentFrequencyValues) {
+        investmentFrequencyIndex++;
+
+        if (existingInvestmentFrequencySet.has(frequency)) {
+            continue;
+        } else {
+            investmentFrequenciesToCreate.push({
+                id: investmentFrequencyIndex,
+                investmentFrequency: frequency,
+            });
+        }
+    }
+
+    if (investmentFrequenciesToCreate.length > 0) {
+        await prisma.investmentFrequency.createMany({
+            data: investmentFrequenciesToCreate,
+        });
+    }
+
+    //PAYMENT STATUS
+
+    const paymentStatusValues = Object.values(PaymentStatus).map((status) => status.toString());
+
+    const existingPaymentStatuses = await prisma.paymentStatus.findMany({
+        select: {
+            paymentStatus: true,
+        },
+    });
+
+    const existingPaymentStatusSet = new Set(existingPaymentStatuses.map((paymentStatus) => paymentStatus.paymentStatus));
+
+    const paymentStatusesToDelete: string[] = [];
+
+    for (const status of existingPaymentStatusSet) {
+        if (!paymentStatusValues.includes(status)) {
+            paymentStatusesToDelete.push(status);
+        }
+    }
+
+    if (paymentStatusesToDelete.length > 0) {
+        await prisma.paymentStatus.deleteMany({
+            where: {
+                paymentStatus: {
+                    in: paymentStatusesToDelete,
+                },
+            },
+        });
+    }
+
+    const paymentStatusesToCreate: {
+        id: number,
+        paymentStatus: string
+    }[] = [];
+
+    let statusIndex = 0;
+
+    for (const status of paymentStatusValues) {
+        statusIndex++;
+
+        if (existingPaymentStatusSet.has(status)) {
+            continue;
+        } else {
+            paymentStatusesToCreate.push({
+                id: statusIndex,
+                paymentStatus: status,
+            });
+        }
+    }
+
+    if (paymentStatusesToCreate.length > 0) {
+        await prisma.paymentStatus.createMany({
+            data: paymentStatusesToCreate,
+        });
+    }
 };
 
 seed()

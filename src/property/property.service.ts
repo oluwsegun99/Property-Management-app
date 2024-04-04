@@ -159,6 +159,15 @@ export class PropertyService implements OnModuleInit {
         };
     }
 
+    async getProjectMediaCategories() {
+        try {
+            return await this.prisma.projectMediaCategory.findMany();
+        } catch (error) {
+            console.error(error);
+            throw error;
+        };
+    }
+
     async createProject(userId: string, dto: CreateProject) {
         try {
             // Validate

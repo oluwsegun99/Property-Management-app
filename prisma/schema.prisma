@@ -834,10 +834,10 @@ model InvestmentPaymentSchedule {
 }
 
 model InvestmentPayment {
-  id         String @id @default(uuid())
+  id         String   @id @default(uuid())
   reference  String
   amountPaid Float
-  datePaid   Float
+  datePaid   DateTime
 
   investmentId String
   investment   Investment @relation(fields: [investmentId], references: [id], onDelete: Cascade)
