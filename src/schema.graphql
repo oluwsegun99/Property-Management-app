@@ -367,6 +367,7 @@ type Project{
     updatedAt: DateTime
     prototypes: [Prototype]
     properties: [Property]
+    projectsMedia: [ProjectMedia]
 }
 
 type ProjectMediaCategory{
