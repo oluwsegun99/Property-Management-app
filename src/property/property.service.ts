@@ -268,7 +268,7 @@ export class PropertyService implements OnModuleInit {
                         };
                     });
 
-                    const bannerMediaCategory = requiredMediaCategories.find((category) => category.mediaCategory === ProjectMediaCategory.Banner);
+                    // const bannerMediaCategory = requiredMediaCategories.find((category) => category.mediaCategory === ProjectMediaCategory.Banner);
 
                     const projectMediaData = dto.projectMedia.map((media) => {
                         const mediaCategoryExists = projectMediaCategories.find((category) => category.id === media.projectMediaCategoryId);
@@ -286,8 +286,8 @@ export class PropertyService implements OnModuleInit {
                     const handledMediaCategoryIds = projectMediaData.map((data) => data.projectMediaCategoryId);
 
                     //check for multiple banner entries
-                    const bannerEntries = handledMediaCategoryIds.filter((id) => id === bannerMediaCategory.id);
-                    if (bannerEntries.length > 1) throw new ForbiddenException("Multiple Banner entries: Only one banner entry is required");
+                    // const bannerEntries = handledMediaCategoryIds.filter((id) => id === bannerMediaCategory.id);
+                    // if (bannerEntries.length > 1) throw new ForbiddenException("Multiple Banner entries: Only one banner entry is required");
 
                     //check if all required categories are present
                     for (const requiredCategory of requiredMediaCategories) {
@@ -316,7 +316,21 @@ export class PropertyService implements OnModuleInit {
 
     async getProjects() {
         try {
-            return await this.prisma.project.findMany();
+            return await this.prisma.project.findMany({
+                include: {
+                    user: true,
+                    developerCompany: true,
+                    city: true,
+                    properties: true,
+                    prototypes: true,
+                    projectsMedia: {
+                        include: {
+                            projectMediaCategory: true,
+                        },
+                    },
+                    projectStatus: true,
+                },
+            });
         } catch (error) {
             console.error(error);
             throw error;
@@ -330,9 +344,18 @@ export class PropertyService implements OnModuleInit {
                     id: projectId,
                 },
                 include: {
-                    prototypes: true,
+                    user: true,
+                    developerCompany: true,
+                    city: true,
                     properties: true,
-                },
+                    prototypes: true,
+                    projectsMedia: {
+                        include: {
+                            projectMediaCategory: true,
+                        },
+                    },
+                    projectStatus: true,
+                }
             });
             if (!project) throw new ForbiddenException("Project not found");
 
@@ -350,9 +373,18 @@ export class PropertyService implements OnModuleInit {
                     developerCompanyId: string,
                 },
                 include: {
-                    prototypes: true,
+                    user: true,
+                    developerCompany: true,
+                    city: true,
                     properties: true,
-                },
+                    prototypes: true,
+                    projectsMedia: {
+                        include: {
+                            projectMediaCategory: true,
+                        },
+                    },
+                    projectStatus: true,
+                }
                 orderBy: {
                     createdAt: "desc"
                 },
@@ -366,8 +398,17 @@ export class PropertyService implements OnModuleInit {
                     developerCompanyId: companyId,
                 },
                 include: {
-                    prototypes: true,
+                    user: true,
+                    developerCompany: true,
+                    city: true,
                     properties: true,
+                    prototypes: true,
+                    projectsMedia: {
+                        include: {
+                            projectMediaCategory: true,
+                        },
+                    },
+                    projectStatus: true,
                 },
                 orderBy: {
                     createdAt: "desc"
@@ -692,7 +733,17 @@ export class PropertyService implements OnModuleInit {
 
     async getPrototypes() {
         try {
-            return await this.prisma.prototype.findMany();
+            return await this.prisma.prototype.findMany({
+                include: {
+                    properties: true,
+                    project: true,
+                    prototypesMedia: {
+                        include: {
+                            propertyMediaCategory: true,
+                        },
+                    },
+                },
+            });
         } catch (error) {
             console.error(error);
             throw error;
@@ -706,7 +757,17 @@ export class PropertyService implements OnModuleInit {
                     id: projectId,
                 },
                 select: {
-                    prototypes: true,
+                    prototypes: {
+                        include: {
+                            properties: true,
+                            project: true,
+                            prototypesMedia: {
+                                include: {
+                                    propertyMediaCategory: true,
+                                },
+                            },
+                        },
+                    },
                 },
             });
             if (!projectExists) throw new ForbiddenException("Project not found");
@@ -725,6 +786,15 @@ export class PropertyService implements OnModuleInit {
             const prototypeExists = await this.prisma.prototype.findUnique({
                 where: {
                     id: prototypeId,
+                },
+                include: {
+                    properties: true,
+                    project: true,
+                    prototypesMedia: {
+                        include: {
+                            propertyMediaCategory: true,
+                        },
+                    },
                 },
             });
             if (!prototypeExists) throw new ForbiddenException("Prototype not found");
