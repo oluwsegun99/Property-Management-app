@@ -263,6 +263,15 @@ export class AdminApprovePrequalification {
     prequalificationStatusId: number;
 }
 
+export class CreateInvestmentPayment {
+    reference: string;
+    amountPaid: number;
+    datePaid: DateTime;
+    investmentId: string;
+    investmentPaymentScheduleId: string;
+    userWalletId: string;
+}
+
 export class CreateInvestment {
     description: string;
     totalAmount: number;
@@ -541,6 +550,7 @@ export class User {
     role?: Nullable<Role>;
     createdAt?: Nullable<DateTime>;
     updatedAt?: Nullable<DateTime>;
+    userWallet?: Nullable<UserWallet>;
 }
 
 export class UserWishlist {
@@ -764,6 +774,7 @@ export class Prototype {
     createdAt?: Nullable<DateTime>;
     updatedAt?: Nullable<DateTime>;
     properties?: Nullable<Nullable<Property>[]>;
+    prototypesMedia?: Nullable<Nullable<PrototypeMedia>[]>;
 }
 
 export class PrototypeMedia {

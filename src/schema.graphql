@@ -85,6 +85,7 @@ type User {
     role: Role
     createdAt: DateTime
     updatedAt: DateTime
+    userWallet: UserWallet
 }
 
 type UserWishlist{
@@ -439,6 +440,7 @@ type Prototype{
     createdAt: DateTime
     updatedAt: DateTime
     properties: [Property]
+    prototypesMedia: [PrototypeMedia]
 }
 
 type PrototypeMedia {
@@ -975,6 +977,15 @@ type InvestmentPayment{
     userWallet: UserWallet
     createdAt: DateTime
     updatedAt: DateTime
+}
+
+input CreateInvestmentPayment{
+    reference: String!
+    amountPaid: Float!
+    datePaid: DateTime!
+    investmentId: String!
+    investmentPaymentScheduleId: String!
+    userWalletId: String!
 }
 
 input CreateInvestment{
