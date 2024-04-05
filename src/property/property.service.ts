@@ -349,11 +349,23 @@ export class PropertyService implements OnModuleInit {
                     city: true,
                     properties: {
                         include: {
-                            propertiesMedia: true,
+                            propertiesMedia: {
+                                include: {
+                                    propertyMediaCategory: true,
+                                },
+                            },
                             propertyDetail: true,
                         },
                     },
-                    prototypes: true,
+                    prototypes: {
+                        include: {
+                            prototypesMedia: {
+                                include: {
+                                    propertyMediaCategory: true,
+                                },
+                            },
+                        },
+                    },
                     projectsMedia: {
                         include: {
                             projectMediaCategory: true,
