@@ -21,6 +21,8 @@ model Role {
   userDeveloperInvites UserDeveloperInvite[]
   admins               Admin[]
   adminInvites         AdminInvite[]
+  financiers           Financier[]
+  financierInvites     FinancierInvite[]
 
   @@map("roles")
 }
@@ -97,6 +99,9 @@ model User {
   prequalifications        Prequalification[]
   investments              Investment[]
   userWallet               UserWallet?
+  mortgages                Mortgage[]
+  mortgagePayments         MortgagePayment[]
+  paymentTransactions      PaymentTransaction[]
 
   @@map("users")
 }
@@ -114,7 +119,11 @@ model UserWallet {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  investmentPayments InvestmentPayment[]
+  investmentPayments                 InvestmentPayment[]
+  mortgagePayments                   MortgagePayment[]
+  financierDeveloperMortgagePayments FinancierDeveloperMortgagePayment[]
+  paymentTransactions                PaymentTransaction[]
+  paymentTransactionDetails          PaymentTransactionDetail[]
 
   @@map("userWallets")
 }
@@ -211,6 +220,107 @@ model DevloperCompanyBankAccount {
   updatedAt DateTime @updatedAt
 
   @@map("developerCompanyBankAccounts")
+}
+
+model Financier {
+  id       String @id @default(uuid())
+  fullname String
+  email    String @unique
+  hash     String
+  mobile   String
+
+  roleId String
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  verified               Boolean?  @default(false)
+  verificationAttempt    Float?
+  verificationTimeOut    DateTime?
+  vetted                 Boolean?  @default(false)
+  hashedRt               String?
+  code                   Float?
+  codeExpiry             DateTime?
+  twoFactorAuthSecret    String?
+  isTwoFactorAuthEnabled Boolean?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  financeCompanies        FinanceCompany[]
+  financeCompanyFinancier FinanceCompanyFinancier?
+  financierWallets        FinancierWallet?
+
+  @@map("financiers")
+}
+
+model FinanceCompany {
+  id            String  @id @default(uuid())
+  companyName   String
+  companyEmail  String  @unique
+  companyMobile String
+  vetted        Boolean @default(false)
+
+  financierId String
+  financier   Financier @relation(fields: [financierId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  financeCompanyFinanciers           FinanceCompanyFinancier[]
+  financierInvites                   FinancierInvite[]
+  mortgages                          Mortgage[]
+  financierDeveloperMortgagePayments FinancierDeveloperMortgagePayment[]
+
+  @@map("financeCompanies")
+}
+
+model FinanceCompanyFinancier {
+  id String @id @default(uuid())
+
+  financeCompanyId String
+  financeCompany   FinanceCompany @relation(fields: [financeCompanyId], references: [id], onDelete: Cascade)
+
+  financierId String    @unique
+  financier   Financier @relation(fields: [financierId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("financeCompanyFinanciers")
+}
+
+model FinancierInvite {
+  id       String  @id @default(uuid())
+  email    String
+  fullname String
+  mobile   String
+  accepted Boolean @default(false)
+
+  financeCompanyId String
+  financeCompany   FinanceCompany @relation(fields: [financeCompanyId], references: [id], onDelete: Cascade)
+
+  roleId String
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("financierInvites")
+}
+
+model FinancierWallet {
+  id String @id @default(uuid())
+
+  financierId String    @unique
+  financier   Financier @relation(fields: [financierId], references: [id], onDelete: Cascade)
+
+  balance Float @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  mortgagePayments                   MortgagePayment[]
+  financierDeveloperMortgagePayments FinancierDeveloperMortgagePayment[]
+
+  @@map("financierWallets")
 }
 
 model Country {
@@ -455,15 +565,18 @@ model Property {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  propertyDetail           PropertyDetail?
-  propertiesMedia          PropertyMedia[]
-  propertyUpdateRequests   PropertyUpdateRequest[]
-  propertyOwned            PropertyOwned?
-  rents                    PropertyRented[]
-  propertiesCostHistory    PropertyCostHistory[]
-  propertyPurchaseRequests PropertyPurchaseRequest[]
-  userWishlists            UserWishlist[]
-  inspectionSchedules      InspectionSchedule[]
+  propertyDetail                     PropertyDetail?
+  propertiesMedia                    PropertyMedia[]
+  propertyUpdateRequests             PropertyUpdateRequest[]
+  propertyOwned                      PropertyOwned?
+  rents                              PropertyRented[]
+  propertiesCostHistory              PropertyCostHistory[]
+  propertyPurchaseRequests           PropertyPurchaseRequest[]
+  userWishlists                      UserWishlist[]
+  inspectionSchedules                InspectionSchedule[]
+  mortgages                          Mortgage[]
+  financierDeveloperMortgagePayments FinancierDeveloperMortgagePayment[]
+  paymentTransactions                PaymentTransaction[]
 
   @@map("properties")
 }
@@ -614,8 +727,19 @@ model DurationType {
   createdAt    DateTime @default(now())
 
   propertyPurchaseRequests PropertyPurchaseRequest[]
+  mortgages                Mortgage[]
 
   @@map("durationTypes")
+}
+
+model PurchaseRequestStatus {
+  id                    Int      @id
+  purchaseRequestStatus String   @unique
+  createdAt             DateTime @default(now())
+
+  propertyPurchaseRequests PropertyPurchaseRequest[]
+
+  @@map("purchaseRequestStatuses")
 }
 
 model PropertyPurchaseRequest {
@@ -631,16 +755,22 @@ model PropertyPurchaseRequest {
   approved     Boolean   @default(false)
   approvalDate DateTime?
 
+  purchaseRequestStatusId Int
+  purchaseRequestStatus   PurchaseRequestStatus @relation(fields: [purchaseRequestStatusId], references: [id], onDelete: Cascade)
+
   purchaseRequestTypeId Int
   purchaseRequestType   PurchaseRequestType @relation(fields: [purchaseRequestTypeId], references: [id], onDelete: Cascade)
 
-  purchaseDuration Int
+  purchaseDuration Int?
 
   durationTypeId Int?
   durationType   DurationType? @relation(fields: [durationTypeId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  mortgages           Mortgage[]
+  paymentTransactions PaymentTransaction[]
 
   @@map("propertyPurchaseRequests")
 }
@@ -750,6 +880,7 @@ model PaymentStatus {
   createdAt     DateTime @default(now())
 
   investmentPaymentSchedules InvestmentPaymentSchedule[]
+  mortgagePaymentSchedules   MortgagePaymentSchedule[]
 
   @@map("paymentStatuses")
 }
@@ -852,4 +983,178 @@ model InvestmentPayment {
   updatedAt DateTime @updatedAt
 
   @@map("investmentPayments")
+}
+
+model MortgageStatus {
+  id             Int      @id
+  mortgageStatus String   @unique
+  createdAt      DateTime @default(now())
+
+  mortgages Mortgage[]
+
+  @@map("mortgageStatuses")
+}
+
+model Mortgage {
+  id                    String    @id @default(uuid())
+  coApplicantName       String?
+  coApplicantEmail      String?
+  downPayment           Float
+  downPaymentPercentage Float
+  applicationDate       DateTime
+  interestRate          Float
+  approvalDate          DateTime?
+  mortgageDuration      Int
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  propertyPurchaseReqId String
+  propertyPurchaseReq   PropertyPurchaseRequest @relation(fields: [propertyPurchaseReqId], references: [id], onDelete: Cascade)
+
+  mortgageStatusId Int
+  mortgageStatus   MortgageStatus @relation(fields: [mortgageStatusId], references: [id], onDelete: Cascade)
+
+  durationTypeId Int
+  durationType   DurationType @relation(fields: [durationTypeId], references: [id], onDelete: Cascade)
+
+  financeCompanyId String?
+  financeCompany   FinanceCompany? @relation(fields: [financeCompanyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  mortgagePaymentSchedules           MortgagePaymentSchedule[]
+  mortgagePayments                   MortgagePayment[]
+  financierDeveloperMortgagePayments FinancierDeveloperMortgagePayment[]
+
+  @@map("mortgages")
+}
+
+model MortgagePaymentSchedule {
+  id        String    @id @default(uuid())
+  amountDue Float
+  dueDate   DateTime
+  paid      Boolean   @default(false)
+  datePaid  DateTime?
+
+  paymentStatusId Int
+  paymentStatus   PaymentStatus @relation(fields: [paymentStatusId], references: [id], onDelete: Cascade)
+
+  mortgageId String
+  mortgage   Mortgage @relation(fields: [mortgageId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  mortgagePayments MortgagePayment[]
+
+  @@map("mortgagePaymentSchedules")
+}
+
+model MortgagePayment {
+  id         String   @id @default(uuid())
+  reference  String
+  amountPaid Float
+  datePaid   DateTime
+
+  mortgageId String
+  mortgage   Mortgage @relation(fields: [mortgageId], references: [id], onDelete: Cascade)
+
+  mortgagePaymentScheduleId String
+  mortgagePaymentSchedule   MortgagePaymentSchedule @relation(fields: [mortgagePaymentScheduleId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  userWalletId String
+  userWallet   UserWallet @relation(fields: [userWalletId], references: [id], onDelete: Cascade)
+
+  destinationWalletId String
+  destinationWallet   FinancierWallet @relation(fields: [destinationWalletId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("mortgagePayments")
+}
+
+model FinancierDeveloperMortgagePayment {
+  id         String   @id @default(uuid())
+  amountPaid Float
+  datePaid   DateTime
+
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  mortgageId String
+  mortgage   Mortgage @relation(fields: [mortgageId], references: [id], onDelete: Cascade)
+
+  financeCompanyId String
+  financeCompany   FinanceCompany @relation(fields: [financeCompanyId], references: [id], onDelete: Cascade)
+
+  financierWalletId String
+  financierWallet   FinancierWallet @relation(fields: [financierWalletId], references: [id], onDelete: Cascade)
+
+  destinationWalletId String
+  destinationWallet   UserWallet @relation(fields: [destinationWalletId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("financierDeveloperMortgagePayments")
+}
+
+model PaymentTransaction {
+  id         String   @id @default(uuid())
+  reference  String
+  amountPaid Float
+  datePaid   DateTime
+
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  propertyPurchaseReqId String
+  propertyPurchaseReq   PropertyPurchaseRequest @relation(fields: [propertyPurchaseReqId], references: [id], onDelete: Cascade)
+
+  userWalletId String
+  userWallet   UserWallet @relation(fields: [userWalletId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  paymentTransactionDetails PaymentTransactionDetail[]
+
+  @@map("paymentTransactions")
+}
+
+model PaymentTransactionDetail {
+  id                 String             @id
+  paymentTransaction PaymentTransaction @relation(fields: [id], references: [id], onDelete: Cascade)
+
+  destinationWalletId String
+  destinationWallet   UserWallet @relation(fields: [destinationWalletId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("paymentTransactionDetails")
+}
+
+model FAQ {
+  id String @id @default(uuid())
+
+  question String
+  answer   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("FAQs")
 }

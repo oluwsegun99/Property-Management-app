@@ -5,10 +5,23 @@ export enum PropertyStatus {
     Sold = "Sold"
 };
 
+export enum PropertyStatusEnum {
+    Completed = 1,
+    Rented = 2,
+    Mortgaged = 3,
+    Sold = 4
+};
+
 export enum PropertyOption {
     forSale = "For Sale",
     toRent = "To Rent",
     taken = "Taken"
+};
+
+export enum PropertyOptionEnum {
+    forSale = 1,
+    toRent = 2,
+    taken = 3
 };
 
 export enum ProjectStatus {
@@ -19,11 +32,26 @@ export enum ProjectStatus {
     RequestedChanges = "RequestedChanges"
 };
 
+export enum ProjectStatusEnum {
+    Draft = 1,
+    Approved = 2,
+    Rejected = 3,
+    PendingApproval = 4,
+    RequestedChanges = 5
+};
+
 export enum RequestUpdateStatus {
     Pending = "Pending",
     Approved = "Approved",
     Declined = "Declined",
     Closed = "Closed"
+};
+
+export enum RequestUpdateStatusEnum {
+    Pending = 1,
+    Approved = 2,
+    Declined = 3,
+    Closed = 4
 };
 
 export enum PurchaseRequestType {
@@ -32,10 +60,33 @@ export enum PurchaseRequestType {
     Rent = "Rent"
 };
 
+export enum PurchaseRequestTypeEnum {
+    FullPayment = 1,
+    MortgagePayment = 2,
+    Rent = 3
+};
+
 export enum DurationType {
     Monthly = "Monthly",
     Yearly = "Yearly"
 };
+
+export enum DurationTypeEnum {
+    Monthly = 1,
+    Yearly = 2
+};
+
+export enum PurchaseRequestStatus {
+    Pending = "Pending",
+    Approved = "Approved",
+    Rejected = "Rejected"
+};
+
+export enum PurchaseRequestStatusEnum {
+    Pending = 1,
+    Approved = 2,
+    Rejected = 3
+}
 
 export enum PropertyCategory {
     Bungalow = 'Bungalow',

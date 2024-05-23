@@ -6,7 +6,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/enums/role.enum';
 import { AtGuard } from 'src/common/guards/at-guard';
 import { RolesGuard } from 'src/common/guards/role-guard';
-import { CreateProject, CreateProperty, CreatePrototype, UpdateProject, UpdateProperty, UpdatePrototype } from 'src/graphql';
+import { ApprovePurchaseRequest, CreateProject, CreateProperty, CreatePropertyPurchaseRequest, CreatePrototype, UpdateProject, UpdateProperty, UpdatePropertyPurchaseRequest, UpdatePrototype } from 'src/graphql';
 import { PropertyService } from './property.service';
 
 @Resolver()
@@ -181,5 +181,62 @@ export class PropertyResolver {
     @Mutation("deleteAllProperties")
     async deleteAllProperties() {
         return await this.propertyService.deleteAllProperties();
+    };
+
+    @UseGuards(AtGuard, RolesGuard)
+    @Roles(Role.Owner)
+    @Mutation("createPurchaseRequest")
+    async createPurchaseRequest(@GraphqlGetUserId() userId: string, @Args("input") dto: CreatePropertyPurchaseRequest) {
+        return await this.propertyService.createPurchaseRequest(userId, dto);
+    };
+
+    @Query("getPurchaseRequests")
+    async getPurchaseRequests() {
+        return await this.propertyService.getPurchaseRequests();
+    };
+
+    @UseGuards(AtGuard, RolesGuard)
+    @Roles(Role.Owner)
+    @Query("getPurchaseRequestsByUser")
+    async getPurchaseRequestsByUser(@GraphqlGetUserId() userId: string) {
+        return await this.propertyService.getPurchaseRequestsByUser(userId);
+    };
+
+    @UseGuards(AtGuard, RolesGuard)
+    @Roles(Role.SuperAdmin, Role.Admin)
+    @Query("adminGetPurchaseRequests")
+    async adminGetPurchaseRequests(@GraphqlGetUserId() adminId: string) {
+        return await this.propertyService.adminGetPurchaseRequests(adminId);
+    };
+
+    @Query("getPurchaseRequestById")
+    async getPurchaseRequestById(@Args("purchaseRequestId") purchaseRequestId: string) {
+        return await this.propertyService.getPurchaseRequestById(purchaseRequestId);
+    };
+
+    @UseGuards(AtGuard, RolesGuard)
+    @Roles(Role.Owner)
+    @Mutation("updatePurchaseRequest")
+    async updatePurchaseRequest(@GraphqlGetUserId() userId: string, @Args("input") dto: UpdatePropertyPurchaseRequest) {
+        return await this.propertyService.updatePurchaseRequest(userId, dto);
+    };
+
+    @UseGuards(AtGuard, RolesGuard)
+    @Roles(Role.SuperAdmin, Role.Admin)
+    @Mutation("approvePurchaseRequest")
+    async approvePurchaseRequest(@GraphqlGetUserId() adminId: string, @Args("input") dto: ApprovePurchaseRequest) {
+        return await this.propertyService.approvePurchaseRequest(adminId, dto);
+    };
+
+    @UseGuards(AtGuard, RolesGuard)
+    @Roles(Role.Owner)
+    @Mutation("deletePurchaseRequest")
+    async deletePurchaseRequest(@GraphqlGetUserId() userId: string, @Args("purchaseRequestId") purchaseRequestId: string) {
+        return await this.propertyService.deletePurchaseRequest(userId, purchaseRequestId);
+    };
+
+    @Mutation("deleteAllPurchaseRequest")
+    async deleteAllPurchaseRequest() {
+        return await this.propertyService.deleteAllPurchaseRequest();
     };
 }

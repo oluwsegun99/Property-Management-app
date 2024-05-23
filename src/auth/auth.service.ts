@@ -46,28 +46,41 @@ export class AuthService {
             const code = Math.floor(1000 + Math.random() * 9000);
             const codeExpiry = new Date(Date.now() + 60 * 60 * 1000);
 
-            const newUser = await this.prisma.user.create({
-                data: {
-                    email: dto.email,
-                    fullname: dto.fullname,
-                    mobile: dto.mobile,
-                    hash,
-                    isDeveloper: dto.isDeveloper,
-                    hasCompany: dto.hasCompany,
-                    roleId: role.id,
-                    code,
-                    codeExpiry,
-                    // verified: false,
-                },
-            });
+            const createUser = await this.prisma.$transaction(async (prisma) => {
+                const newUser = await prisma.user.create({
+                    data: {
+                        email: dto.email,
+                        fullname: dto.fullname,
+                        mobile: dto.mobile,
+                        hash,
+                        isDeveloper: dto.isDeveloper,
+                        hasCompany: dto.hasCompany,
+                        roleId: role.id,
+                        code,
+                        codeExpiry,
+                        // verified: false,
+                    },
+                });
+
+                await prisma.userWallet.create({
+                    data: {
+                        accountNumber: "00000000000000",
+                        balance: 1000000,
+                        total: 1000000,
+                        userId: newUser.id,
+                    },
+                });
+
+                return newUser;
+            })
 
             // await this.eventEmitter.emit("user.created", new UserCreatedEvent(newUser.id, newUser.email, newUser.fullname, code));
             // await this.logger.log("User successfully created...", newUser.email);
 
-            const token = await this.getTokens(newUser.id, newUser.email);
-            this.updateRtHash(newUser.id, token.refresh_token);
+            const token = await this.getTokens(createUser.id, createUser.email);
+            this.updateRtHash(createUser.id, token.refresh_token);
             return {
-                user: newUser,
+                user: createUser,
                 token,
             };
         } catch (error) {

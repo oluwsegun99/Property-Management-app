@@ -8,32 +8,32 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export class AdminCreateInvite {
+export interface AdminCreateInvite {
     fullname: string;
     email: string;
     mobile: string;
     roleId: string;
 }
 
-export class AdminSignupInput {
+export interface AdminSignupInput {
     email: string;
     fullname: string;
     mobile: string;
     password: string;
 }
 
-export class AdminSignUpAfterInvite {
+export interface AdminSignUpAfterInvite {
     inviteId: string;
     password: string;
 }
 
-export class AdminSigninInput {
+export interface AdminSigninInput {
     email: string;
     password: string;
     twoFACode?: Nullable<string>;
 }
 
-export class UserSignUpInput {
+export interface UserSignUpInput {
     email: string;
     fullname: string;
     mobile: string;
@@ -42,12 +42,12 @@ export class UserSignUpInput {
     hasCompany?: Nullable<boolean>;
 }
 
-export class UserSigninInput {
+export interface UserSigninInput {
     email: string;
     password: string;
 }
 
-export class UserCreateInvite {
+export interface UserCreateInvite {
     email: string;
     fullname: string;
     mobile: string;
@@ -55,12 +55,12 @@ export class UserCreateInvite {
     roleId: string;
 }
 
-export class UserSignUpAfterInvite {
+export interface UserSignUpAfterInvite {
     inviteId: string;
     password: string;
 }
 
-export class CreateDeveloperCompany {
+export interface CreateDeveloperCompany {
     companyName: string;
     companyEmail: string;
     companyMobile: string;
@@ -69,7 +69,7 @@ export class CreateDeveloperCompany {
     address?: Nullable<string>;
 }
 
-export class UpdateDeveloperCompany {
+export interface UpdateDeveloperCompany {
     companyId: string;
     companyName?: Nullable<string>;
     companyEmail?: Nullable<string>;
@@ -82,14 +82,14 @@ export class UpdateDeveloperCompany {
     companyTypeId?: Nullable<number>;
 }
 
-export class CreateProjectMedia {
+export interface CreateProjectMedia {
     projectMediaCategoryId: string;
     mediaUrl: string;
     description?: Nullable<string>;
     index?: Nullable<number>;
 }
 
-export class CreateProject {
+export interface CreateProject {
     projectName: string;
     description: string;
     address: string;
@@ -100,7 +100,7 @@ export class CreateProject {
     projectMedia?: Nullable<Nullable<CreateProjectMedia>[]>;
 }
 
-export class UpdateProject {
+export interface UpdateProject {
     projectId: string;
     projectName?: Nullable<string>;
     description?: Nullable<string>;
@@ -112,14 +112,14 @@ export class UpdateProject {
     projectMedia?: Nullable<Nullable<CreateProjectMedia>[]>;
 }
 
-export class CreatePrototypeMedia {
+export interface CreatePrototypeMedia {
     propertyMediaCategoryId: string;
     index?: Nullable<number>;
     mediaUrl: string;
     description?: Nullable<string>;
 }
 
-export class CreatePrototype {
+export interface CreatePrototype {
     prototypeName: string;
     description: string;
     projectId: string;
@@ -127,7 +127,7 @@ export class CreatePrototype {
     prototypeMedia?: Nullable<Nullable<CreatePrototypeMedia>[]>;
 }
 
-export class UpdatePrototype {
+export interface UpdatePrototype {
     prototypeId: string;
     prototypeName?: Nullable<string>;
     description?: Nullable<string>;
@@ -135,7 +135,28 @@ export class UpdatePrototype {
     mediaUrl?: Nullable<string>;
 }
 
-export class CreatePropertyDetails {
+export interface CreatePropertyPurchaseRequest {
+    propertyId: string;
+    requestDate: Date;
+    purchaseRequestTypeId: number;
+    durationTypeId?: Nullable<number>;
+    purchaseDuration?: Nullable<number>;
+}
+
+export interface UpdatePropertyPurchaseRequest {
+    purchaseRequestId: string;
+    requestDate?: Nullable<Date>;
+    purchaseRequestTypeId?: Nullable<number>;
+    durationTypeId?: Nullable<number>;
+    purchaseDuration?: Nullable<number>;
+}
+
+export interface ApprovePurchaseRequest {
+    purchaseRequestId: string;
+    purchaseRequestStatusId: number;
+}
+
+export interface CreatePropertyDetails {
     address: string;
     longitude: string;
     latitude: string;
@@ -156,7 +177,7 @@ export class CreatePropertyDetails {
     propertyOptionId: number;
 }
 
-export class UpdatePropertyDetails {
+export interface UpdatePropertyDetails {
     address?: Nullable<string>;
     longitude?: Nullable<string>;
     latitude?: Nullable<string>;
@@ -177,14 +198,14 @@ export class UpdatePropertyDetails {
     propertyOptionId?: Nullable<number>;
 }
 
-export class CreatePropertyMedia {
+export interface CreatePropertyMedia {
     index?: Nullable<number>;
     mediaUrl: string;
     mediaCategoryId: string;
     description?: Nullable<string>;
 }
 
-export class CreateProperty {
+export interface CreateProperty {
     name: string;
     description: string;
     price: number;
@@ -198,7 +219,7 @@ export class CreateProperty {
     propertyMedia?: Nullable<Nullable<CreatePropertyMedia>[]>;
 }
 
-export class UpdateProperty {
+export interface UpdateProperty {
     propertyId: string;
     name?: Nullable<string>;
     description?: Nullable<string>;
@@ -212,30 +233,30 @@ export class UpdateProperty {
     propertyMedia?: Nullable<Nullable<CreatePropertyMedia>[]>;
 }
 
-export class CreateInspectionSchedule {
+export interface CreateInspectionSchedule {
     propertyId: string;
     dateScheduled: DateTime;
     inspectionTypeId: number;
 }
 
-export class UpdateInspectionSchedule {
+export interface UpdateInspectionSchedule {
     scheduleId: string;
     dateScheduled?: Nullable<DateTime>;
     inspectionTypeId?: Nullable<number>;
 }
 
-export class AdminHandleInspectionSchedule {
+export interface AdminHandleInspectionSchedule {
     inspectionStatusId: number;
     scheduleId: string;
 }
 
-export class DeveloperHandleInspectionSchedule {
+export interface DeveloperHandleInspectionSchedule {
     scheduleId: string;
     inspectionStatusId: number;
     agentId?: Nullable<string>;
 }
 
-export class CreatePrequalification {
+export interface CreatePrequalification {
     fullname: string;
     email: string;
     incomeMonthly: number;
@@ -246,7 +267,7 @@ export class CreatePrequalification {
     spouseEmail?: Nullable<string>;
 }
 
-export class UpdatePrequalification {
+export interface UpdatePrequalification {
     prequalificationId: string;
     fullname?: Nullable<string>;
     email?: Nullable<string>;
@@ -258,12 +279,12 @@ export class UpdatePrequalification {
     spouseEmail?: Nullable<string>;
 }
 
-export class AdminApprovePrequalification {
+export interface AdminApprovePrequalification {
     prequalificationId: string;
     prequalificationStatusId: number;
 }
 
-export class CreateInvestmentPayment {
+export interface CreateInvestmentPayment {
     reference: string;
     amountPaid: number;
     datePaid: DateTime;
@@ -272,7 +293,7 @@ export class CreateInvestmentPayment {
     userWalletId: string;
 }
 
-export class CreateInvestment {
+export interface CreateInvestment {
     description: string;
     totalAmount: number;
     startDate: Date;
@@ -280,7 +301,7 @@ export class CreateInvestment {
     investmentFrequencyId: number;
 }
 
-export class UpdateInvestment {
+export interface UpdateInvestment {
     investmentId: string;
     description?: Nullable<string>;
     totalAmount?: Nullable<number>;
@@ -289,12 +310,48 @@ export class UpdateInvestment {
     investmentFrequencyId?: Nullable<number>;
 }
 
-export class ResumeInvestment {
+export interface ResumeInvestment {
     investmentId: string;
     resumeDate: Date;
 }
 
-export class Role {
+export interface MortgageCalculatorInput {
+    propertyPrice: number;
+    downPaymentPercentage: number;
+    durationTypeId: number;
+    mortgageDuration: number;
+    interestRate: number;
+}
+
+export interface CreateMortgage {
+    coApplicantName?: Nullable<string>;
+    coApplicantEmail?: Nullable<string>;
+    downPaymentPercentage: number;
+    applicationDate: Date;
+    interestRate: number;
+    mortgageDuration: number;
+    propertyId: string;
+    propertyPurchaseReqId: string;
+    durationTypeId: number;
+}
+
+export interface UpdateMortgage {
+    mortgageId: string;
+    coApplicantName?: Nullable<string>;
+    coApplicantEmail?: Nullable<string>;
+    downPaymentPercentage?: Nullable<number>;
+    interestRate?: Nullable<number>;
+    mortgageDuration?: Nullable<number>;
+    propertyPurchaseReqId?: Nullable<string>;
+    durationTypeId?: Nullable<number>;
+}
+
+export interface AdminApproveMortgage {
+    mortgageId: string;
+    mortgageStatusId: number;
+}
+
+export interface Role {
     id?: Nullable<string>;
     roleName?: Nullable<string>;
     roleDescription?: Nullable<string>;
@@ -302,103 +359,67 @@ export class Role {
     updatedAt?: Nullable<DateTime>;
 }
 
-export abstract class IQuery {
-    abstract getAllRoles(): Nullable<Nullable<Role>[]> | Promise<Nullable<Nullable<Role>[]>>;
-
-    abstract getUserDeveloperRoles(): Nullable<Nullable<Role>[]> | Promise<Nullable<Nullable<Role>[]>>;
-
-    abstract getAdminRoles(): Nullable<Nullable<Role>[]> | Promise<Nullable<Nullable<Role>[]>>;
-
-    abstract getUserById(): Nullable<User> | Promise<Nullable<User>>;
-
-    abstract getAdminById(): Nullable<Admin> | Promise<Nullable<Admin>>;
-
-    abstract getAllUsers(): Nullable<Nullable<User>[]> | Promise<Nullable<Nullable<User>[]>>;
-
-    abstract getAllUserWishlists(): Nullable<Nullable<UserWishlist>[]> | Promise<Nullable<Nullable<UserWishlist>[]>>;
-
-    abstract getUserWishlistsByUser(): Nullable<Nullable<Property>[]> | Promise<Nullable<Nullable<Property>[]>>;
-
-    abstract getUserWishlistById(wishlistId: string): Nullable<UserWishlist> | Promise<Nullable<UserWishlist>>;
-
-    abstract getCompanyTypes(): Nullable<Nullable<CompanyType>[]> | Promise<Nullable<Nullable<CompanyType>[]>>;
-
-    abstract getDeveloperCompanies(): Nullable<Nullable<DeveloperCompany>[]> | Promise<Nullable<Nullable<DeveloperCompany>[]>>;
-
-    abstract getDeveloperCompanyById(companyId: string): Nullable<DeveloperCompany> | Promise<Nullable<DeveloperCompany>>;
-
-    abstract getDeveloperCompanyByUser(): Nullable<DeveloperCompany> | Promise<Nullable<DeveloperCompany>>;
-
-    abstract getStates(): Nullable<Nullable<State>[]> | Promise<Nullable<Nullable<State>[]>>;
-
-    abstract getCities(): Nullable<Nullable<City>[]> | Promise<Nullable<Nullable<City>[]>>;
-
-    abstract getCitiesByStateId(stateId: string): Nullable<Nullable<City>[]> | Promise<Nullable<Nullable<City>[]>>;
-
-    abstract getPropertyStatuses(): Nullable<Nullable<PropertyStatus>[]> | Promise<Nullable<Nullable<PropertyStatus>[]>>;
-
-    abstract getPropertyOptions(): Nullable<Nullable<PropertyOption>[]> | Promise<Nullable<Nullable<PropertyOption>[]>>;
-
-    abstract getPropertyCategories(): Nullable<Nullable<PropertyCategory>[]> | Promise<Nullable<Nullable<PropertyCategory>[]>>;
-
-    abstract getProjectStatuses(): Nullable<Nullable<ProjectStatus>[]> | Promise<Nullable<Nullable<ProjectStatus>[]>>;
-
-    abstract getPropertyMediaCategories(): Nullable<Nullable<PropertyMediaCategory>[]> | Promise<Nullable<Nullable<PropertyMediaCategory>[]>>;
-
-    abstract getProjectMediaCategories(): Nullable<Nullable<ProjectMediaCategory>[]> | Promise<Nullable<Nullable<ProjectMediaCategory>[]>>;
-
-    abstract getProjects(): Nullable<Nullable<Project>[]> | Promise<Nullable<Nullable<Project>[]>>;
-
-    abstract getProjectById(projectId: string): Nullable<Project> | Promise<Nullable<Project>>;
-
-    abstract getProjectsByCompany(companyId: string, cursor?: Nullable<string>, sets?: Nullable<number>): Nullable<ProjectByCompanyResponse> | Promise<Nullable<ProjectByCompanyResponse>>;
-
-    abstract getPrototypes(): Nullable<Nullable<Prototype>[]> | Promise<Nullable<Nullable<Prototype>[]>>;
-
-    abstract getPrototypesByProject(projectId: string): Nullable<Nullable<Prototype>[]> | Promise<Nullable<Nullable<Prototype>[]>>;
-
-    abstract getPrototypeById(prototypeId: string): Nullable<Prototype> | Promise<Nullable<Prototype>>;
-
-    abstract getProperties(): Nullable<Nullable<Property>[]> | Promise<Nullable<Nullable<Property>[]>>;
-
-    abstract getPropertiesByProject(projectId: string): Nullable<Nullable<Property>[]> | Promise<Nullable<Nullable<Property>[]>>;
-
-    abstract getPropertiesByCompany(companyId: string): Nullable<Nullable<Property>[]> | Promise<Nullable<Nullable<Property>[]>>;
-
-    abstract getPropertyByDeveloper(developerId: string): Nullable<Nullable<Property>[]> | Promise<Nullable<Nullable<Property>[]>>;
-
-    abstract getPropertyById(propertyId: string): Nullable<Property> | Promise<Nullable<Property>>;
-
-    abstract getInspectionTypes(): Nullable<Nullable<InspectionType>[]> | Promise<Nullable<Nullable<InspectionType>[]>>;
-
-    abstract getInspectionStatus(): Nullable<Nullable<InspectionStatus>[]> | Promise<Nullable<Nullable<InspectionStatus>[]>>;
-
-    abstract adminGetInspectionSchedules(monthValue?: Nullable<number>): Nullable<Nullable<InspectionCalendarLog>[]> | Promise<Nullable<Nullable<InspectionCalendarLog>[]>>;
-
-    abstract getInspectionScheduleByDeveloper(monthValue?: Nullable<number>): Nullable<Nullable<InspectionCalendarLog>[]> | Promise<Nullable<Nullable<InspectionCalendarLog>[]>>;
-
-    abstract userGetInspectionSchedules(): Nullable<Nullable<InspectionSchedule>[]> | Promise<Nullable<Nullable<InspectionSchedule>[]>>;
-
-    abstract getInspectionSchedules(): Nullable<Nullable<InspectionSchedule>[]> | Promise<Nullable<Nullable<InspectionSchedule>[]>>;
-
-    abstract getInpectionScheduleById(scheduleId: string): Nullable<InspectionSchedule> | Promise<Nullable<InspectionSchedule>>;
-
-    abstract adminViewPrequalifications(): Nullable<Nullable<Prequalification>[]> | Promise<Nullable<Nullable<Prequalification>[]>>;
-
-    abstract getPrequalifications(): Nullable<Nullable<Prequalification>[]> | Promise<Nullable<Nullable<Prequalification>[]>>;
-
-    abstract getPrequalificationById(prequalificationId: string): Nullable<Prequalification> | Promise<Nullable<Prequalification>>;
-
-    abstract getPrequalificationsByUser(): Nullable<Nullable<Prequalification>[]> | Promise<Nullable<Nullable<Prequalification>[]>>;
-
-    abstract getInvestments(): Nullable<Nullable<Investment>[]> | Promise<Nullable<Nullable<Investment>[]>>;
-
-    abstract getInvestementsByUser(): Nullable<Nullable<Investment>[]> | Promise<Nullable<Nullable<Investment>[]>>;
-
-    abstract adminGetInvestments(): Nullable<Nullable<Investment>[]> | Promise<Nullable<Nullable<Investment>[]>>;
+export interface IQuery {
+    getAllRoles(): Nullable<Nullable<Role>[]> | Promise<Nullable<Nullable<Role>[]>>;
+    getUserDeveloperRoles(): Nullable<Nullable<Role>[]> | Promise<Nullable<Nullable<Role>[]>>;
+    getAdminRoles(): Nullable<Nullable<Role>[]> | Promise<Nullable<Nullable<Role>[]>>;
+    getUserById(): Nullable<User> | Promise<Nullable<User>>;
+    getAdminById(): Nullable<Admin> | Promise<Nullable<Admin>>;
+    getAllUsers(): Nullable<Nullable<User>[]> | Promise<Nullable<Nullable<User>[]>>;
+    getAllUserWishlists(): Nullable<Nullable<UserWishlist>[]> | Promise<Nullable<Nullable<UserWishlist>[]>>;
+    getUserWishlistsByUser(): Nullable<Nullable<Property>[]> | Promise<Nullable<Nullable<Property>[]>>;
+    getUserWishlistById(wishlistId: string): Nullable<UserWishlist> | Promise<Nullable<UserWishlist>>;
+    getCompanyTypes(): Nullable<Nullable<CompanyType>[]> | Promise<Nullable<Nullable<CompanyType>[]>>;
+    getDeveloperCompanies(): Nullable<Nullable<DeveloperCompany>[]> | Promise<Nullable<Nullable<DeveloperCompany>[]>>;
+    getDeveloperCompanyById(companyId: string): Nullable<DeveloperCompany> | Promise<Nullable<DeveloperCompany>>;
+    getDeveloperCompanyByUser(): Nullable<DeveloperCompany> | Promise<Nullable<DeveloperCompany>>;
+    getStates(): Nullable<Nullable<State>[]> | Promise<Nullable<Nullable<State>[]>>;
+    getCities(): Nullable<Nullable<City>[]> | Promise<Nullable<Nullable<City>[]>>;
+    getCitiesByStateId(stateId: string): Nullable<Nullable<City>[]> | Promise<Nullable<Nullable<City>[]>>;
+    getPropertyStatuses(): Nullable<Nullable<PropertyStatus>[]> | Promise<Nullable<Nullable<PropertyStatus>[]>>;
+    getPropertyOptions(): Nullable<Nullable<PropertyOption>[]> | Promise<Nullable<Nullable<PropertyOption>[]>>;
+    getPropertyCategories(): Nullable<Nullable<PropertyCategory>[]> | Promise<Nullable<Nullable<PropertyCategory>[]>>;
+    getProjectStatuses(): Nullable<Nullable<ProjectStatus>[]> | Promise<Nullable<Nullable<ProjectStatus>[]>>;
+    getPropertyMediaCategories(): Nullable<Nullable<PropertyMediaCategory>[]> | Promise<Nullable<Nullable<PropertyMediaCategory>[]>>;
+    getProjectMediaCategories(): Nullable<Nullable<ProjectMediaCategory>[]> | Promise<Nullable<Nullable<ProjectMediaCategory>[]>>;
+    getProjects(): Nullable<Nullable<Project>[]> | Promise<Nullable<Nullable<Project>[]>>;
+    getProjectById(projectId: string): Nullable<Project> | Promise<Nullable<Project>>;
+    getProjectsByCompany(companyId: string, cursor?: Nullable<string>, sets?: Nullable<number>): Nullable<ProjectByCompanyResponse> | Promise<Nullable<ProjectByCompanyResponse>>;
+    getPrototypes(): Nullable<Nullable<Prototype>[]> | Promise<Nullable<Nullable<Prototype>[]>>;
+    getPrototypesByProject(projectId: string): Nullable<Nullable<Prototype>[]> | Promise<Nullable<Nullable<Prototype>[]>>;
+    getPrototypeById(prototypeId: string): Nullable<Prototype> | Promise<Nullable<Prototype>>;
+    getProperties(): Nullable<Nullable<Property>[]> | Promise<Nullable<Nullable<Property>[]>>;
+    getPropertiesByProject(projectId: string): Nullable<Nullable<Property>[]> | Promise<Nullable<Nullable<Property>[]>>;
+    getPropertiesByCompany(companyId: string): Nullable<Nullable<Property>[]> | Promise<Nullable<Nullable<Property>[]>>;
+    getPropertyByDeveloper(developerId: string): Nullable<Nullable<Property>[]> | Promise<Nullable<Nullable<Property>[]>>;
+    getPropertyById(propertyId: string): Nullable<Property> | Promise<Nullable<Property>>;
+    getPurchaseRequests(): Nullable<Nullable<PropertyPurchaseRequest>[]> | Promise<Nullable<Nullable<PropertyPurchaseRequest>[]>>;
+    getPurchaseRequestsByUser(): Nullable<Nullable<PropertyPurchaseRequest>[]> | Promise<Nullable<Nullable<PropertyPurchaseRequest>[]>>;
+    adminGetPurchaseRequests(): Nullable<Nullable<PropertyPurchaseRequest>[]> | Promise<Nullable<Nullable<PropertyPurchaseRequest>[]>>;
+    getPurchaseRequestById(purchaseRequestId: string): Nullable<PropertyPurchaseRequest> | Promise<Nullable<PropertyPurchaseRequest>>;
+    getInspectionTypes(): Nullable<Nullable<InspectionType>[]> | Promise<Nullable<Nullable<InspectionType>[]>>;
+    getInspectionStatus(): Nullable<Nullable<InspectionStatus>[]> | Promise<Nullable<Nullable<InspectionStatus>[]>>;
+    adminGetInspectionSchedules(monthValue?: Nullable<number>): Nullable<Nullable<InspectionCalendarLog>[]> | Promise<Nullable<Nullable<InspectionCalendarLog>[]>>;
+    getInspectionScheduleByDeveloper(monthValue?: Nullable<number>): Nullable<Nullable<InspectionCalendarLog>[]> | Promise<Nullable<Nullable<InspectionCalendarLog>[]>>;
+    userGetInspectionSchedules(): Nullable<Nullable<InspectionSchedule>[]> | Promise<Nullable<Nullable<InspectionSchedule>[]>>;
+    getInspectionSchedules(): Nullable<Nullable<InspectionSchedule>[]> | Promise<Nullable<Nullable<InspectionSchedule>[]>>;
+    getInpectionScheduleById(scheduleId: string): Nullable<InspectionSchedule> | Promise<Nullable<InspectionSchedule>>;
+    adminViewPrequalifications(): Nullable<Nullable<Prequalification>[]> | Promise<Nullable<Nullable<Prequalification>[]>>;
+    getPrequalifications(): Nullable<Nullable<Prequalification>[]> | Promise<Nullable<Nullable<Prequalification>[]>>;
+    getPrequalificationById(prequalificationId: string): Nullable<Prequalification> | Promise<Nullable<Prequalification>>;
+    getPrequalificationsByUser(): Nullable<Nullable<Prequalification>[]> | Promise<Nullable<Nullable<Prequalification>[]>>;
+    getInvestments(): Nullable<Nullable<Investment>[]> | Promise<Nullable<Nullable<Investment>[]>>;
+    getInvestementsByUser(): Nullable<Nullable<Investment>[]> | Promise<Nullable<Nullable<Investment>[]>>;
+    adminGetInvestments(): Nullable<Nullable<Investment>[]> | Promise<Nullable<Nullable<Investment>[]>>;
+    getMortgageStatuses(): Nullable<Nullable<MortgageStatus>[]> | Promise<Nullable<Nullable<MortgageStatus>[]>>;
+    mortgageCalculator(input: MortgageCalculatorInput): Nullable<MortgageCalculatorResponse> | Promise<Nullable<MortgageCalculatorResponse>>;
+    getMortgages(): Nullable<Nullable<Mortgage>[]> | Promise<Nullable<Nullable<Mortgage>[]>>;
+    getMortgageById(mortgageId: string): Nullable<Mortgage> | Promise<Nullable<Mortgage>>;
+    getMortgagesByUser(): Nullable<Nullable<Mortgage>[]> | Promise<Nullable<Nullable<Mortgage>[]>>;
+    adminGetMortgages(): Nullable<Nullable<Mortgage>[]> | Promise<Nullable<Nullable<Mortgage>[]>>;
 }
 
-export class AdminInvite {
+export interface AdminInvite {
     id?: Nullable<string>;
     fullname?: Nullable<string>;
     email?: Nullable<string>;
@@ -409,119 +430,75 @@ export class AdminInvite {
     updatedAt?: Nullable<DateTime>;
 }
 
-export abstract class IMutation {
-    abstract createAdminInvite(input?: Nullable<AdminCreateInvite>): Nullable<AdminInvite> | Promise<Nullable<AdminInvite>>;
-
-    abstract signUp(input: UserSignUpInput): Nullable<UserSignUpResponse> | Promise<Nullable<UserSignUpResponse>>;
-
-    abstract userSignUpAfterInvite(input: UserSignUpAfterInvite): Nullable<UserSignUpResponse> | Promise<Nullable<UserSignUpResponse>>;
-
-    abstract signIn(input: UserSigninInput): Nullable<UserSignInResponse> | Promise<Nullable<UserSignInResponse>>;
-
-    abstract adminSignUp(input: AdminSignupInput): Nullable<AdminSignUpResponse> | Promise<Nullable<AdminSignUpResponse>>;
-
-    abstract adminSignIn(input: AdminSigninInput): Nullable<AdminSignUpResponse> | Promise<Nullable<AdminSignUpResponse>>;
-
-    abstract adminSignUpAfterInvite(input: AdminSignUpAfterInvite): Nullable<AdminSignUpResponse> | Promise<Nullable<AdminSignUpResponse>>;
-
-    abstract resendVerificationCode(): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract verification(code: number): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract logOut(): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract adminLogOut(): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract userCreateInvite(input?: Nullable<UserCreateInvite>): Nullable<UserDeveloperInvite> | Promise<Nullable<UserDeveloperInvite>>;
-
-    abstract deleteUserByEmail(email: string): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract deleteUserById(userId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract deleteAllUsers(): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract addPropertyToWishlist(propertyId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract deletePropertyfromWishlist(propertyId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract deleteAllUserWishlists(): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract generateQrCodeDataURL(): string | Promise<string>;
-
-    abstract turnOnTwoFactorAuth(twoFACode: string): boolean | Promise<boolean>;
-
-    abstract createDeveloperCompany(input?: Nullable<CreateDeveloperCompany>): Nullable<DeveloperCompany> | Promise<Nullable<DeveloperCompany>>;
-
-    abstract updateDeveloperCompany(input?: Nullable<UpdateDeveloperCompany>): Nullable<DeveloperCompany> | Promise<Nullable<DeveloperCompany>>;
-
-    abstract deleteDeveloperCompany(companyId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract deleteAllDeveloperCompanies(): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract createProject(input: CreateProject): Nullable<Project> | Promise<Nullable<Project>>;
-
-    abstract updateProject(input: UpdateProject): Nullable<Project> | Promise<Nullable<Project>>;
-
-    abstract deleteProject(projectId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract deleteAllProjects(): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract createPrototype(input: CreatePrototype): Nullable<Prototype> | Promise<Nullable<Prototype>>;
-
-    abstract updatePrototype(input: UpdatePrototype): Nullable<Prototype> | Promise<Nullable<Prototype>>;
-
-    abstract deletePrototype(prototypeId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract deleteAllPrototypes(): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract createProperty(input: CreateProperty): Nullable<Property> | Promise<Nullable<Property>>;
-
-    abstract updateProperty(input: UpdateProperty): Nullable<Property> | Promise<Nullable<Property>>;
-
-    abstract deleteProperty(propertyId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract deleteAllPropertyCategories(): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract deleteAllProperties(): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract createInspectionSchedule(input: CreateInspectionSchedule): Nullable<InspectionSchedule> | Promise<Nullable<InspectionSchedule>>;
-
-    abstract adminHandleInspectionSchedule(input: AdminHandleInspectionSchedule): string | Promise<string>;
-
-    abstract developerHandleInspectionSchedule(input: DeveloperHandleInspectionSchedule): InspectionScheduleSlip | Promise<InspectionScheduleSlip>;
-
-    abstract updateInspectionSchedule(input: UpdateInspectionSchedule): Nullable<InspectionSchedule> | Promise<Nullable<InspectionSchedule>>;
-
-    abstract deleteInspectionSchedule(scheduleId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract deleteAllInspectionSchedules(): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract createPrequalification(input: CreatePrequalification): Nullable<Prequalification> | Promise<Nullable<Prequalification>>;
-
-    abstract updatePrequalification(input: UpdatePrequalification): Nullable<Prequalification> | Promise<Nullable<Prequalification>>;
-
-    abstract deletePrequalification(prequalificationId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract deleteAllPrequalifications(): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract adminApprovePrequalification(input: AdminApprovePrequalification): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract createInvestment(input: CreateInvestment): Nullable<Investment> | Promise<Nullable<Investment>>;
-
-    abstract updateInvestment(input: UpdateInvestment): Nullable<Investment> | Promise<Nullable<Investment>>;
-
-    abstract pauseInvestment(investmentId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract resumeInvestment(input?: Nullable<ResumeInvestment>): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract endInvestment(investmentId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract deleteInvestment(investmentId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
-
-    abstract deleteAllInvestements(): Nullable<boolean> | Promise<Nullable<boolean>>;
+export interface IMutation {
+    createAdminInvite(input?: Nullable<AdminCreateInvite>): Nullable<AdminInvite> | Promise<Nullable<AdminInvite>>;
+    signUp(input: UserSignUpInput): Nullable<UserSignUpResponse> | Promise<Nullable<UserSignUpResponse>>;
+    userSignUpAfterInvite(input: UserSignUpAfterInvite): Nullable<UserSignUpResponse> | Promise<Nullable<UserSignUpResponse>>;
+    signIn(input: UserSigninInput): Nullable<UserSignInResponse> | Promise<Nullable<UserSignInResponse>>;
+    adminSignUp(input: AdminSignupInput): Nullable<AdminSignUpResponse> | Promise<Nullable<AdminSignUpResponse>>;
+    adminSignIn(input: AdminSigninInput): Nullable<AdminSignUpResponse> | Promise<Nullable<AdminSignUpResponse>>;
+    adminSignUpAfterInvite(input: AdminSignUpAfterInvite): Nullable<AdminSignUpResponse> | Promise<Nullable<AdminSignUpResponse>>;
+    resendVerificationCode(): Nullable<boolean> | Promise<Nullable<boolean>>;
+    verification(code: number): Nullable<boolean> | Promise<Nullable<boolean>>;
+    logOut(): Nullable<boolean> | Promise<Nullable<boolean>>;
+    adminLogOut(): Nullable<boolean> | Promise<Nullable<boolean>>;
+    userCreateInvite(input?: Nullable<UserCreateInvite>): Nullable<UserDeveloperInvite> | Promise<Nullable<UserDeveloperInvite>>;
+    deleteUserByEmail(email: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deleteUserById(userId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deleteAllUsers(): Nullable<boolean> | Promise<Nullable<boolean>>;
+    addPropertyToWishlist(propertyId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deletePropertyfromWishlist(propertyId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deleteAllUserWishlists(): Nullable<boolean> | Promise<Nullable<boolean>>;
+    generateQrCodeDataURL(): string | Promise<string>;
+    turnOnTwoFactorAuth(twoFACode: string): boolean | Promise<boolean>;
+    createDeveloperCompany(input?: Nullable<CreateDeveloperCompany>): Nullable<DeveloperCompany> | Promise<Nullable<DeveloperCompany>>;
+    updateDeveloperCompany(input?: Nullable<UpdateDeveloperCompany>): Nullable<DeveloperCompany> | Promise<Nullable<DeveloperCompany>>;
+    deleteDeveloperCompany(companyId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deleteAllDeveloperCompanies(): Nullable<boolean> | Promise<Nullable<boolean>>;
+    createProject(input: CreateProject): Nullable<Project> | Promise<Nullable<Project>>;
+    updateProject(input: UpdateProject): Nullable<Project> | Promise<Nullable<Project>>;
+    deleteProject(projectId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deleteAllProjects(): Nullable<boolean> | Promise<Nullable<boolean>>;
+    createPrototype(input: CreatePrototype): Nullable<Prototype> | Promise<Nullable<Prototype>>;
+    updatePrototype(input: UpdatePrototype): Nullable<Prototype> | Promise<Nullable<Prototype>>;
+    deletePrototype(prototypeId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deleteAllPrototypes(): Nullable<boolean> | Promise<Nullable<boolean>>;
+    createProperty(input: CreateProperty): Nullable<Property> | Promise<Nullable<Property>>;
+    updateProperty(input: UpdateProperty): Nullable<Property> | Promise<Nullable<Property>>;
+    deleteProperty(propertyId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deleteAllPropertyCategories(): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deleteAllProperties(): Nullable<boolean> | Promise<Nullable<boolean>>;
+    createPurchaseRequest(input: CreatePropertyPurchaseRequest): Nullable<PropertyPurchaseRequest> | Promise<Nullable<PropertyPurchaseRequest>>;
+    updatePurchaseRequest(input: UpdatePropertyPurchaseRequest): Nullable<PropertyPurchaseRequest> | Promise<Nullable<PropertyPurchaseRequest>>;
+    approvePurchaseRequest(input: ApprovePurchaseRequest): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deletePurchaseRequest(purchaseRequestId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deleteAllPurchaseRequest(): Nullable<boolean> | Promise<Nullable<boolean>>;
+    createInspectionSchedule(input: CreateInspectionSchedule): Nullable<InspectionSchedule> | Promise<Nullable<InspectionSchedule>>;
+    adminHandleInspectionSchedule(input: AdminHandleInspectionSchedule): string | Promise<string>;
+    developerHandleInspectionSchedule(input: DeveloperHandleInspectionSchedule): InspectionScheduleSlip | Promise<InspectionScheduleSlip>;
+    updateInspectionSchedule(input: UpdateInspectionSchedule): Nullable<InspectionSchedule> | Promise<Nullable<InspectionSchedule>>;
+    deleteInspectionSchedule(scheduleId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deleteAllInspectionSchedules(): Nullable<boolean> | Promise<Nullable<boolean>>;
+    createPrequalification(input: CreatePrequalification): Nullable<Prequalification> | Promise<Nullable<Prequalification>>;
+    updatePrequalification(input: UpdatePrequalification): Nullable<Prequalification> | Promise<Nullable<Prequalification>>;
+    deletePrequalification(prequalificationId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deleteAllPrequalifications(): Nullable<boolean> | Promise<Nullable<boolean>>;
+    adminApprovePrequalification(input: AdminApprovePrequalification): Nullable<boolean> | Promise<Nullable<boolean>>;
+    createInvestment(input: CreateInvestment): Nullable<Investment> | Promise<Nullable<Investment>>;
+    updateInvestment(input: UpdateInvestment): Nullable<Investment> | Promise<Nullable<Investment>>;
+    pauseInvestment(investmentId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    resumeInvestment(input?: Nullable<ResumeInvestment>): Nullable<boolean> | Promise<Nullable<boolean>>;
+    endInvestment(investmentId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deleteInvestment(investmentId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deleteAllInvestements(): Nullable<boolean> | Promise<Nullable<boolean>>;
+    createMortgage(input: CreateMortgage): Nullable<Mortgage> | Promise<Nullable<Mortgage>>;
+    adminAproveMortgage(input: AdminApproveMortgage): Nullable<boolean> | Promise<Nullable<boolean>>;
+    updateMortgage(input: UpdateMortgage): Nullable<Mortgage> | Promise<Nullable<Mortgage>>;
+    deleteMortgage(mortgageId: string): Nullable<boolean> | Promise<Nullable<boolean>>;
+    deleteAllMortgages(): Nullable<boolean> | Promise<Nullable<boolean>>;
 }
 
-export class Admin {
+export interface Admin {
     id?: Nullable<string>;
     fullname?: Nullable<string>;
     email?: Nullable<string>;
@@ -532,13 +509,13 @@ export class Admin {
     updatedAt?: Nullable<DateTime>;
 }
 
-export class AdminSignUpResponse {
+export interface AdminSignUpResponse {
     email: string;
     access_token: string;
     refresh_token: string;
 }
 
-export class User {
+export interface User {
     id?: Nullable<string>;
     fullname?: Nullable<string>;
     email?: Nullable<string>;
@@ -553,7 +530,7 @@ export class User {
     userWallet?: Nullable<UserWallet>;
 }
 
-export class UserWishlist {
+export interface UserWishlist {
     id?: Nullable<string>;
     propertyId?: Nullable<string>;
     property?: Nullable<Property>;
@@ -562,7 +539,7 @@ export class UserWishlist {
     createdAt?: Nullable<DateTime>;
 }
 
-export class UserWallet {
+export interface UserWallet {
     id?: Nullable<string>;
     accountNumber?: Nullable<string>;
     balance?: Nullable<number>;
@@ -575,17 +552,17 @@ export class UserWallet {
     investmentPayments?: Nullable<Nullable<InvestmentPayment>[]>;
 }
 
-export class TokenResponse {
+export interface TokenResponse {
     access_token: string;
     refresh_token: string;
 }
 
-export class UserSignUpResponse {
+export interface UserSignUpResponse {
     user?: Nullable<User>;
     token?: Nullable<TokenResponse>;
 }
 
-export class UserSignInResponse {
+export interface UserSignInResponse {
     vetted?: Nullable<boolean>;
     verified?: Nullable<boolean>;
     hasDeveloperCompany?: Nullable<boolean>;
@@ -593,7 +570,7 @@ export class UserSignInResponse {
     token?: Nullable<TokenResponse>;
 }
 
-export class UserDeveloperInvite {
+export interface UserDeveloperInvite {
     id?: Nullable<string>;
     email?: Nullable<string>;
     fullname?: Nullable<string>;
@@ -607,12 +584,12 @@ export class UserDeveloperInvite {
     updatedAt?: Nullable<DateTime>;
 }
 
-export class CompanyType {
+export interface CompanyType {
     id?: Nullable<number>;
     type?: Nullable<string>;
 }
 
-export class DeveloperCompany {
+export interface DeveloperCompany {
     id?: Nullable<string>;
     companyName?: Nullable<string>;
     companyEmail?: Nullable<string>;
@@ -631,7 +608,7 @@ export class DeveloperCompany {
     updatedAt?: Nullable<DateTime>;
 }
 
-export class UserDeveloperCompany {
+export interface UserDeveloperCompany {
     id?: Nullable<string>;
     developerCompanyId?: Nullable<string>;
     developerCompany?: Nullable<DeveloperCompany>;
@@ -642,7 +619,74 @@ export class UserDeveloperCompany {
     updatedAt?: Nullable<DateTime>;
 }
 
-export class Country {
+export interface Financier {
+    id?: Nullable<string>;
+    fullname?: Nullable<string>;
+    email?: Nullable<string>;
+    mobile?: Nullable<string>;
+    roleId?: Nullable<string>;
+    role?: Nullable<Role>;
+    verified?: Nullable<boolean>;
+    code?: Nullable<number>;
+    codeExpiry?: Nullable<DateTime>;
+    isTwoFactorAuthEnabled?: Nullable<boolean>;
+    createdAt?: Nullable<DateTime>;
+    updatedAt?: Nullable<DateTime>;
+    financeCompanies?: Nullable<Nullable<FinanceCompany>[]>;
+    financeCompanyFinancier?: Nullable<FinanceCompanyFinancier>;
+    financierWallets?: Nullable<FinancierWallet>;
+}
+
+export interface FinanceCompany {
+    id?: Nullable<string>;
+    companyName?: Nullable<string>;
+    companyEmail?: Nullable<string>;
+    companyMobile?: Nullable<string>;
+    vetted?: Nullable<boolean>;
+    financierId?: Nullable<string>;
+    financier?: Nullable<Financier>;
+    createdAt?: Nullable<DateTime>;
+    updatedAt?: Nullable<DateTime>;
+    financeCompanyFinanciers?: Nullable<Nullable<FinanceCompanyFinancier>[]>;
+    financierInvites?: Nullable<Nullable<FinancierInvite>[]>;
+    mortgages?: Nullable<Nullable<Mortgage>[]>;
+    financierDeveloperMortgagePayments?: Nullable<Nullable<FinancierDeveloperMortgagePayment>[]>;
+}
+
+export interface FinanceCompanyFinancier {
+    id?: Nullable<string>;
+    financeCompanyId?: Nullable<string>;
+    financeCompany?: Nullable<FinanceCompany>;
+    financierId?: Nullable<string>;
+    financier?: Nullable<Financier>;
+    createdAt?: Nullable<DateTime>;
+    updatedAt?: Nullable<DateTime>;
+}
+
+export interface FinancierInvite {
+    id?: Nullable<string>;
+    email?: Nullable<string>;
+    fullname?: Nullable<string>;
+    mobile?: Nullable<string>;
+    accepted?: Nullable<boolean>;
+    financeCompanyId?: Nullable<string>;
+    financeCompany?: Nullable<FinanceCompany>;
+    roleId?: Nullable<string>;
+    role?: Nullable<Role>;
+    createdAt?: Nullable<DateTime>;
+    updatedAt?: Nullable<DateTime>;
+}
+
+export interface FinancierWallet {
+    id?: Nullable<string>;
+    financierId?: Nullable<string>;
+    financier?: Nullable<Financier>;
+    balance?: Nullable<number>;
+    createdAt?: Nullable<DateTime>;
+    updatedAt?: Nullable<DateTime>;
+}
+
+export interface Country {
     id?: Nullable<string>;
     countryName?: Nullable<string>;
     createdAt?: Nullable<DateTime>;
@@ -650,7 +694,7 @@ export class Country {
     states?: Nullable<Nullable<State>[]>;
 }
 
-export class State {
+export interface State {
     id?: Nullable<string>;
     stateName?: Nullable<string>;
     countryId?: Nullable<string>;
@@ -660,7 +704,7 @@ export class State {
     cities?: Nullable<Nullable<City>[]>;
 }
 
-export class City {
+export interface City {
     id?: Nullable<string>;
     cityName?: Nullable<string>;
     stateId?: Nullable<string>;
@@ -672,7 +716,7 @@ export class City {
     properties?: Nullable<Nullable<Property>[]>;
 }
 
-export class Neighborhood {
+export interface Neighborhood {
     id?: Nullable<string>;
     name?: Nullable<string>;
     cityId?: Nullable<string>;
@@ -683,21 +727,21 @@ export class Neighborhood {
     propertyDetails?: Nullable<Nullable<PropertyDetail>[]>;
 }
 
-export class PropertyStatus {
+export interface PropertyStatus {
     id?: Nullable<number>;
     propertyStatus?: Nullable<string>;
     createdAt?: Nullable<DateTime>;
     properties?: Nullable<Nullable<Property>[]>;
 }
 
-export class PropertyOption {
+export interface PropertyOption {
     id?: Nullable<number>;
     propertyOption?: Nullable<string>;
     createdAt?: Nullable<DateTime>;
     propertyDetails?: Nullable<Nullable<PropertyDetail>[]>;
 }
 
-export class PropertyCategory {
+export interface PropertyCategory {
     id?: Nullable<string>;
     categoryName?: Nullable<string>;
     createdAt?: Nullable<DateTime>;
@@ -706,14 +750,14 @@ export class PropertyCategory {
     properties?: Nullable<Nullable<Property>[]>;
 }
 
-export class ProjectStatus {
+export interface ProjectStatus {
     id?: Nullable<number>;
     projectStatus?: Nullable<string>;
     createdAt?: Nullable<DateTime>;
     projects?: Nullable<Nullable<Project>[]>;
 }
 
-export class Project {
+export interface Project {
     id?: Nullable<string>;
     projectName?: Nullable<string>;
     description?: Nullable<string>;
@@ -736,7 +780,7 @@ export class Project {
     projectsMedia?: Nullable<Nullable<ProjectMedia>[]>;
 }
 
-export class ProjectMediaCategory {
+export interface ProjectMediaCategory {
     id?: Nullable<string>;
     mediaCategory?: Nullable<string>;
     required?: Nullable<boolean>;
@@ -744,7 +788,7 @@ export class ProjectMediaCategory {
     projectsMedia?: Nullable<Nullable<ProjectMedia>[]>;
 }
 
-export class ProjectMedia {
+export interface ProjectMedia {
     id?: Nullable<string>;
     projectId?: Nullable<string>;
     project?: Nullable<Project>;
@@ -757,12 +801,12 @@ export class ProjectMedia {
     updatedAt?: Nullable<DateTime>;
 }
 
-export class ProjectByCompanyResponse {
+export interface ProjectByCompanyResponse {
     projectsByCompany?: Nullable<Nullable<Project>[]>;
     cursorId?: Nullable<string>;
 }
 
-export class Prototype {
+export interface Prototype {
     id?: Nullable<string>;
     prototypeName?: Nullable<string>;
     description?: Nullable<string>;
@@ -777,7 +821,7 @@ export class Prototype {
     prototypesMedia?: Nullable<Nullable<PrototypeMedia>[]>;
 }
 
-export class PrototypeMedia {
+export interface PrototypeMedia {
     id?: Nullable<string>;
     prototypeId?: Nullable<string>;
     prototype?: Nullable<Prototype>;
@@ -790,14 +834,14 @@ export class PrototypeMedia {
     updatedAt?: Nullable<DateTime>;
 }
 
-export class RequestUpdateStatus {
+export interface RequestUpdateStatus {
     id?: Nullable<number>;
     requestUpdateStatus?: Nullable<string>;
     createdAt?: Nullable<Date>;
     propertyUpdateRequests?: Nullable<Nullable<PropertyUpdateRequest>[]>;
 }
 
-export class Property {
+export interface Property {
     id?: Nullable<string>;
     name?: Nullable<string>;
     description?: Nullable<string>;
@@ -827,7 +871,7 @@ export class Property {
     propertyPurchaseRequests?: Nullable<Nullable<PropertyPurchaseRequest>[]>;
 }
 
-export class PropertyDetail {
+export interface PropertyDetail {
     id?: Nullable<string>;
     property?: Nullable<Property>;
     address?: Nullable<string>;
@@ -854,7 +898,7 @@ export class PropertyDetail {
     updatedAt?: Nullable<DateTime>;
 }
 
-export class PropertyUpdateRequest {
+export interface PropertyUpdateRequest {
     id?: Nullable<string>;
     description?: Nullable<string>;
     requestUpdateStatusId?: Nullable<number>;
@@ -867,7 +911,7 @@ export class PropertyUpdateRequest {
     updatedAt?: Nullable<DateTime>;
 }
 
-export class PropertyOwned {
+export interface PropertyOwned {
     propertyId?: Nullable<string>;
     property?: Nullable<Property>;
     userId?: Nullable<string>;
@@ -876,7 +920,7 @@ export class PropertyOwned {
     createdAt?: Nullable<DateTime>;
 }
 
-export class PropertyRented {
+export interface PropertyRented {
     id?: Nullable<string>;
     propertyId?: Nullable<string>;
     property?: Nullable<Property>;
@@ -888,7 +932,7 @@ export class PropertyRented {
     updatedAt?: Nullable<DateTime>;
 }
 
-export class PropertyMediaCategory {
+export interface PropertyMediaCategory {
     id?: Nullable<string>;
     mediaCategory?: Nullable<string>;
     required?: Nullable<boolean>;
@@ -896,7 +940,7 @@ export class PropertyMediaCategory {
     propertiesMedia?: Nullable<Nullable<PropertyMedia>[]>;
 }
 
-export class PropertyMedia {
+export interface PropertyMedia {
     id?: Nullable<string>;
     propertyId?: Nullable<string>;
     property?: Nullable<Property>;
@@ -909,7 +953,7 @@ export class PropertyMedia {
     updatedAt?: Nullable<DateTime>;
 }
 
-export class PropertyCostHistory {
+export interface PropertyCostHistory {
     id?: Nullable<string>;
     propertyId?: Nullable<string>;
     property?: Nullable<Property>;
@@ -918,21 +962,28 @@ export class PropertyCostHistory {
     createdAt?: Nullable<DateTime>;
 }
 
-export class PurchaseRequestType {
+export interface PurchaseRequestType {
     id?: Nullable<number>;
     purchaseRequestType?: Nullable<string>;
     createdAt?: Nullable<DateTime>;
     propertyPurchaseRequests?: Nullable<Nullable<PropertyPurchaseRequest>[]>;
 }
 
-export class DurationType {
+export interface DurationType {
     id?: Nullable<number>;
     durationType?: Nullable<string>;
     createdAt?: Nullable<DateTime>;
     propertyPurchaseRequests?: Nullable<Nullable<PropertyPurchaseRequest>[]>;
 }
 
-export class PropertyPurchaseRequest {
+export interface PurchaseRequestStatus {
+    id?: Nullable<number>;
+    purchaseRequestStatus?: Nullable<string>;
+    createdAt?: Nullable<DateTime>;
+    propertyPurchaseRequests?: Nullable<Nullable<PropertyPurchaseRequest>[]>;
+}
+
+export interface PropertyPurchaseRequest {
     id?: Nullable<string>;
     propertyId?: Nullable<string>;
     property?: Nullable<Property>;
@@ -941,6 +992,8 @@ export class PropertyPurchaseRequest {
     requestDate?: Nullable<DateTime>;
     approved?: Nullable<boolean>;
     approvalDate?: Nullable<DateTime>;
+    purchaseRequestStatusId?: Nullable<number>;
+    purchaseRequestStatus?: Nullable<PurchaseRequestStatus>;
     purchaseRequestTypeId?: Nullable<number>;
     purchaseRequestType?: Nullable<PurchaseRequestType>;
     purchaseDuration?: Nullable<number>;
@@ -950,21 +1003,21 @@ export class PropertyPurchaseRequest {
     updatedAt?: Nullable<DateTime>;
 }
 
-export class InspectionType {
+export interface InspectionType {
     id?: Nullable<number>;
     inspectionType?: Nullable<string>;
     createdAt?: Nullable<DateTime>;
     inspectionSchedules?: Nullable<Nullable<InspectionSchedule>[]>;
 }
 
-export class InspectionStatus {
+export interface InspectionStatus {
     id?: Nullable<number>;
     inspectionStatus?: Nullable<string>;
     createdAt?: Nullable<DateTime>;
     inspectionSchedules?: Nullable<Nullable<InspectionSchedule>[]>;
 }
 
-export class InspectionSchedule {
+export interface InspectionSchedule {
     id?: Nullable<string>;
     userId?: Nullable<string>;
     user?: Nullable<User>;
@@ -980,7 +1033,7 @@ export class InspectionSchedule {
     inspectionScheduleSlip?: Nullable<InspectionScheduleSlip>;
 }
 
-export class InspectionScheduleSlip {
+export interface InspectionScheduleSlip {
     id?: Nullable<string>;
     inspectionSchedule?: Nullable<InspectionSchedule>;
     agentId?: Nullable<string>;
@@ -992,19 +1045,19 @@ export class InspectionScheduleSlip {
     updatedAt?: Nullable<DateTime>;
 }
 
-export class InspectionCalendarLog {
+export interface InspectionCalendarLog {
     date?: Nullable<string>;
     inspectionsForDay?: Nullable<Nullable<InspectionSchedule>[]>;
 }
 
-export class PrequalificationStatus {
+export interface PrequalificationStatus {
     id?: Nullable<number>;
     prequalificationStatus?: Nullable<string>;
     createdAt?: Nullable<DateTime>;
     prequalifications?: Nullable<Nullable<Prequalification>[]>;
 }
 
-export class Prequalification {
+export interface Prequalification {
     id?: Nullable<string>;
     fullname?: Nullable<string>;
     email?: Nullable<string>;
@@ -1022,27 +1075,27 @@ export class Prequalification {
     updatedAt?: Nullable<DateTime>;
 }
 
-export class InvestmentState {
+export interface InvestmentState {
     id?: Nullable<number>;
     investmentState?: Nullable<string>;
     createdAt?: Nullable<DateTime>;
     investments?: Nullable<Nullable<Investment>[]>;
 }
 
-export class InvestmentFrequency {
+export interface InvestmentFrequency {
     id?: Nullable<number>;
     investmentFrequency?: Nullable<string>;
     createdAt?: Nullable<DateTime>;
     investments?: Nullable<Nullable<Investment>[]>;
 }
 
-export class PaymentStatus {
+export interface PaymentStatus {
     id?: Nullable<number>;
     paymentStatus?: Nullable<string>;
     createdAt?: Nullable<DateTime>;
 }
 
-export class Investment {
+export interface Investment {
     id?: Nullable<string>;
     description?: Nullable<string>;
     totalAmount?: Nullable<number>;
@@ -1061,7 +1114,7 @@ export class Investment {
     investmentPayments?: Nullable<Nullable<InvestmentPayment>[]>;
 }
 
-export class InvestmentPaymentSchedule {
+export interface InvestmentPaymentSchedule {
     id?: Nullable<string>;
     amountDue?: Nullable<number>;
     dateDue?: Nullable<DateTime>;
@@ -1075,7 +1128,7 @@ export class InvestmentPaymentSchedule {
     investmentPayments?: Nullable<Nullable<InvestmentPayment>[]>;
 }
 
-export class InvestmentPayment {
+export interface InvestmentPayment {
     id?: Nullable<string>;
     reference?: Nullable<string>;
     amountPaid?: Nullable<number>;
@@ -1086,6 +1139,134 @@ export class InvestmentPayment {
     investmentPaymentSchedule?: Nullable<InvestmentPaymentSchedule>;
     userWalletId?: Nullable<string>;
     userWallet?: Nullable<UserWallet>;
+    createdAt?: Nullable<DateTime>;
+    updatedAt?: Nullable<DateTime>;
+}
+
+export interface MortgageStatus {
+    id?: Nullable<number>;
+    mortgageStatus?: Nullable<string>;
+    createdAt?: Nullable<DateTime>;
+    mortgages?: Nullable<Nullable<Mortgage>[]>;
+}
+
+export interface Mortgage {
+    id?: Nullable<string>;
+    coApplicantName?: Nullable<string>;
+    coApplicantEmail?: Nullable<string>;
+    downPayment?: Nullable<number>;
+    downPaymentPercentage?: Nullable<number>;
+    applicationDate?: Nullable<DateTime>;
+    interestRate?: Nullable<number>;
+    approvalDate?: Nullable<DateTime>;
+    mortgageDuration?: Nullable<number>;
+    userId?: Nullable<string>;
+    user?: Nullable<User>;
+    propertyId?: Nullable<string>;
+    property?: Nullable<Property>;
+    propertyPurchaseReqId?: Nullable<string>;
+    propertyPurchaseReq?: Nullable<PropertyPurchaseRequest>;
+    mortgageStatusId?: Nullable<number>;
+    mortgageStatus?: Nullable<MortgageStatus>;
+    durationTypeId?: Nullable<number>;
+    durationType?: Nullable<DurationType>;
+    financeCompanyId?: Nullable<string>;
+    financeCompany?: Nullable<FinanceCompany>;
+    createdAt?: Nullable<DateTime>;
+    updatedAt?: Nullable<DateTime>;
+    mortgagePaymentSchedules?: Nullable<Nullable<MortgagePaymentSchedule>[]>;
+    mortgagePayments?: Nullable<Nullable<MortgagePayment>[]>;
+    financierDeveloperMortgagePayments?: Nullable<Nullable<FinancierDeveloperMortgagePayment>[]>;
+}
+
+export interface MortgagePaymentSchedule {
+    id?: Nullable<string>;
+    amountDue?: Nullable<number>;
+    dueDate?: Nullable<DateTime>;
+    paid?: Nullable<boolean>;
+    datePaid?: Nullable<DateTime>;
+    paymentStatusId?: Nullable<number>;
+    paymentStatus?: Nullable<PaymentStatus>;
+    mortgageId?: Nullable<string>;
+    mortgage?: Nullable<Mortgage>;
+    createdAt?: Nullable<DateTime>;
+    updatedAt?: Nullable<DateTime>;
+    mortgagePayments?: Nullable<Nullable<MortgagePayment>[]>;
+}
+
+export interface MortgagePayment {
+    id?: Nullable<string>;
+    reference?: Nullable<string>;
+    amountPaid?: Nullable<number>;
+    datePaid?: Nullable<DateTime>;
+    mortgageId?: Nullable<string>;
+    mortgage?: Nullable<Mortgage>;
+    mortgagePaymentScheduleId?: Nullable<string>;
+    mortgagePaymentSchedule?: Nullable<MortgagePaymentSchedule>;
+    userId?: Nullable<string>;
+    user?: Nullable<User>;
+    userWalletId?: Nullable<string>;
+    userWallet?: Nullable<UserWallet>;
+    destinationWalletId?: Nullable<string>;
+    destinationWallet?: Nullable<FinancierWallet>;
+    createdAt?: Nullable<DateTime>;
+    updatedAt?: Nullable<DateTime>;
+}
+
+export interface FinancierDeveloperMortgagePayment {
+    id?: Nullable<string>;
+    amountPaid?: Nullable<number>;
+    datePaid?: Nullable<DateTime>;
+    propertyId?: Nullable<string>;
+    property?: Nullable<Property>;
+    mortgageId?: Nullable<string>;
+    mortgage?: Nullable<Mortgage>;
+    financeCompanyId?: Nullable<string>;
+    financeCompany?: Nullable<FinanceCompany>;
+    financierWalletId?: Nullable<string>;
+    financierWallet?: Nullable<FinancierWallet>;
+    destinationWalletId?: Nullable<string>;
+    destinationWallet?: Nullable<UserWallet>;
+    createdAt?: Nullable<DateTime>;
+    updatedAt?: Nullable<DateTime>;
+}
+
+export interface MortgageCalculatorResponse {
+    tax?: Nullable<number>;
+    principalAndInterest?: Nullable<number>;
+}
+
+export interface PaymentTransaction {
+    id?: Nullable<string>;
+    reference?: Nullable<string>;
+    amountPaid?: Nullable<number>;
+    datePaid?: Nullable<DateTime>;
+    propertyId?: Nullable<string>;
+    property?: Nullable<Property>;
+    userId?: Nullable<string>;
+    user?: Nullable<User>;
+    propertyPurchaseReqId?: Nullable<string>;
+    propertyPurchaseReq?: Nullable<PropertyPurchaseRequest>;
+    userWalletId?: Nullable<string>;
+    userWallet?: Nullable<UserWallet>;
+    createdAt?: Nullable<DateTime>;
+    updatedAt?: Nullable<DateTime>;
+    paymentTransactionDetails?: Nullable<Nullable<PaymentTransactionDetail>[]>;
+}
+
+export interface PaymentTransactionDetail {
+    id?: Nullable<string>;
+    paymentTransaction?: Nullable<PaymentTransaction>;
+    destinationWalletId?: Nullable<string>;
+    destinationWallet?: Nullable<UserWallet>;
+    createdAt?: Nullable<DateTime>;
+    updatedAt?: Nullable<DateTime>;
+}
+
+export interface FAQ {
+    id?: Nullable<string>;
+    question?: Nullable<string>;
+    answer?: Nullable<string>;
     createdAt?: Nullable<DateTime>;
     updatedAt?: Nullable<DateTime>;
 }

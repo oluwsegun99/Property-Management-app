@@ -16,9 +16,13 @@ import { LocationModule } from './location/location.module';
 import { InspectionModule } from './inspection/inspection.module';
 import { InvestmentModule } from './investment/investment.module';
 import { MortgageModule } from './mortgage/mortgage.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    EventEmitterModule.forRoot(),
+    ScheduleModule.forRoot(),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       cors: {
         origin: ['http://localhost:3000', 'https://home-crescent.vercel.app', 'https://homecrescent-developer.vercel.app'],

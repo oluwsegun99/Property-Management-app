@@ -3,8 +3,9 @@ import { CompanyType } from "./common/enums/companyType.enum";
 import { InspectionStatus, InspectionType } from "./common/enums/inspection.enum";
 import { InvestmentFrequency, InvestmentState, PaymentStatus } from "./common/enums/investment.enum";
 import { CITY_DATA, Country, STATE_DATA } from "./common/enums/location.enum";
+import { MortgagePaymentFrequency, MortgageStatus } from "./common/enums/mortage.enum";
 import { PrequalificationStatus } from "./common/enums/prequalification.enum";
-import { DurationType, ProjectMediaCategory, ProjectStatus, PROJECT_MEDIA_CATEGORY, PropertyCategory, PropertyOption, PropertyStatus, PROPERTY_MEDIA_CATEGORY, PurchaseRequestType, RequestUpdateStatus } from "./common/enums/property.enum";
+import { DurationType, ProjectMediaCategory, ProjectStatus, PROJECT_MEDIA_CATEGORY, PropertyCategory, PropertyOption, PropertyStatus, PROPERTY_MEDIA_CATEGORY, PurchaseRequestStatus, PurchaseRequestType, RequestUpdateStatus } from "./common/enums/property.enum";
 import { Role } from "./common/enums/role.enum";
 import { ImportTypesensePropertyCategory } from "./typesense/importTypes/propertyCategory.import";
 
@@ -991,8 +992,8 @@ async function seed() {
     for (const status of existingPaymentStatusSet) {
         if (!paymentStatusValues.includes(status)) {
             paymentStatusesToDelete.push(status);
-        }
-    }
+        };
+    };
 
     if (paymentStatusesToDelete.length > 0) {
         await prisma.paymentStatus.deleteMany({
@@ -1002,33 +1003,145 @@ async function seed() {
                 },
             },
         });
-    }
+    };
 
     const paymentStatusesToCreate: {
         id: number,
         paymentStatus: string
     }[] = [];
 
-    let statusIndex = 0;
+    let paymentStatusIndex = 0;
 
     for (const status of paymentStatusValues) {
-        statusIndex++;
+        paymentStatusIndex++;
 
         if (existingPaymentStatusSet.has(status)) {
             continue;
         } else {
             paymentStatusesToCreate.push({
-                id: statusIndex,
+                id: paymentStatusIndex,
                 paymentStatus: status,
             });
-        }
-    }
+        };
+    };
 
     if (paymentStatusesToCreate.length > 0) {
         await prisma.paymentStatus.createMany({
             data: paymentStatusesToCreate,
         });
-    }
+    };
+
+    //PURCHASE REQUEST STATUS
+
+    const purchaseRequestStatusValues = Object.values(PurchaseRequestStatus).map((status) => status.toString());
+
+    const existingPurchaseRequestStatuses = await prisma.purchaseRequestStatus.findMany({
+        select: {
+            purchaseRequestStatus: true,
+        },
+    });
+
+    const existingPurchaseRequestStatusSet = new Set(existingPurchaseRequestStatuses.map((requestStatus) => requestStatus.purchaseRequestStatus));
+
+    const purchaseRequestStatusesToDelete: string[] = [];
+
+    for (const status of existingPurchaseRequestStatusSet) {
+        if (!purchaseRequestStatusValues.includes(status)) {
+            purchaseRequestStatusesToDelete.push(status);
+        };
+    };
+
+    if (purchaseRequestStatusesToDelete.length > 0) {
+        await prisma.purchaseRequestStatus.deleteMany({
+            where: {
+                purchaseRequestStatus: {
+                    in: purchaseRequestStatusesToDelete,
+                },
+            },
+        });
+    };
+
+    const purchaseRequestStatusesToCreate: {
+        id: number,
+        purchaseRequestStatus: string
+    }[] = [];
+
+    let purchaseRequestStatusIndex = 0;
+
+    for (const status of purchaseRequestStatusValues) {
+        purchaseRequestStatusIndex++;
+
+        if (existingPurchaseRequestStatusSet.has(status)) {
+            continue;
+        } else {
+            purchaseRequestStatusesToCreate.push({
+                id: purchaseRequestStatusIndex,
+                purchaseRequestStatus: status,
+            });
+        };
+    };
+
+    if (purchaseRequestStatusesToCreate.length > 0) {
+        await prisma.purchaseRequestStatus.createMany({
+            data: purchaseRequestStatusesToCreate,
+        });
+    };
+
+    //MORTGAGE STATUS
+
+    const mortgageStatusValues = Object.values(MortgageStatus).map((status) => status.toString());
+
+    const existingMortgageStatuses = await prisma.mortgageStatus.findMany({
+        select: {
+            mortgageStatus: true,
+        },
+    });
+
+    const existingMortgageStatusSet = new Set(existingMortgageStatuses.map((mortgageStatus) => mortgageStatus.mortgageStatus));
+
+    const mortgageStatusesToDelete: string[] = [];
+
+    for (const status of existingMortgageStatusSet) {
+        if (!mortgageStatusValues.includes(status)) {
+            mortgageStatusesToDelete.push(status);
+        };
+    };
+
+    if (mortgageStatusesToDelete.length > 0) {
+        await prisma.mortgageStatus.deleteMany({
+            where: {
+                mortgageStatus: {
+                    in: mortgageStatusesToDelete,
+                },
+            },
+        });
+    };
+
+    const mortgageStatusesToCreate: {
+        id: number,
+        mortgageStatus: string
+    }[] = [];
+
+    let mortgageStatusIndex = 0;
+
+    for (const status of mortgageStatusValues) {
+        mortgageStatusIndex++;
+
+        if (existingMortgageStatusSet.has(status)) {
+            continue;
+        } else {
+            mortgageStatusesToCreate.push({
+                id: mortgageStatusIndex,
+                mortgageStatus: status,
+            });
+        };
+    };
+
+    if (mortgageStatusesToCreate.length > 0) {
+        await prisma.mortgageStatus.createMany({
+            data: mortgageStatusesToCreate,
+        });
+    };
 };
 
 seed()

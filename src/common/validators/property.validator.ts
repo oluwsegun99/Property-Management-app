@@ -339,3 +339,60 @@ export class CreatePropertyDTO {
     @ArrayMinSize(1, { message: 'Property Media should contain at least one item' })
     propertyMedia?: CreatePropertyMediaDTO[];
 };
+
+export class CreatePropertyPurchaseRequestDTO {
+    @IsNotEmpty({ message: 'Property ID should not be empty' })
+    @IsString()
+    @Matches(/^\s*\S.*$/, { message: 'Property ID should not contain only whitespace' })
+    propertyId: string;
+
+    @IsNotEmpty({ message: 'Request date should not be empty' })
+    @IsDate()
+    requestDate: Date;
+
+    @IsNotEmpty({ message: 'Purchase request type ID should not be empty' })
+    @IsNumber()
+    purchaseRequestTypeId: number;
+
+    @IsOptional()
+    @IsNumber()
+    durationTypeId?: number;
+
+    @IsOptional()
+    @IsNumber()
+    purchaseDuration?: number;
+}
+
+export class UpdatePropertyPurchaseRequestDTO {
+    @IsNotEmpty({ message: 'Purchase request ID should not be empty' })
+    @IsString()
+    @Matches(/^\s*\S.*$/, { message: 'Purchase request ID should not contain only whitespace' })
+    purchaseRequestId: string;
+
+    @IsOptional()
+    @IsDate()
+    requestDate?: Date;
+
+    @IsOptional()
+    @IsNumber()
+    purchaseRequestTypeId?: number;
+
+    @IsOptional()
+    @IsNumber()
+    durationTypeId?: number;
+
+    @IsOptional()
+    @IsNumber()
+    purchaseDuration?: number;
+}
+
+export class ApprovePurchaseRequestDTO {
+    @IsNotEmpty({ message: 'Purchase request ID should not be empty' })
+    @IsString()
+    @Matches(/^\s*\S.*$/, { message: 'Purchase request ID should not contain only whitespace' })
+    purchaseRequestId: string;
+
+    @IsNotEmpty({ message: 'Purchase request status ID should not be empty' })
+    @IsNumber()
+    purchaseRequestStatusId: number;
+}

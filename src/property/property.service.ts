@@ -1,8 +1,8 @@
 import { ForbiddenException, Injectable, Logger, OnModuleInit, UnauthorizedException } from '@nestjs/common';
 import { User } from '@prisma/client';
-import { ProjectMediaCategory, PropertyCategory, PropertyMediaCategory } from 'src/common/enums/property.enum';
-import { validateCreateProjectDTO, validateCreatePropertyDetailDTO, validateCreatePropertyDTO, validateCreatePrototypeDTO, validateProjectMediaArray, validatePropertyMediaArray, validatePrototypeMediaArray, validateUpdateProjectDTO, validateUpdatePrototypeDTO } from 'src/common/validationFunctions/property.validation';
-import { CreateProject, CreateProperty, CreatePrototype, PropertyMedia, UpdateProject, UpdateProperty, UpdatePrototype, UserDeveloperCompany } from 'src/graphql';
+import { ProjectMediaCategory, PropertyCategory, PropertyMediaCategory, PurchaseRequestStatusEnum, PurchaseRequestTypeEnum } from 'src/common/enums/property.enum';
+import { validateApprovePurchaseRequestDTO, validateCreateProjectDTO, validateCreatePropertyDetailDTO, validateCreatePropertyDTO, validateCreatePropertyPurchaseRequestDTO, validateCreatePrototypeDTO, validateProjectMediaArray, validatePropertyMediaArray, validatePrototypeMediaArray, validateUpdateProjectDTO, validateUpdatePropertyPurchaseRequestDTO, validateUpdatePrototypeDTO } from 'src/common/validationFunctions/property.validation';
+import { ApprovePurchaseRequest, CreateProject, CreateProperty, CreatePropertyPurchaseRequest, CreatePrototype, PropertyMedia, UpdateProject, UpdateProperty, UpdatePropertyPurchaseRequest, UpdatePrototype, UserDeveloperCompany } from 'src/graphql';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ImportTypesensePropertyCategory } from 'src/typesense/importTypes/propertyCategory.import';
 import { TypesenseService } from 'src/typesense/typesense.service';
@@ -1450,6 +1450,337 @@ export class PropertyService implements OnModuleInit {
             return true;
         } catch (error) {
             console.error(error);
+            throw error;
+        };
+    };
+
+    async createPurchaseRequest(userId: string, dto: CreatePropertyPurchaseRequest) {
+        try {
+            // Validate
+            const errors: string[] = await validateCreatePropertyPurchaseRequestDTO(dto);
+            if (errors.length > 0) {
+                const errorMessage = `Validation error: ${errors.join(', ')}`;
+                throw new ForbiddenException(errorMessage);
+            };
+
+            //authorization
+            const user = await this.prisma.user.findFirst({
+                where: {
+                    id: userId,
+                    isDeveloper: false,
+                    hasCompany: false,
+                },
+            });
+            if (!user) throw new UnauthorizedException("Access denied");
+
+            const validRequestTypes: number[] = [PurchaseRequestTypeEnum.FullPayment, PurchaseRequestTypeEnum.MortgagePayment, PurchaseRequestTypeEnum.Rent];
+            if (!validRequestTypes.includes(dto.purchaseRequestTypeId)) throw new ForbiddenException("Invalid property request type");
+
+            const purchaseRequestData: {
+                propertyId: string,
+                requestDate: Date,
+                purchaseRequestTypeId: number,
+                purchaseRequestStatusId: number,
+                durationTypeId?: number,
+                purchaseDuration?: number
+                userId: string
+            } = {
+                propertyId: dto.propertyId,
+                requestDate: dto.requestDate,
+                purchaseRequestStatusId: PurchaseRequestStatusEnum.Pending,
+                purchaseRequestTypeId: dto.purchaseRequestTypeId,
+                userId,
+            };
+
+            if (dto.purchaseRequestTypeId === PurchaseRequestTypeEnum.Rent || dto.purchaseRequestTypeId === PurchaseRequestTypeEnum.MortgagePayment) {
+                if (!dto.durationTypeId || !dto.purchaseDuration) throw new ForbiddenException("Missing fields");
+
+                purchaseRequestData.durationTypeId = dto.durationTypeId;
+                purchaseRequestData.purchaseDuration = dto.purchaseDuration;
+            };
+
+            const newPurchaseRequest = await this.prisma.propertyPurchaseRequest.create({
+                data: purchaseRequestData,
+            });
+
+            return newPurchaseRequest;
+        } catch (error) {
+            this.logger.error(error);
+            throw error;
+        };
+    };
+
+    async getPurchaseRequests() {
+        try {
+            return await this.prisma.propertyPurchaseRequest.findMany({
+                include: {
+                    property: true,
+                    durationType: true,
+                    purchaseRequestStatus: true,
+                    purchaseRequestType: true,
+                    paymentTransactions: true,
+                }
+            });
+        } catch (error) {
+            this.logger.error(error);
+            throw error;
+        };
+    };
+
+    async getPurchaseRequestsByUser(userId: string) {
+        try {
+            //authorization
+            const user = await this.prisma.user.findFirst({
+                where: {
+                    id: userId,
+                    isDeveloper: false,
+                    hasCompany: false,
+                },
+                select: {
+                    propertyPurchaseRequests: {
+                        include: {
+                            property: {
+                                include: {
+                                    propertyDetail: true,
+                                    propertiesMedia: {
+                                        include: {
+                                            propertyMediaCategory: true,
+                                        },
+                                    },
+                                },
+                            },
+                            durationType: true,
+                            purchaseRequestStatus: true,
+                            purchaseRequestType: true,
+                            paymentTransactions: true,
+                        },
+                    },
+                },
+            });
+            if (!user) throw new UnauthorizedException("Access denied");
+
+            return user.propertyPurchaseRequests;
+        } catch (error) {
+            this.logger.error(error);
+            throw error;
+        };
+    };
+
+    async adminGetPurchaseRequests(adminId: string) {
+        try {
+            //authorization
+            const admin = await this.prisma.admin.findUnique({
+                where: {
+                    id: adminId,
+                },
+            });
+            if (!admin) throw new UnauthorizedException("Access denied");
+
+            return await this.prisma.propertyPurchaseRequest.findMany({
+                include: {
+                    property: {
+                        include: {
+                            propertyDetail: true,
+                            propertiesMedia: {
+                                include: {
+                                    propertyMediaCategory: true,
+                                },
+                            },
+                        },
+                    },
+                    durationType: true,
+                    purchaseRequestStatus: true,
+                    purchaseRequestType: true,
+                    paymentTransactions: true,
+                },
+            });
+        } catch (error) {
+            this.logger.error(error);
+            throw error;
+        };
+    };
+
+    async getPurchaseRequestById(purchaseRequestId: string) {
+        try {
+            const purchaseRequest = await this.prisma.propertyPurchaseRequest.findUnique({
+                where: {
+                    id: purchaseRequestId,
+                },
+                include: {
+                    property: {
+                        include: {
+                            propertyDetail: true,
+                            propertiesMedia: {
+                                include: {
+                                    propertyMediaCategory: true,
+                                },
+                            },
+                        },
+                    },
+                    durationType: true,
+                    purchaseRequestStatus: true,
+                    purchaseRequestType: true,
+                    paymentTransactions: true,
+                },
+            });
+            if (!purchaseRequest) throw new ForbiddenException("Property purchase request not found");
+
+            return purchaseRequest;
+        } catch (error) {
+            this.logger.error(error);
+            throw error;
+        };
+    };
+
+    async updatePurchaseRequest(userId: string, dto: UpdatePropertyPurchaseRequest) {
+        try {
+            // Validate
+            const errors: string[] = await validateUpdatePropertyPurchaseRequestDTO(dto);
+            if (errors.length > 0) {
+                const errorMessage = `Validation error: ${errors.join(', ')}`;
+                throw new ForbiddenException(errorMessage);
+            };
+
+            //authorization
+            const user = await this.prisma.user.findFirst({
+                where: {
+                    id: userId,
+                    isDeveloper: false,
+                    hasCompany: false,
+                },
+            });
+            if (!user) throw new UnauthorizedException("Access denied");
+
+            const purchaseRequest = await this.prisma.propertyPurchaseRequest.findUnique({
+                where: {
+                    id: dto.purchaseRequestId,
+                },
+            });
+            if (!purchaseRequest) throw new ForbiddenException("Property purchase request not found");
+            if (purchaseRequest.userId !== userId) throw new ForbiddenException("Access denied");
+            if (purchaseRequest.purchaseRequestStatusId !== PurchaseRequestStatusEnum.Pending) throw new ForbiddenException("Cannot update purchase request")
+
+            const purchaseRequestData: {
+                requestDate?: Date,
+                purchaseRequestTypeId?: number,
+                durationTypeId?: number,
+                purchaseDuration?: number
+            } = {
+                requestDate: dto.requestDate,
+            };
+
+            if (dto.purchaseRequestTypeId) {
+                const validRequestTypes: number[] = [PurchaseRequestTypeEnum.FullPayment, PurchaseRequestTypeEnum.MortgagePayment, PurchaseRequestTypeEnum.Rent];
+                if (!validRequestTypes.includes(dto.purchaseRequestTypeId)) throw new ForbiddenException("Invalid property request type");
+
+                if (dto.purchaseRequestTypeId === PurchaseRequestTypeEnum.Rent || dto.purchaseRequestTypeId === PurchaseRequestTypeEnum.MortgagePayment) {
+                    purchaseRequestData.purchaseRequestTypeId = dto.purchaseRequestTypeId;
+                    purchaseRequestData.durationTypeId = dto.durationTypeId;
+                    purchaseRequestData.purchaseDuration = dto.purchaseDuration;
+                } else {
+                    purchaseRequestData.purchaseRequestTypeId = dto.purchaseRequestTypeId;
+                    purchaseRequestData.durationTypeId = null;
+                    purchaseRequestData.purchaseDuration = null;
+                };
+            };
+
+            const updatedPurchaseRequest = await this.prisma.propertyPurchaseRequest.update({
+                where: {
+                    id: dto.purchaseRequestId,
+                },
+                data: purchaseRequestData
+            });
+
+            return updatedPurchaseRequest;
+        } catch (error) {
+            this.logger.error(error);
+            throw error;
+        }
+    }
+
+    async approvePurchaseRequest(adminId: string, dto: ApprovePurchaseRequest) {
+        try {
+            // Validate
+            const errors: string[] = await validateApprovePurchaseRequestDTO(dto);
+            if (errors.length > 0) {
+                const errorMessage = `Validation error: ${errors.join(', ')}`;
+                throw new ForbiddenException(errorMessage);
+            };
+
+            //authorization
+            const admin = await this.prisma.admin.findUnique({
+                where: {
+                    id: adminId,
+                },
+            });
+            if (!admin) throw new UnauthorizedException("Access denied");
+
+            const purchaseRequest = await this.prisma.propertyPurchaseRequest.findUnique({
+                where: {
+                    id: dto.purchaseRequestId,
+                },
+            });
+            if (!purchaseRequest) throw new ForbiddenException("Property purchase request not found");
+            if (purchaseRequest.purchaseRequestStatusId !== PurchaseRequestStatusEnum.Pending) throw new ForbiddenException("Purchase request already approved")
+
+            const validRequestStatus: number[] = [PurchaseRequestStatusEnum.Approved, PurchaseRequestStatusEnum.Rejected];
+            if (!validRequestStatus.includes(dto.purchaseRequestStatusId)) throw new ForbiddenException("Invalid status");
+
+            await this.prisma.propertyPurchaseRequest.update({
+                where: {
+                    id: dto.purchaseRequestId,
+                },
+                data: {
+                    purchaseRequestStatusId: dto.purchaseRequestStatusId,
+                },
+            });
+
+            return true;
+        } catch (error) {
+            this.logger.error(error);
+            throw error;
+        };
+    };
+
+    async deletePurchaseRequest(userId: string, purchaseRequestId: string) {
+        try {
+            //authorization
+            const user = await this.prisma.user.findFirst({
+                where: {
+                    id: userId,
+                    isDeveloper: false,
+                    hasCompany: false,
+                },
+            });
+            if (!user) throw new UnauthorizedException("Access denied");
+
+            const purchaseRequest = await this.prisma.propertyPurchaseRequest.findUnique({
+                where: {
+                    id: purchaseRequestId,
+                },
+            });
+            if (!purchaseRequest) throw new ForbiddenException("Property purchase request not found");
+            if (purchaseRequest.userId !== userId) throw new ForbiddenException("Access denied");
+
+            await this.prisma.propertyPurchaseRequest.delete({
+                where: {
+                    id: purchaseRequestId,
+                },
+            });
+
+            return true;
+        } catch (error) {
+            this.logger.error(error);
+            throw error;
+        };
+    };
+
+    async deleteAllPurchaseRequest() {
+        try {
+            await this.prisma.propertyPurchaseRequest.deleteMany();
+            return true;
+        } catch (error) {
+            this.logger.error(error);
             throw error;
         };
     };

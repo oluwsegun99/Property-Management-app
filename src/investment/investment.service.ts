@@ -1,7 +1,9 @@
 import { ForbiddenException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { scheduled } from 'rxjs';
 import { InvestmentFrequencyEnum, InvestmentStateEnum, PaymentStatusEnum } from 'src/common/enums/investment.enum';
 import { validateCreateInvestmentDTO, validateResumeInvestmentDTO, validateUpdateInvestmentDTO } from 'src/common/validationFunctions/investment.validation';
-import { CreateInvestment, ResumeInvestment, UpdateInvestment } from 'src/graphql';
+import { CreateInvestment, CreateInvestmentPayment, InvestmentPayment, InvestmentPaymentSchedule, ResumeInvestment, UpdateInvestment } from 'src/graphql';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -164,7 +166,206 @@ export class InvestmentService {
         };
     };
 
-    async automaticInvestmentPayment() { }
+    //test CRON JOB
+    @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, { name: 'automatic_investment_payment' })
+    async automaticInvestmentPayment() {
+        try {
+            const runningInvestments = await this.prisma.investment.findMany({
+                where: {
+                    investmentStateId: InvestmentStateEnum.Created || InvestmentStateEnum.Started
+                },
+                select: {
+                    investmentPaymentSchedules: {
+                        include: {
+                            paymentStatus: true,
+                            investment: {
+                                include: {
+                                    user: {
+                                        include: {
+                                            userWallet: true
+                                        }
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+
+            const today = new Date(Date.now());
+            today.setHours(0, 0, 0, 0);
+
+            const investmentPaymentSchedules: InvestmentPaymentSchedule[] = [];
+
+            for (const investment of runningInvestments) {
+                console.log(today);
+                const paymentSchedules = investment.investmentPaymentSchedules.filter((schedule) => schedule.paymentStatusId === PaymentStatusEnum.OnSchedule && schedule.dateDue.toDateString() === today.toDateString());
+                investmentPaymentSchedules.push(...paymentSchedules);
+            };
+
+            this.logger.log("Getting payment schedules...");
+
+            const createInvestmentPayments: CreateInvestmentPayment[] = []
+            const failedPayments: {
+                scheduleId: string,
+                investmentId: string,
+            }[] = [];
+
+            for (const schedule of investmentPaymentSchedules) {
+                const walletBalance = schedule.investment.user.userWallet.balance;
+
+                if (walletBalance >= schedule.amountDue) {
+                    const scheduleDate = new Date(schedule.dateDue);
+
+                    const userName = schedule.investment.user.fullname;
+                    const firstName = userName.split(' ')[0]; // Get the first name
+                    const firstThreeLetters = firstName.slice(0, 3).toUpperCase();
+
+                    let paymentReference = `SAV-${firstThreeLetters}-${scheduleDate.getFullYear()}-${scheduleDate.getMonth()}${scheduleDate.getDate()}`;
+
+                    createInvestmentPayments.push({
+                        reference: paymentReference,
+                        amountPaid: schedule.amountDue,
+                        datePaid: today,
+                        investmentId: schedule.investmentId,
+                        investmentPaymentScheduleId: schedule.id,
+                        userWalletId: schedule.investment.user.userWallet.id,
+                    });
+
+                    await this.prisma.userWallet.update({
+                        where: {
+                            id: schedule.investment.user.userWallet.id,
+                        },
+                        data: {
+                            balance: {
+                                decrement: schedule.amountDue,
+                            },
+                            savings: {
+                                increment: schedule.amountDue,
+                            },
+                        },
+                    });
+
+                    this.logger.log(`${schedule.investment.user.fullname} wallet updated...`);
+                } else if (walletBalance < schedule.amountDue) {
+                    failedPayments.push({
+                        scheduleId: schedule.id,
+                        investmentId: schedule.investmentId,
+                    });
+
+                    this.logger.log("Collecting failed payments...");
+                };
+            };
+
+            if (failedPayments.length > 0) {
+                const failedPaymentsScheduleIds = failedPayments.map((failed) => failed.scheduleId);
+                const failedPaymentsInvestmentIds = failedPayments.map((failed) => failed.investmentId);
+
+                await this.prisma.$transaction(async (prisma) => {
+                    await prisma.investmentPaymentSchedule.updateMany({
+                        where: {
+                            id: {
+                                in: failedPaymentsScheduleIds,
+                            },
+                        },
+                        data: {
+                            paymentStatusId: PaymentStatusEnum.Failed,
+                        },
+                    });
+
+                    await prisma.investment.updateMany({
+                        where: {
+                            id: {
+                                in: failedPaymentsInvestmentIds,
+                            },
+                        },
+                        data: {
+                            investmentStateId: InvestmentStateEnum.Failed,
+                        },
+                    });
+                });
+
+                this.logger.log("Failed payments handled...");
+                this.logger.log("Investments and schedules updated...");
+            };
+
+            if (createInvestmentPayments.length > 0) {
+
+                await this.prisma.$transaction(async (prisma) => {
+                    const scheduleIds: string[] = createInvestmentPayments.map((schedule) => schedule.investmentPaymentScheduleId);
+                    const investmentIds: string[] = createInvestmentPayments.map((schedule) => schedule.investmentId);
+
+                    await prisma.investmentPayment.createMany({
+                        data: createInvestmentPayments,
+                    });
+
+                    await prisma.investmentPaymentSchedule.updateMany({
+                        where: {
+                            id: {
+                                in: scheduleIds,
+                            },
+                        },
+                        data: {
+                            paymentStatusId: PaymentStatusEnum.Succeeded,
+                        },
+                    });
+
+                    await prisma.investment.updateMany({
+                        where: {
+                            id: {
+                                in: investmentIds,
+                            },
+                        },
+                        data: {
+                            investmentStateId: InvestmentStateEnum.Started,
+                        },
+                    });
+                });
+
+                this.logger.log("Successful payments created...");
+                this.logger.log("Investments and schedules updated...");
+            };
+
+            this.logger.log("Getting live investments...");
+
+            const investments = await this.prisma.investment.findMany({
+                where: {
+                    investmentStateId: InvestmentStateEnum.Created || InvestmentStateEnum.Started
+                },
+                include: {
+                    investmentPaymentSchedules: {
+                        include: {
+                            paymentStatus: true,
+                        },
+                    },
+                },
+            });
+
+            const completedInvestments: string[] = [];
+
+            for (const investment of investments) {
+                const schedules = investment.investmentPaymentSchedules.length;
+                const completedSchedules = investment.investmentPaymentSchedules.filter((completed) => completed.paymentStatusId === PaymentStatusEnum.Succeeded).length;
+
+                if (schedules === completedSchedules) completedInvestments.push(investment.id);
+            };
+
+            await this.prisma.investment.updateMany({
+                where: {
+                    id: {
+                        in: completedInvestments,
+                    },
+                },
+                data: {
+                    investmentStateId: InvestmentStateEnum.Completed,
+                },
+            });
+
+            this.logger.log("Investment job completed");
+        } catch (error) {
+            this.logger.error(error);
+        };
+    };
 
     async updateInvestment(userId: string, dto: UpdateInvestment) {
         try {

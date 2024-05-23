@@ -271,6 +271,73 @@ type Mutation{
     deleteAllDeveloperCompanies: Boolean
 }
 
+type Financier {
+  id: String
+  fullname: String
+  email: String
+  mobile: String
+  roleId: String
+  role: Role
+  verified: Boolean
+  code: Float
+  codeExpiry: DateTime
+  isTwoFactorAuthEnabled: Boolean
+  createdAt: DateTime
+  updatedAt: DateTime
+  financeCompanies: [FinanceCompany]
+  financeCompanyFinancier: FinanceCompanyFinancier
+  financierWallets: FinancierWallet
+}
+
+type FinanceCompany {
+  id: String
+  companyName: String
+  companyEmail: String
+  companyMobile: String
+  vetted: Boolean
+  financierId: String
+  financier: Financier
+  createdAt: DateTime
+  updatedAt: DateTime
+  financeCompanyFinanciers: [FinanceCompanyFinancier]
+  financierInvites: [FinancierInvite]
+  mortgages: [Mortgage]
+  financierDeveloperMortgagePayments: [FinancierDeveloperMortgagePayment]
+}
+
+type FinanceCompanyFinancier {
+  id: String
+  financeCompanyId: String
+  financeCompany: FinanceCompany
+  financierId: String
+  financier: Financier
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+type FinancierInvite {
+  id: String
+  email: String
+  fullname: String
+  mobile: String
+  accepted: Boolean
+  financeCompanyId: String
+  financeCompany: FinanceCompany
+  roleId: String
+  role: Role
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+type FinancierWallet {
+  id: String
+  financierId: String
+  financier: Financier
+  balance: Float
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
 type Country{
     id: String
     countryName: String
@@ -621,6 +688,13 @@ type DurationType{
     propertyPurchaseRequests: [PropertyPurchaseRequest]
 }
 
+type PurchaseRequestStatus{
+    id: Int
+    purchaseRequestStatus: String
+    createdAt: DateTime
+    propertyPurchaseRequests: [PropertyPurchaseRequest]
+}
+
 type PropertyPurchaseRequest{
     id: String
     propertyId: String
@@ -630,6 +704,8 @@ type PropertyPurchaseRequest{
     requestDate: DateTime
     approved: Boolean
     approvalDate: DateTime
+    purchaseRequestStatusId: Int
+    purchaseRequestStatus: PurchaseRequestStatus
     purchaseRequestTypeId: Int
     purchaseRequestType: PurchaseRequestType
     purchaseDuration: Int
@@ -637,6 +713,27 @@ type PropertyPurchaseRequest{
     durationType: DurationType
     createdAt: DateTime
     updatedAt: DateTime
+}
+
+input CreatePropertyPurchaseRequest{
+    propertyId: String!
+    requestDate: Date!
+    purchaseRequestTypeId: Int!
+    durationTypeId: Int #For rent cases
+    purchaseDuration: Int #For rent cases
+}
+
+input UpdatePropertyPurchaseRequest{
+    purchaseRequestId: String!
+    requestDate: Date
+    purchaseRequestTypeId: Int
+    durationTypeId: Int #For rent cases
+    purchaseDuration: Int #For rent cases
+}
+
+input ApprovePurchaseRequest{
+    purchaseRequestId: String!
+    purchaseRequestStatusId: Int!
 }
 
 input CreatePropertyDetails{
@@ -734,7 +831,10 @@ type Query {
     getPropertiesByCompany(companyId: String!): [Property]
     getPropertyByDeveloper(developerId: String!): [Property]
     getPropertyById(propertyId: String!): Property
-
+    getPurchaseRequests: [PropertyPurchaseRequest]
+    getPurchaseRequestsByUser: [PropertyPurchaseRequest]
+    adminGetPurchaseRequests: [PropertyPurchaseRequest]
+    getPurchaseRequestById(purchaseRequestId: String!): PropertyPurchaseRequest
 }
 
 type Mutation {
@@ -751,6 +851,11 @@ type Mutation {
     deleteProperty(propertyId: String!): Boolean
     deleteAllPropertyCategories: Boolean
     deleteAllProperties: Boolean
+    createPurchaseRequest(input: CreatePropertyPurchaseRequest!): PropertyPurchaseRequest
+    updatePurchaseRequest(input: UpdatePropertyPurchaseRequest!): PropertyPurchaseRequest
+    approvePurchaseRequest(input: ApprovePurchaseRequest!): Boolean
+    deletePurchaseRequest(purchaseRequestId: String!): Boolean
+    deleteAllPurchaseRequest: Boolean
 }
 
 type InspectionType{
@@ -1025,4 +1130,186 @@ type Mutation {
     endInvestment(investmentId: String!): Boolean
     deleteInvestment(investmentId: String!): Boolean
     deleteAllInvestements: Boolean
+}
+
+type MortgageStatus {
+  id: Int
+  mortgageStatus: String
+  createdAt: DateTime
+  mortgages: [Mortgage]
+}
+
+type Mortgage {
+  id: String
+  coApplicantName: String
+  coApplicantEmail: String
+  downPayment: Float
+  downPaymentPercentage: Float
+  applicationDate: DateTime
+  interestRate: Float
+  approvalDate: DateTime
+  mortgageDuration: Int
+  userId: String
+  user: User
+  propertyId: String
+  property: Property
+  propertyPurchaseReqId: String
+  propertyPurchaseReq: PropertyPurchaseRequest
+  mortgageStatusId: Int
+  mortgageStatus: MortgageStatus
+  durationTypeId: Int
+  durationType: DurationType
+  financeCompanyId: String
+  financeCompany: FinanceCompany
+  createdAt: DateTime
+  updatedAt: DateTime
+  mortgagePaymentSchedules: [MortgagePaymentSchedule]
+  mortgagePayments: [MortgagePayment]
+  financierDeveloperMortgagePayments: [FinancierDeveloperMortgagePayment]
+}
+
+type MortgagePaymentSchedule {
+  id: String
+  amountDue: Float
+  dueDate: DateTime
+  paid: Boolean
+  datePaid: DateTime
+  paymentStatusId: Int
+  paymentStatus: PaymentStatus
+  mortgageId: String
+  mortgage: Mortgage
+  createdAt: DateTime
+  updatedAt: DateTime
+  mortgagePayments: [MortgagePayment]
+}
+
+type MortgagePayment {
+  id: String
+  reference: String
+  amountPaid: Float
+  datePaid: DateTime
+  mortgageId: String
+  mortgage: Mortgage
+  mortgagePaymentScheduleId: String
+  mortgagePaymentSchedule: MortgagePaymentSchedule
+  userId: String
+  user: User
+  userWalletId: String
+  userWallet: UserWallet
+  destinationWalletId: String
+  destinationWallet: FinancierWallet
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+type FinancierDeveloperMortgagePayment {
+  id: String
+  amountPaid: Float
+  datePaid: DateTime
+  propertyId: String
+  property: Property
+  mortgageId: String
+  mortgage: Mortgage
+  financeCompanyId: String
+  financeCompany: FinanceCompany
+  financierWalletId: String
+  financierWallet: FinancierWallet
+  destinationWalletId: String
+  destinationWallet: UserWallet
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+input MortgageCalculatorInput{
+    propertyPrice: Float!
+    downPaymentPercentage: Float!
+    durationTypeId: Int!
+    mortgageDuration: Int!
+    interestRate: Float!
+}
+
+type MortgageCalculatorResponse {
+    tax: Float
+    principalAndInterest: Float
+}
+
+input CreateMortgage{
+    coApplicantName: String
+    coApplicantEmail: String
+    downPaymentPercentage: Float!
+    applicationDate: Date!
+    interestRate: Float!
+    mortgageDuration: Int!
+    propertyId: String!
+    propertyPurchaseReqId: String!
+    # mortgageStatusId: Int
+    durationTypeId: Int!
+}
+
+input UpdateMortgage{
+    mortgageId: String!
+    coApplicantName: String
+    coApplicantEmail: String
+    downPaymentPercentage: Float
+    interestRate: Float
+    mortgageDuration: Int
+    propertyPurchaseReqId: String
+    durationTypeId: Int
+}
+
+input AdminApproveMortgage{
+    mortgageId: String!
+    mortgageStatusId: Int!
+}
+
+type Query {
+    getMortgageStatuses: [MortgageStatus]
+    mortgageCalculator(input: MortgageCalculatorInput!): MortgageCalculatorResponse
+    getMortgages: [Mortgage]
+    getMortgageById(mortgageId: String!): Mortgage
+    getMortgagesByUser: [Mortgage]
+    adminGetMortgages: [Mortgage]
+}
+
+type Mutation {
+    createMortgage(input: CreateMortgage!): Mortgage
+    adminAproveMortgage(input: AdminApproveMortgage!): Boolean
+    updateMortgage(input: UpdateMortgage!): Mortgage
+    deleteMortgage(mortgageId: String!): Boolean
+    deleteAllMortgages: Boolean
+}
+
+type PaymentTransaction {
+  id: String
+  reference: String
+  amountPaid: Float
+  datePaid: DateTime
+  propertyId: String
+  property: Property
+  userId: String
+  user: User
+  propertyPurchaseReqId: String
+  propertyPurchaseReq: PropertyPurchaseRequest
+  userWalletId: String
+  userWallet: UserWallet
+  createdAt: DateTime
+  updatedAt: DateTime
+  paymentTransactionDetails: [PaymentTransactionDetail]
+}
+
+type PaymentTransactionDetail {
+  id: String
+  paymentTransaction: PaymentTransaction
+  destinationWalletId: String
+  destinationWallet: UserWallet
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+type FAQ {
+  id: String
+  question: String
+  answer: String
+  createdAt: DateTime
+  updatedAt: DateTime
 }
