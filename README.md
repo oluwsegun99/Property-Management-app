@@ -1,6 +1,6 @@
-# Homecrescent Backend
+# Property Management Backend
 
-A comprehensive property management and real estate platform built with NestJS, GraphQL, Prisma, and PostgreSQL. This backend service powers the Homecrescent application, enabling property listings, mortgage management, investment opportunities, inspections, and financial transactions.
+A comprehensive property management and real estate platform built with NestJS, GraphQL, Prisma, and PostgreSQL. This backend service powers the Property Management application, enabling property listings, mortgage management, investment opportunities, inspections, and financial transactions.
 
 ## Table of Contents
 
@@ -56,26 +56,22 @@ Before you begin, ensure you have the following installed:
 
 ## Environment Setup
 
-Create a `.env` file in the root directory with the following variables:
+Create a `.env` file in the root directory. You can use the provided `env.sample` file as a template:
 
 ```bash
-# Database Configuration
-DATABASE_URL="postgresql://homecrescent:password@localhost:5433/homecrescentDb"
-
-# JWT Configuration
-JWT_ACCESS_SECRET="your-access-token-secret"
-JWT_REFRESH_SECRET="your-refresh-token-secret"
-
-# Typesense Configuration
-TYPESENSE_HOST="localhost"
-TYPESENSE_PORT="8108"
-TYPESENSE_PROTOCOL="http"
-TYPESENSE_API_KEY="your-typesense-api-key"
-
-# Application Configuration
-PORT=3000
-NODE_ENV=development
+# Copy the sample file to .env
+$ cp env.sample .env
 ```
+
+Then update the `.env` file with your actual configuration values. The template includes all required environment variables with descriptions:
+
+- **Database Configuration**: PostgreSQL connection string
+- **JWT Authentication**: Access and refresh token secrets
+- **Two-Factor Authentication**: Authenticator secret for 2FA
+- **Typesense Search**: Search engine configuration
+- **Application Settings**: Port and environment mode
+
+**Important**: Never commit your `.env` file to version control. Use strong, randomly generated secrets for production environments.
 
 ## Installation
 
@@ -98,9 +94,9 @@ $ docker-compose up -d
 ```
 
 This will start a PostgreSQL 13 instance on port `5433` with the following credentials:
-- **User**: `homecrescent`
+- **User**: `propertymanagement`
 - **Password**: `password`
-- **Database**: `homecrescentDb`
+- **Database**: `propertymanagementDb`
 
 ### 2. Run Database Migrations
 

@@ -5,6 +5,6 @@ services:
     ports:
       - 5433:5432
     environment:
-      POSTGRES_USER: homecrescent
+      POSTGRES_USER: propertymanagement
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: homecrescentDb
+      POSTGRES_DB: propertymanagementDb
